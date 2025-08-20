@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aerobea Presidential Timeline</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 800px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            padding: 5px;
+            transition: all 0.3s;
+        }
+        .cell.active {
+            background: rgba(0,212,255,0.3);
+            border-color: #00d4ff;
+            transform: scale(1.05);
+        }
+        .cell.dead {
+            background: rgba(255,0,0,0.2);
+            border-color: rgba(255,0,0,0.5);
+        }
+        .name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        .event {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+        .year {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        .progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin: 15px 0;
+        }
+        .bar {
+            height: 100%;
+            background: #00d4ff;
+            border-radius: 2px;
+            transition: width 1s;
+        }
+        button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Aerobea Presidential Timeline</h2>
+        <div class="grid" id="grid"></div>
+        <div class="year" id="year">1672</div>
+        <div class="progress">
+            <div class="bar" id="bar"></div>
+        </div>
+        <button id="toggle">Pause</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <script>
+        const START = 1672, END = 2025;
+        
+        // JSON Configuration - easily modify presidents and events
+ const PRESIDENTS = [
+  {
+    name: "Baahram Edward Lincoln the Elder",
+    birth: 1674,
+    death: 1735,
+    events: [
+      { year: 1701, text: "Elected as first President of Aerobea" },
+      { year: 1702, text: "Sworn into office" },
+      { year: 1722, text: "Resigned from office" }
+    ]
+  },
+  {
+    name: "Robert Crumbleton",
+    birth: 1698,
+    death: 1787,
+    events: [
+      { year: 1722, text: "Elected" },
+      { year: 1727, text: "Lost re-election" }
+    ]
+  },
+  {
+    name: "Ferito Beoe",
+    birth: 1703,
+    death: 1763,
+    events: [
+      { year: 1727, text: "Elected" },
+      { year: 1745, text: "Term ended" }
+    ]
+  },
+  {
+    name: "Valu Jezza",
+    birth: 1708,
+    death: 1779,
+    events: [
+      { year: 1745, text: "Elected" },
+      { year: 1761, text: "Resigned" }
+    ]
+  },
+  {
+    name: "Commander Nullglyph",
+    birth: 1717,
+    death: 1797,
+    events: [
+      { year: 1761, text: "Assumed office" },
+      { year: 1797, text: "Died in office" }
+    ]
+  },
+  {
+    name: "Jammes Jaglianviac",
+    birth: 1717,
+    death: 1812,
+    events: [
+      { year: 1797, text: "Elected" },
+      { year: 1812, text: "Resigned due to age" }
+    ]
+  },
+  {
+    name: "Stanley Roberts",
+    birth: 1752,
+    death: 1812,
+    events: [
+      { year: 1812, text: "Appointed Acting President" },
+      { year: 1812, text: "Died in office" }
+    ]
+  },
+  {
+    name: "Barkley Thunderflap",
+    birth: 1750,
+    death: 1805,
+    events: [
+      { year: 1818, text: "Appointed Acting President (GSC-aligned dog)" },
+      { year: 1821, text: "Resigned" }
+    ]
+  },
+  {
+    name: "Feathery Quill",
+    birth: 1749,
+    death: 1779,
+    events: [
+      { year: 1821, text: "Posthumously served 6 symbolic days" }
+    ]
+  },
+  {
+    name: "Oreo Joshon Boeoer",
+    birth: 1885,
+    death: 1969,
+    events: [
+      { year: 1821, text: "Elected" },
+      { year: 1840, text: "Retired" }
+    ]
+  },
+  {
+    name: "Myreech Oiaboy",
+    birth: 1824,
+    death: 1899,
+    events: [
+      { year: 1840, text: "Elected" },
+      { year: 1853, text: "Stepped down" }
+    ]
+  },
+  {
+    name: "Tennisonopi Avots",
+    birth: 1698,
+    death: 1763,
+    events: [
+      { year: 1853, text: "Elected (by retroactive declaration)" },
+      { year: 1863, text: "Term ends" }
+    ]
+  },
+  {
+    name: "Spindle Gowlash",
+    birth: 1839,
+    death: 1910,
+    events: [
+      { year: 1863, text: "Elected" },
+      { year: 1910, text: "Died in office" }
+    ]
+  },
+  {
+    name: "Anamalo Synth",
+    birth: 1871,
+    death: 1920,
+    events: [
+      { year: 1910, text: "Elected" },
+      { year: 1920, text: "Died shortly after leaving office" }
+    ]
+  },
+  {
+    name: "Avae Romrowabala",
+    birth: 1887,
+    death: 1970,
+    events: [
+      { year: 1920, text: "Elected" },
+      { year: 1954, text: "Retired" }
+    ]
+  },
+  {
+    name: "Alec Oven",
+    birth: 1929,
+    death: null,
+    events: [
+      { year: 1954, text: "Elected" },
+      { year: 1957, text: "Term ended" }
+    ]
+  },
+  {
+    name: "Avia Gow",
+    birth: 1933,
+    death: null,
+    events: [
+      { year: 1957, text: "Elected" },
+      { year: 1965, text: "Term ended" }
+    ]
+  },
+  {
+    name: "Ajaysoionvasao Foallowa",
+    birth: 1931,
+    death: null,
+    events: [
+      { year: 1965, text: "Elected" },
+      { year: 1981, text: "Term ended" }
+    ]
+  },
+  {
+    name: "Herbert Lovvbert",
+    birth: 1927,
+    death: null,
+    events: [
+      { year: 1981, text: "Elected" },
+      { year: 2023, text: "Retired" }
+    ]
+  },
+  {
+    name: "Baahram Linco",
+    birth: 1980,
+    death: null,
+    events: [
+      { year: 2023, text: "Elected" }
+    ]
+  }
+];
+
+
+        let current = START, running = true, timer;
+        const yearEl = document.getElementById('year');
+        const barEl = document.getElementById('bar');
+        const gridEl = document.getElementById('grid');
+        const toggleBtn = document.getElementById('toggle');
+
+        function createGrid() {
+            for (let i = 0; i < 20; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${i}`;
+                gridEl.appendChild(cell);
+            }
+        }
+
+        function updateGrid() {
+            PRESIDENTS.forEach((pres, idx) => {
+                if (idx >= 20) return;
+                const cell = document.getElementById(`cell-${idx}`);
+                
+                if (current >= pres.birth) {
+                    cell.innerHTML = `<div class="name">${pres.name}</div>`;
+                    
+                    // Find current event
+                    const currentEvent = pres.events.find(e => e.year <= current && 
+                        (!pres.events.find(ne => ne.year > e.year && ne.year <= current)));
+                    
+                    if (currentEvent) {
+                        cell.innerHTML += `<div class="event">${currentEvent.text}</div>`;
+                    }
+                    
+                    // Set status
+                    if (current >= pres.death) {
+                        cell.className = 'cell dead';
+                    } else {
+                        cell.className = 'cell active';
+                    }
+                } else {
+                    cell.innerHTML = '';
+                    cell.className = 'cell';
+                }
+            });
+        }
+
+        function update() {
+            yearEl.textContent = current;
+            barEl.style.width = ((current - START) / (END - START) * 100) + '%';
+            updateGrid();
+        }
+
+        function tick() {
+            current = current < END ? current + 1 : START;
+            update();
+        }
+
+        function toggle() {
+            if (running) {
+                clearInterval(timer);
+                toggleBtn.textContent = 'Play';
+            } else {
+                timer = setInterval(tick, 1000);
+                toggleBtn.textContent = 'Pause';
+            }
+            running = !running;
+        }
+
+        function reset() {
+            current = START;
+            update();
+        }
+
+        toggleBtn.onclick = toggle;
+        document.getElementById('reset').onclick = reset;
+        
+        createGrid();
+        timer = setInterval(tick, 1000);
+        update();
+    </script>
+</body>
+</html>
