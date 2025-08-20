@@ -65,18 +65,36 @@
             font-weight: bold;
             margin: 15px 0;
         }
-        .progress {
+        .progress-container {
+            position: relative;
             width: 100%;
-            height: 4px;
+            height: 20px;
             background: rgba(255,255,255,0.2);
-            border-radius: 2px;
+            border-radius: 10px;
             margin: 15px 0;
+            cursor: pointer;
         }
-        .bar {
+        .progress {
             height: 100%;
             background: #00d4ff;
-            border-radius: 2px;
-            transition: width 1s;
+            border-radius: 10px;
+            transition: width 0.1s;
+            position: relative;
+        }
+        .slider {
+            position: absolute;
+            top: 50%;
+            right: -10px;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .slider:active {
+            cursor: grabbing;
         }
         button {
             background: rgba(255,255,255,0.2);
@@ -98,8 +116,10 @@
         <h2>Aerobea Presidential Timeline</h2>
         <div class="grid" id="grid"></div>
         <div class="year" id="year">1672</div>
-        <div class="progress">
-            <div class="bar" id="bar"></div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress" id="bar">
+                <div class="slider" id="slider"></div>
+            </div>
         </div>
         <button id="toggle">Pause</button>
         <button id="reset">Reset</button>
@@ -109,9 +129,11 @@
         const START = 1672, END = 2025;
         
         // JSON Configuration - easily modify presidents and events
+        // JSON Configuration - easily modify presidents and events
  const PRESIDENTS = [
   {
     name: "Baahram Edward Lincoln the Elder",
+    party: "Whig",
     birth: 1674,
     death: 1735,
     events: [
@@ -122,6 +144,7 @@
   },
   {
     name: "Robert Crumbleton",
+    party: "Whig",
     birth: 1698,
     death: 1787,
     events: [
@@ -131,15 +154,17 @@
   },
   {
     name: "Ferito Beoe",
-    birth: 1703,
-    death: 1763,
+    party: "Conservative",
+    birth: 1672,
+    death: 1731,
     events: [
       { year: 1727, text: "Elected" },
-      { year: 1745, text: "Term ended" }
+      { year: 1731, text: "assassinated" }
     ]
   },
   {
     name: "Valu Jezza",
+    party: "Labour",
     birth: 1708,
     death: 1779,
     events: [
@@ -149,35 +174,58 @@
   },
   {
     name: "Commander Nullglyph",
+    party: "Whig",
     birth: 1717,
     death: 1797,
     events: [
       { year: 1761, text: "Assumed office" },
-      { year: 1797, text: "Died in office" }
+      { year: 1779, text: "Resigned in favour of Conservative Party" }
+    ]
+  },
+  {
+    name: "benjamin jones",
+    party: "conservative",
+    birth: 1730,
+    death: 1806,
+    events: [
+      { year: 1779, text: "" },
+      { year: 1785, text: "" }
+    ]
+  },
+  {
+    name: "nullglyph",
+    party: "whig",
+    birth: 1717,
+    death: 1797,
+    events: [
+      { year:1785, text: "Elected" },
+      { year: 1787, text: "Resigned due to illness" }
     ]
   },
   {
     name: "Jammes Jaglianviac",
+    party: "Conservative",
     birth: 1717,
-    death: 1812,
+    death: 1798,
     events: [
-      { year: 1797, text: "Elected" },
-      { year: 1812, text: "Resigned due to age" }
+      { year: 1785, text: "Elected" },
+      { year: 1794, text: "Resigned due to age" }
     ]
   },
   {
     name: "Stanley Roberts",
+    party: "Conservative",
     birth: 1752,
-    death: 1812,
+    death: 1827,
     events: [
-      { year: 1812, text: "Appointed Acting President" },
+      { year: 1794, text: "Appointed Acting President" },
       { year: 1812, text: "Died in office" }
     ]
   },
   {
     name: "Barkley Thunderflap",
-    birth: 1750,
-    death: 1805,
+    birth: 1766,
+    death: 1830,
     events: [
       { year: 1818, text: "Appointed Acting President (GSC-aligned dog)" },
       { year: 1821, text: "Resigned" }
@@ -185,16 +233,16 @@
   },
   {
     name: "Feathery Quill",
-    birth: 1749,
-    death: 1779,
+    birth: 1791,
+    death: 1821,
     events: [
       { year: 1821, text: "Posthumously served 6 symbolic days" }
     ]
   },
   {
     name: "Oreo Joshon Boeoer",
-    birth: 1885,
-    death: 1969,
+    birth: 1780,
+    death: 1870,
     events: [
       { year: 1821, text: "Elected" },
       { year: 1840, text: "Retired" }
@@ -203,7 +251,7 @@
   {
     name: "Myreech Oiaboy",
     birth: 1824,
-    death: 1899,
+    death: 1917,
     events: [
       { year: 1840, text: "Elected" },
       { year: 1853, text: "Stepped down" }
@@ -211,11 +259,11 @@
   },
   {
     name: "Tennisonopi Avots",
-    birth: 1698,
-    death: 1763,
+    birth: 1798,
+    death: 1863,
     events: [
       { year: 1853, text: "Elected (by retroactive declaration)" },
-      { year: 1863, text: "Term ends" }
+      { year: 1863, text: "died" }
     ]
   },
   {
@@ -224,16 +272,45 @@
     death: 1910,
     events: [
       { year: 1863, text: "Elected" },
-      { year: 1910, text: "Died in office" }
+      { year: 1869, text: "overthrown" }
+    ]
+  },
+  {
+    name: "davi rovfe",
+    party: "conservative",
+    birth: 1840,
+    death: 1906,
+    events: [
+      { year: 1869, text: "Elected" },
+      { year: 1889, text: "Resigned due to illness" }
+    ]
+  },
+
+  {
+    name: "ben joinse",
+    birth: 1859,
+    death: 1948,
+    events: [
+      { year: 1889, text: "Elected" },
+      { year: 1899, text: "lost re election" }
+    ]
+  },
+  {
+    name: "lila file",
+    birth: 1867,
+    death:1957,
+    events: [
+      { year: 1899, text: "Elected" },
+      { year: 1910, text: "Retired" }
     ]
   },
   {
     name: "Anamalo Synth",
     birth: 1871,
-    death: 1920,
+    death: 1959,
     events: [
       { year: 1910, text: "Elected" },
-      { year: 1920, text: "Died shortly after leaving office" }
+      { year: 1920, text: "retired" }
     ]
   },
   {
@@ -247,8 +324,8 @@
   },
   {
     name: "Alec Oven",
-    birth: 1929,
-    death: null,
+    birth: 1924,
+    death: 1980,
     events: [
       { year: 1954, text: "Elected" },
       { year: 1957, text: "Term ended" }
@@ -283,7 +360,7 @@
   },
   {
     name: "Baahram Linco",
-    birth: 1980,
+    birth: 1979,
     death: null,
     events: [
       { year: 2023, text: "Elected" }
@@ -292,14 +369,16 @@
 ];
 
 
-        let current = START, running = true, timer;
+        let current = START, running = true, timer, isDragging = false;
         const yearEl = document.getElementById('year');
         const barEl = document.getElementById('bar');
         const gridEl = document.getElementById('grid');
         const toggleBtn = document.getElementById('toggle');
+        const progressContainer = document.getElementById('progressContainer');
+        const slider = document.getElementById('slider');
 
         function createGrid() {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 25; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.id = `cell-${i}`;
@@ -309,7 +388,7 @@
 
         function updateGrid() {
             PRESIDENTS.forEach((pres, idx) => {
-                if (idx >= 20) return;
+                if (idx >= 25) return;
                 const cell = document.getElementById(`cell-${idx}`);
                 
                 if (current >= pres.birth) {
@@ -319,12 +398,12 @@
                     const currentEvent = pres.events.find(e => e.year <= current && 
                         (!pres.events.find(ne => ne.year > e.year && ne.year <= current)));
                     
-                    if (currentEvent) {
+                    if (currentEvent && currentEvent.text) {
                         cell.innerHTML += `<div class="event">${currentEvent.text}</div>`;
                     }
                     
                     // Set status
-                    if (current >= pres.death) {
+                    if (pres.death && current >= pres.death) {
                         cell.className = 'cell dead';
                     } else {
                         cell.className = 'cell active';
@@ -338,13 +417,71 @@
 
         function update() {
             yearEl.textContent = current;
-            barEl.style.width = ((current - START) / (END - START) * 100) + '%';
+            const progress = ((current - START) / (END - START)) * 100;
+            barEl.style.width = progress + '%';
             updateGrid();
         }
 
-        function tick() {
-            current = current < END ? current + 1 : START;
+        function setYear(year) {
+            current = Math.max(START, Math.min(END, Math.round(year)));
             update();
+        }
+
+        function getYearFromPosition(x) {
+            const rect = progressContainer.getBoundingClientRect();
+            const percentage = (x - rect.left) / rect.width;
+            return START + (percentage * (END - START));
+        }
+
+        // Mouse events for dragging
+        function handleMouseDown(e) {
+            isDragging = true;
+            if (running) toggle(); // Pause if running
+            handleMouseMove(e);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            const year = getYearFromPosition(e.clientX);
+            setYear(year);
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+
+        // Touch events for mobile
+        function handleTouchStart(e) {
+            isDragging = true;
+            if (running) toggle(); // Pause if running
+            handleTouchMove(e);
+            document.addEventListener('touchmove', handleTouchMove);
+            document.addEventListener('touchend', handleTouchEnd);
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            const year = getYearFromPosition(touch.clientX);
+            setYear(year);
+        }
+
+        function handleTouchEnd() {
+            isDragging = false;
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
+        }
+
+        function tick() {
+            if (!isDragging) {
+                current = current < END ? current + 1 : START;
+                update();
+            }
         }
 
         function toggle() {
@@ -363,9 +500,15 @@
             update();
         }
 
+        // Event listeners
         toggleBtn.onclick = toggle;
         document.getElementById('reset').onclick = reset;
         
+        // Progress bar click/drag events
+        progressContainer.addEventListener('mousedown', handleMouseDown);
+        progressContainer.addEventListener('touchstart', handleTouchStart);
+        
+        // Initialize
         createGrid();
         timer = setInterval(tick, 1000);
         update();
