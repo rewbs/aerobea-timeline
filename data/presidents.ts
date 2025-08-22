@@ -1,13 +1,25 @@
-'use client';
+export const START = 1672;
+export const END = 2025;
+export const PRESIDENCY_BEGINS = 1;
+export const PRESIDENCY_ENDS = 2;
 
-import { useState, useEffect, useRef } from 'react';
+export type EventType = typeof PRESIDENCY_BEGINS | typeof PRESIDENCY_ENDS;
 
-const START = 1672;
-const END = 2025;
-const PRESIDENCY_BEGINS = 1;
-const PRESIDENCY_ENDS = 2;
+export interface TimelineEvent {
+  year: number;
+  type?: EventType;
+  text: string;
+}
 
-const PRESIDENTS = [
+export interface President {
+  name: string;
+  party: string;
+  birth: number;
+  death: number | null;
+  events: TimelineEvent[];
+}
+
+export const PRESIDENTS: President[] = [
   {
     name: "Baahram Edward Lincoln the Elder",
     party: "Whig",
@@ -339,8 +351,7 @@ const PRESIDENTS = [
     ]
   }
 ];
-
-function isPresident(year, president) {
+export function isPresident(year: number, president: President): boolean {
   const begins = president.events.filter(e => e.type === PRESIDENCY_BEGINS);
   const ends = president.events.filter(e => e.type === PRESIDENCY_ENDS);
   begins.sort((a, b) => a.year - b.year);
@@ -353,160 +364,3 @@ function isPresident(year, president) {
   return false;
 }
 
-export default function Page() {
-  const [current, setCurrent] = useState(START);
-  const [running, setRunning] = useState(true);
-  const [isDragging, setIsDragging] = useState(false);
-  const [musicPlaying, setMusicPlaying] = useState(false);
-  const progressRef = useRef(null);
-  const progressContainerRef = useRef(null);
-  const timerRef = useRef(null);
-  const audioCtxRef = useRef(null);
-  const gainRef = useRef(null);
-  const oscillatorsRef = useRef([]);
-  const musicIntervalRef = useRef(null);
-
-  useEffect(() => {
-    if (running) {
-      timerRef.current = setInterval(() => {
-        setCurrent(prev => (prev < END ? prev + 1 : START));
-      }, 1000);
-    }
-    return () => clearInterval(timerRef.current);
-  }, [running]);
-
-  useEffect(() => {
-    if (isDragging) {
-      const handleMove = e => {
-        const x = e.clientX ?? e.touches?.[0].clientX;
-        const rect = progressContainerRef.current.getBoundingClientRect();
-        const percentage = (x - rect.left) / rect.width;
-        const year = START + percentage * (END - START);
-        setCurrent(Math.max(START, Math.min(END, Math.round(year))));
-      };
-      const handleUp = () => setIsDragging(false);
-      window.addEventListener('mousemove', handleMove);
-      window.addEventListener('mouseup', handleUp);
-      window.addEventListener('touchmove', handleMove, { passive: false });
-      window.addEventListener('touchend', handleUp);
-      return () => {
-        window.removeEventListener('mousemove', handleMove);
-        window.removeEventListener('mouseup', handleUp);
-        window.removeEventListener('touchmove', handleMove);
-        window.removeEventListener('touchend', handleUp);
-      };
-    }
-  }, [isDragging]);
-
-  const progress = ((current - START) / (END - START)) * 100;
-
-  function initMusic() {
-    audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-    gainRef.current = audioCtxRef.current.createGain();
-    gainRef.current.connect(audioCtxRef.current.destination);
-    gainRef.current.gain.value = 0.1;
-  }
-
-  function playChord(frequencies, duration = 2000) {
-    oscillatorsRef.current.forEach(osc => { try { osc.stop(); } catch { } });
-    oscillatorsRef.current = [];
-    frequencies.forEach(freq => {
-      const osc = audioCtxRef.current.createOscillator();
-      const oscGain = audioCtxRef.current.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, audioCtxRef.current.currentTime);
-      oscGain.gain.setValueAtTime(0, audioCtxRef.current.currentTime);
-      oscGain.gain.linearRampToValueAtTime(0.3, audioCtxRef.current.currentTime + 0.1);
-      oscGain.gain.exponentialRampToValueAtTime(0.01, audioCtxRef.current.currentTime + duration / 1000);
-      osc.connect(oscGain);
-      oscGain.connect(gainRef.current);
-      osc.start();
-      osc.stop(audioCtxRef.current.currentTime + duration / 1000);
-      oscillatorsRef.current.push(osc);
-    });
-  }
-
-  const toggleMusic = () => {
-    if (!audioCtxRef.current) initMusic();
-    if (musicPlaying) {
-      clearInterval(musicIntervalRef.current);
-      oscillatorsRef.current.forEach(o => { try { o.stop(); } catch {} });
-      setMusicPlaying(false);
-    } else {
-      const chords = [
-        [261.63, 329.63, 392.00],
-        [220.00, 261.63, 329.63],
-        [174.61, 220.00, 261.63],
-        [196.00, 246.94, 293.66],
-        [164.81, 196.00, 246.94],
-        [146.83, 174.61, 220.00]
-      ];
-      let chordIndex = 0;
-      playChord(chords[chordIndex]);
-      musicIntervalRef.current = setInterval(() => {
-        chordIndex = (chordIndex + 1) % chords.length;
-        playChord(chords[chordIndex]);
-      }, 3000);
-      setMusicPlaying(true);
-    }
-  };
-
-  const updateVolume = e => {
-    if (gainRef.current) {
-      gainRef.current.gain.value = e.target.value / 1000;
-    }
-  };
-
-  return (
-    <div className="container">
-      <h2>Aerobea Presidential Timeline</h2>
-      <div className="grid">
-        {PRESIDENTS.map((pres, idx) => {
-          const visible = current >= pres.birth;
-          const currentEvent = pres.events.find(e => e.year <= current && !pres.events.find(ne => ne.year > e.year && ne.year <= current));
-          const className = visible
-            ? isPresident(current, pres)
-              ? 'cell president'
-              : pres.death && current > pres.death
-                ? 'cell dead'
-                : 'cell active'
-            : 'cell';
-          return (
-            <div className={className} key={idx}>
-              {visible && (
-                <>
-                  <div className="name">{pres.name}</div>
-                  <div className="age">{Math.min(current, pres.death || current) - pres.birth}yo</div>
-                  <div className="party">{pres.party}</div>
-                  {currentEvent && <div className="event">{currentEvent.text}</div>}
-                </>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <div className="year">{current}</div>
-      <div
-        className="progress-container"
-        ref={progressContainerRef}
-        onMouseDown={() => { setIsDragging(true); if (running) setRunning(false); }}
-        onTouchStart={(e) => { e.preventDefault(); setIsDragging(true); if (running) setRunning(false); }}
-      >
-        <div className="progress" style={{ width: `${progress}%` }} ref={progressRef}>
-          <div className="slider"></div>
-        </div>
-      </div>
-      <div>
-        <button onClick={() => setRunning(r => !r)}>{running ? 'Pause' : 'Play'}</button>
-        <button onClick={() => setCurrent(START)}>Reset</button>
-      </div>
-      <div className="music-controls">
-        <button onClick={toggleMusic}>{musicPlaying ? '🎵 Music: On' : '🎵 Music: Off'}</button>
-        <div className="volume-control">
-          <label>Volume: </label>
-          <input type="range" min="0" max="100" defaultValue="30" onInput={updateVolume} style={{ width: '100px' }} />
-        </div>
-      </div>
-    </div>
-  );
-}
