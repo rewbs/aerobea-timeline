@@ -17,7 +17,6 @@ body {
   padding: 30px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   width: 100%;
-  max-width: 800px;
 }
 
 .grid {
@@ -26,7 +25,7 @@ body {
   grid-auto-rows: 160px;
   gap: 10px;
   margin-bottom: 20px;
-  width: 100%;
+  width: 95%;
 }
 
 .cell {

@@ -19,7 +19,21 @@ export interface President {
   events: TimelineEvent[];
 }
 
-export const PRESIDENTS: President[] = [
+export function isPresident(year: number, president: President): boolean {
+  const begins = president.events.filter(e => e.type === PRESIDENCY_BEGINS);
+  const ends = president.events.filter(e => e.type === PRESIDENCY_ENDS);
+  begins.sort((a, b) => a.year - b.year);
+  ends.sort((a, b) => a.year - b.year);
+  for (let i = 0; i < begins.length; i++) {
+    const start = begins[i].year;
+    const end = (ends[i]?.year ?? Infinity) - 1;
+    if (year >= start && year <= end) return true;
+  }
+  return false;
+}
+
+
+export const PRESIDENTS : President[] = [
   {
     name: "Baahram Edward Lincoln the Elder",
     party: "Whig",
@@ -53,14 +67,14 @@ export const PRESIDENTS: President[] = [
   },
   {
     name: "joh gumn nocks",
-    party: "skyborne font",
+    party: "liberal democratic",
     birth: 1693,
     death: 1760,
     events: [
       { year: 1731, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1745, type: PRESIDENCY_ENDS, text: "stepped down" }
     ]
-  },
+  },  
   {
     name: "Valu Jezza",
     party: "Labour",
@@ -116,15 +130,16 @@ export const PRESIDENTS: President[] = [
     ]
   },
   {
-    name: "'Jack Prawn",
-    party: "Conservative",
+    name: "Jack Prawn",
+    party: "Conservative", 
     birth: 1773,
     death: 1818,
     events: [
       { year: 1812, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1818, type: PRESIDENCY_ENDS, text: "Poisoned" },
     ]
-  },
+  },  
+
   {
     name: "Barkley Thunderflap",
     party: "GSC",
@@ -136,102 +151,81 @@ export const PRESIDENTS: President[] = [
     ]
   },
   {
-    name: "Argent Landriano",
-    party: "GSC",
-    birth: 1782,
-    death: 1850,
+    name: "Feathery Quill",
+    party: "feather first",
+    birth: 1791,
+    death: 1821,
+    events: [
+      { year: 1821, type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
+      { year: 1821, type: PRESIDENCY_ENDS, text: "died" }
+    ]
+  },
+  {
+    name: "Oreo Joshon Boeoer",
+    party: "socialist",
+    birth: 1780,
+    death: 1870,
     events: [
       { year: 1821, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1833, type: PRESIDENCY_ENDS, text: "Lost re-election" },
-      { year: 1834, type: PRESIDENCY_BEGINS, text: "Re-elected" },
-      { year: 1840, type: PRESIDENCY_ENDS, text: "Lost re-election" }
+      { year: 1840, type: PRESIDENCY_ENDS, text: "Retired" }
     ]
   },
   {
-    name: "Samuel Dinken",
-    party: "GSC",
-    birth: 1804,
-    death: 1882,
-    events: [
-      { year: 1840, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1857, type: PRESIDENCY_ENDS, text: "Resigned" }
-    ]
-  },
-  {
-    name: "Hasfn Deidon",
-    party: "Donex",
+    name: "Myreech Oiaboy",
+    party: "whig",
     birth: 1824,
-    death: 1892,
-    events: [
-      { year: 1857, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1868, type: PRESIDENCY_ENDS, text: "Lost re-election" }
-    ]
-  },
-  {
-    name: "Anavi Giton",
-    party: "Donex",
-    birth: 1839,
-    death: 1907,
-    events: [
-      { year: 1868, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1870, type: PRESIDENCY_ENDS, text: "Lost re-election" }
-    ]
-  },
-  {
-    name: "Adolf O'Skribe",
-    party: "Labour",
-    birth: 1825,
-    death: 1902,
-    events: [
-      { year: 1870, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1871, type: PRESIDENCY_ENDS, text: "Assassinated" }
-    ]
-  },
-  {
-    name: "Jaayck Slecklson",
-    party: "GSC",
-    birth: 1836,
-    death: 1912,
-    events: [
-      { year: 1871, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1875, type: PRESIDENCY_ENDS, text: "Impeached" }
-    ]
-  },
-  {
-    name: "Hed Crover",
-    party: "Conservative",
-    birth: 1845,
     death: 1917,
     events: [
-      { year: 1875, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1879, type: PRESIDENCY_ENDS, text: "Resigned" }
+      { year: 1840, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1853, type: PRESIDENCY_ENDS, text: "Stepped down" }
     ]
   },
   {
-    name: "Mark Sonfee",
-    party: "Conservative",
-    birth: 1850,
-    death: 1923,
+    name: "Tennisonopi Avots",
+    party: "conservative",
+    birth: 1798,
+    death: 1863,
     events: [
-      { year: 1879, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1885, type: PRESIDENCY_ENDS, text: "Lost re-election" }
+      { year: 1853, type: PRESIDENCY_BEGINS, text: "Elected (by retroactive declaration)" },
+      { year: 1863, type: PRESIDENCY_ENDS, text: "died" }
     ]
   },
   {
-    name: "Brigham Josdaq",
-    party: "Conservative",
-    birth: 1856,
-    death: 1928,
+    name: "Spindle Gowlash",
+    party: "radical",
+    birth: 1839,
+    death: 1910,
     events: [
-      { year: 1885, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1899, type: PRESIDENCY_ENDS, text: "Term ended" }
+      { year: 1863, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1869, type: PRESIDENCY_ENDS, text: "overthrown" }
     ]
   },
   {
-    name: "Parthenia Neen",
-    party: "Conservative",
+    name: "davi rovfe",
+    party: "conservative",
+    birth: 1840,
+    death: 1906,
+    events: [
+      { year: 1869, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1889, type: PRESIDENCY_ENDS, text: "Resigned due to illness" }
+    ]
+  },
+
+  {
+    name: "ben joinse",
+    party: "whig",
+    birth: 1859,
+    death: 1948,
+    events: [
+      { year: 1889, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1899, type: PRESIDENCY_ENDS, text: "lost re election" }
+    ]
+  },
+  {
+    name: "lila file",
+    party: "independent",
     birth: 1867,
-    death: 1957,
+    death:1957,
     events: [
       { year: 1899, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1910, type: PRESIDENCY_ENDS, text: "Retired" }
@@ -256,7 +250,7 @@ export const PRESIDENTS: President[] = [
       { year: 1920, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1929, type: PRESIDENCY_ENDS, text: "Lost re-election" },
     ]
-  },
+  },    
   {
     name: "Avae Romrowabala",
     party: "labour",
@@ -271,14 +265,14 @@ export const PRESIDENTS: President[] = [
   },
   {
     name: "Edwin Peak",
-    party: "conservative",
     birth: 1904,
+    party: "conservative",
     death: 1992,
     events: [
       { year: 1947, type: PRESIDENCY_BEGINS, text: "Seized power" },
       { year: 1948, type: PRESIDENCY_ENDS, text: "Overthrown" },
     ]
-  },
+  },  
   {
     name: "Alec Oven",
     party: "DONEX",
@@ -291,8 +285,9 @@ export const PRESIDENTS: President[] = [
   },
   {
     name: "Avia Gow",
-    party: "skyborne font",
     birth: 1933,
+    party: "skyborne font",
+
     death: null,
     events: [
       { year: 1957, type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -311,8 +306,8 @@ export const PRESIDENTS: President[] = [
   },
   {
     name: "Ajaysoionvasao Foallowa",
-    party:"labour",
     birth: 1931,
+    party:"labour",
     death: null,
     events: [
       { year: 1967, type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -321,8 +316,8 @@ export const PRESIDENTS: President[] = [
   },
   {
     name: "Herbert Lovvbert",
-    party:"labour",
     birth: 1927,
+    party:"labour",
     death: null,
     events: [
       { year: 1981, type:PRESIDENCY_BEGINS, text: "Elected 1981 but for a few days only" },
@@ -333,14 +328,14 @@ export const PRESIDENTS: President[] = [
   },
   {
     name: "Effesi Collad",
-    party:"snackalist",
     birth: 1950,
+    party:"snackalist",
     death: null,
     events: [
       { year: 1981, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1988, type: PRESIDENCY_ENDS, text: "Lost election" }
     ]
-  },
+  },  
   {
     name: "Baahram Linco",
     party: "labour",
@@ -351,16 +346,3 @@ export const PRESIDENTS: President[] = [
     ]
   }
 ];
-export function isPresident(year: number, president: President): boolean {
-  const begins = president.events.filter(e => e.type === PRESIDENCY_BEGINS);
-  const ends = president.events.filter(e => e.type === PRESIDENCY_ENDS);
-  begins.sort((a, b) => a.year - b.year);
-  ends.sort((a, b) => a.year - b.year);
-  for (let i = 0; i < begins.length; i++) {
-    const start = begins[i].year;
-    const end = (ends[i]?.year ?? Infinity) - 1;
-    if (year >= start && year <= end) return true;
-  }
-  return false;
-}
-

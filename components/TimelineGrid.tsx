@@ -1,12 +1,12 @@
 import { PRESIDENTS, isPresident } from '../data/presidents';
 
 const PARTY_COLOURS: Record<string, string> = {
-  whig: '#1f77b4',
-  conservative: '#d62728',
-  labour: '#2ca02c',
+  whig: '#95bde9ff',
+  conservative: '#2639e6ff',
+  labour: '#d51313ff',
   gsc: '#9467bd',
   donex: '#ff7f0e',
-  'skyborne font': '#7f7f7f'
+  'liberal democratic': '#7f7f7f'
 };
 
 interface TimelineGridProps {
