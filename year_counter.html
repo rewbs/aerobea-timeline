@@ -26,7 +26,7 @@
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -48,6 +48,11 @@
             border-color: #00d4ff;
             transform: scale(1.05);
         }
+        .cell.president {
+            background: rgba(0,212,0,0.3);
+            border-color: #00d400;
+            transform: scale(1.1);
+        }        
         .cell.dead {
             background: rgba(255,0,0,0.2);
             border-color: rgba(255,0,0,0.5);
@@ -56,6 +61,16 @@
             font-weight: bold;
             margin-bottom: 3px;
         }
+        .age {
+            font-size: 0.6rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+        .party {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            font-weight: bold;
+        }        
         .event {
             font-size: 0.7rem;
             opacity: 0.9;
@@ -109,6 +124,13 @@
         button:hover {
             background: rgba(255,255,255,0.3);
         }
+        .music-controls {
+            margin-top: 15px;
+            font-size: 0.8rem;
+        }
+        .volume-control {
+            margin: 5px;
+        }        
     </style>
 </head>
 <body>
@@ -121,8 +143,17 @@
                 <div class="slider" id="slider"></div>
             </div>
         </div>
-        <button id="toggle">Pause</button>
-        <button id="reset">Reset</button>
+        <div>
+            <button id="toggle">Pause</button>
+            <button id="reset">Reset</button>
+        </div>
+        <div class="music-controls">
+            <button id="musicToggle">🎵 Music: Off</button>
+            <div class="volume-control">
+                <label>Volume: </label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="30" style="width: 100px;">
+            </div>
+        </div>
     </div>
 
     <script>
@@ -130,6 +161,8 @@
         
         // JSON Configuration - easily modify presidents and events
         // JSON Configuration - easily modify presidents and events
+ const PRESIDENCY_BEGINS = 1;
+ const PRESIDENCY_ENDS = 2;
  const PRESIDENTS = [
   {
     name: "Baahram Edward Lincoln the Elder",
@@ -138,18 +171,18 @@
     death: 1735,
     events: [
       { year: 1701, text: "Elected as first President of Aerobea" },
-      { year: 1702, text: "Sworn into office" },
-      { year: 1722, text: "Resigned from office" }
+      { year: 1702, type: PRESIDENCY_BEGINS, text: "Sworn into office" },
+      { year: 1722, type: PRESIDENCY_ENDS, text: "Resigned from office" }
     ]
   },
   {
     name: "Robert Crumbleton",
     party: "Whig",
     birth: 1698,
-    death: 1787,
+    death: 1765,
     events: [
-      { year: 1722, text: "Elected" },
-      { year: 1727, text: "Lost re-election" }
+      { year: 1722, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1727, type: PRESIDENCY_ENDS, text: "Lost re-election" }
     ]
   },
   {
@@ -158,18 +191,28 @@
     birth: 1672,
     death: 1731,
     events: [
-      { year: 1727, text: "Elected" },
-      { year: 1731, text: "assassinated" }
+      { year: 1727, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1731, type: PRESIDENCY_ENDS, text: "assassinated" }
     ]
   },
+  {
+    name: "joh gumn nocks",
+    party: "skyborne font",
+    birth: 1693,
+    death: 1760,
+    events: [
+      { year: 1731, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1745, type: PRESIDENCY_ENDS, text: "stepped down" }
+    ]
+  },  
   {
     name: "Valu Jezza",
     party: "Labour",
     birth: 1708,
     death: 1779,
     events: [
-      { year: 1745, text: "Elected" },
-      { year: 1761, text: "Resigned" }
+      { year: 1745, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1761, type: PRESIDENCY_ENDS, text: "Resigned" }
     ]
   },
   {
@@ -178,8 +221,10 @@
     birth: 1717,
     death: 1797,
     events: [
-      { year: 1761, text: "Assumed office" },
-      { year: 1779, text: "Resigned in favour of Conservative Party" }
+      { year: 1761, type: PRESIDENCY_BEGINS, text: "Assumed office" },
+      { year: 1779, type: PRESIDENCY_ENDS, text: "Resigned in favour of Conservative Party" },
+      { year:1785, type: PRESIDENCY_BEGINS, text: "Re-Elected" },
+      { year: 1787, type: PRESIDENCY_ENDS, text: "Retired" }
     ]
   },
   {
@@ -188,18 +233,10 @@
     birth: 1730,
     death: 1806,
     events: [
-      { year: 1779, text: "" },
-      { year: 1785, text: "" }
-    ]
-  },
-  {
-    name: "nullglyph",
-    party: "whig",
-    birth: 1717,
-    death: 1797,
-    events: [
-      { year:1785, text: "Elected" },
-      { year: 1787, text: "Resigned due to illness" }
+      { year: 1779, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1785, type: PRESIDENCY_ENDS, text: "Stepped down" },
+      { year: 1794, type: PRESIDENCY_BEGINS, text: "Re-elected" },
+      { year: 1796, type: PRESIDENCY_ENDS, text: "Loses re-elections" },
     ]
   },
   {
@@ -208,8 +245,8 @@
     birth: 1717,
     death: 1798,
     events: [
-      { year: 1785, text: "Elected" },
-      { year: 1794, text: "Resigned due to age" }
+      { year: 1785, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1794, type: PRESIDENCY_ENDS, text: "Resigned due to age" }
     ]
   },
   {
@@ -218,61 +255,79 @@
     birth: 1752,
     death: 1827,
     events: [
-      { year: 1794, text: "Appointed Acting President" },
-      { year: 1812, text: "Died in office" }
+      { year: 1796, type: PRESIDENCY_BEGINS, text: "Appointed Acting President" },
+      { year: 1812, type: PRESIDENCY_ENDS, text: "Stepped down" }
     ]
   },
   {
+    name: "'Jack Prawn",
+    party: "Conservative", 
+    birth: 1773,
+    death: 1818,
+    events: [
+      { year: 1812, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1818, type: PRESIDENCY_ENDS, text: "Poisoned" },
+    ]
+  },  
+
+  {
     name: "Barkley Thunderflap",
+    party: "GSC",
     birth: 1766,
     death: 1830,
     events: [
-      { year: 1818, text: "Appointed Acting President (GSC-aligned dog)" },
-      { year: 1821, text: "Resigned" }
+      { year: 1818, type: PRESIDENCY_BEGINS, text: "Appointed Acting President (GSC-aligned dog)" },
+      { year: 1821, type: PRESIDENCY_ENDS, text: "Resigned" }
     ]
   },
   {
     name: "Feathery Quill",
+    party: "feather first",
     birth: 1791,
     death: 1821,
     events: [
-      { year: 1821, text: "Posthumously served 6 symbolic days" }
+      { year: 1821, type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
+      { year: 1821, type: PRESIDENCY_ENDS, text: "died" }
     ]
   },
   {
     name: "Oreo Joshon Boeoer",
+    party: "socialist",
     birth: 1780,
     death: 1870,
     events: [
-      { year: 1821, text: "Elected" },
-      { year: 1840, text: "Retired" }
+      { year: 1821, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1840, type: PRESIDENCY_ENDS, text: "Retired" }
     ]
   },
   {
     name: "Myreech Oiaboy",
+    party: "whig",
     birth: 1824,
     death: 1917,
     events: [
-      { year: 1840, text: "Elected" },
-      { year: 1853, text: "Stepped down" }
+      { year: 1840, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1853, type: PRESIDENCY_ENDS, text: "Stepped down" }
     ]
   },
   {
     name: "Tennisonopi Avots",
+    party: "conservative",
     birth: 1798,
     death: 1863,
     events: [
-      { year: 1853, text: "Elected (by retroactive declaration)" },
-      { year: 1863, text: "died" }
+      { year: 1853, type: PRESIDENCY_BEGINS, text: "Elected (by retroactive declaration)" },
+      { year: 1863, type: PRESIDENCY_ENDS, text: "died" }
     ]
   },
   {
     name: "Spindle Gowlash",
+    party: "radical",
     birth: 1839,
     death: 1910,
     events: [
-      { year: 1863, text: "Elected" },
-      { year: 1869, text: "overthrown" }
+      { year: 1863, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1869, type: PRESIDENCY_ENDS, text: "overthrown" }
     ]
   },
   {
@@ -281,104 +336,259 @@
     birth: 1840,
     death: 1906,
     events: [
-      { year: 1869, text: "Elected" },
-      { year: 1889, text: "Resigned due to illness" }
+      { year: 1869, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1889, type: PRESIDENCY_ENDS, text: "Resigned due to illness" }
     ]
   },
 
   {
     name: "ben joinse",
+    party: "whig",
     birth: 1859,
     death: 1948,
     events: [
-      { year: 1889, text: "Elected" },
-      { year: 1899, text: "lost re election" }
+      { year: 1889, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1899, type: PRESIDENCY_ENDS, text: "lost re election" }
     ]
   },
   {
     name: "lila file",
+    party: "independent",
     birth: 1867,
     death:1957,
     events: [
-      { year: 1899, text: "Elected" },
-      { year: 1910, text: "Retired" }
+      { year: 1899, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1910, type: PRESIDENCY_ENDS, text: "Retired" }
     ]
   },
   {
     name: "Anamalo Synth",
+    party: "labour",
     birth: 1871,
     death: 1959,
     events: [
-      { year: 1910, text: "Elected" },
-      { year: 1920, text: "retired" }
+      { year: 1910, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1920, type: PRESIDENCY_ENDS, text: "retired" }
     ]
   },
   {
+    name: "Rob Reddik",
+    party: "conservative",
+    birth: 1867,
+    death: 1930,
+    events: [
+      { year: 1920, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1929, type: PRESIDENCY_ENDS, text: "Lost re-election" },
+    ]
+  },    
+  {
     name: "Avae Romrowabala",
+    party: "labour",
     birth: 1887,
     death: 1970,
     events: [
-      { year: 1920, text: "Elected" },
-      { year: 1954, text: "Retired" }
+      { year: 1929, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1947, type: PRESIDENCY_ENDS, text: "Kicked out" },
+      { year: 1948, type: PRESIDENCY_BEGINS, text: "Resumed office" },
+      { year: 1954, type: PRESIDENCY_ENDS, text: "Retired" }
     ]
   },
   {
+    name: "Edwin Peak",
+    birth: 1904,
+    party: "conservative",
+    death: 1992,
+    events: [
+      { year: 1947, type: PRESIDENCY_BEGINS, text: "Seized power" },
+      { year: 1948, type: PRESIDENCY_ENDS, text: "Overthrown" },
+    ]
+  },  
+  {
     name: "Alec Oven",
+    party: "DONEX",
     birth: 1924,
     death: 1980,
     events: [
-      { year: 1954, text: "Elected" },
-      { year: 1957, text: "Term ended" }
+      { year: 1954, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1957, type: PRESIDENCY_ENDS, text: "Term ended" }
     ]
   },
   {
     name: "Avia Gow",
     birth: 1933,
+    party: "skyborne font",
+
     death: null,
     events: [
-      { year: 1957, text: "Elected" },
-      { year: 1965, text: "Term ended" }
+      { year: 1957, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1965, type: PRESIDENCY_ENDS, text: "Term ended" }
+    ]
+  },
+  {
+    name: "Ajaxio Collad",
+    party:"snackalist",
+    birth: 1915,
+    death: 1989,
+    events: [
+      { year: 1965, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1967, type: PRESIDENCY_ENDS, text: "Lost re-election" }
     ]
   },
   {
     name: "Ajaysoionvasao Foallowa",
     birth: 1931,
+    party:"labour",
     death: null,
     events: [
-      { year: 1965, text: "Elected" },
-      { year: 1981, text: "Term ended" }
+      { year: 1967, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1981, type: PRESIDENCY_ENDS, text: "Term ended" }
     ]
   },
   {
     name: "Herbert Lovvbert",
     birth: 1927,
+    party:"labour",
     death: null,
     events: [
-      { year: 1981, text: "Elected" },
-      { year: 2023, text: "Retired" }
+      { year: 1981, type:PRESIDENCY_BEGINS, text: "Elected 1981 but for a few days only" },
+      { year: 1981, type:PRESIDENCY_ENDS, text: "Elected 1981 but for a few days only" },
+      { year: 1988, type:PRESIDENCY_BEGINS, text: "Re-elected" },
+      { year: 2023, type:PRESIDENCY_ENDS, text: "Retired" }
     ]
   },
   {
+    name: "Effesi Collad",
+    birth: 1950,
+    party:"snackalist",
+    death: null,
+    events: [
+      { year: 1981, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1988, type: PRESIDENCY_ENDS, text: "Lost election" }
+    ]
+  },  
+  {
     name: "Baahram Linco",
+    party: "labour",
     birth: 1979,
     death: null,
     events: [
-      { year: 2023, text: "Elected" }
+      { year: 2023, type: PRESIDENCY_BEGINS, text: "Elected" }
     ]
   }
 ];
 
 
-        let current = START, running = true, timer, isDragging = false;
+function isPresident(year, president) {
+  const begins = president.events.filter(e => e.type === PRESIDENCY_BEGINS);
+  const ends = president.events.filter(e => e.type === PRESIDENCY_ENDS);
+
+  begins.sort((a, b) => a.year - b.year);
+  ends.sort((a, b) => a.year - b.year);
+
+  for (let i = 0; i < begins.length; i++) {
+    const start = begins[i].year;
+    const end = (ends[i]?.year ?? Infinity) - 1;
+    if (year >= start && year <= end) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+        let current = START, running = true, timer, isDragging = false, musicPlaying = false;
         const yearEl = document.getElementById('year');
         const barEl = document.getElementById('bar');
         const gridEl = document.getElementById('grid');
         const toggleBtn = document.getElementById('toggle');
         const progressContainer = document.getElementById('progressContainer');
         const slider = document.getElementById('slider');
+        const musicToggleBtn = document.getElementById('musicToggle');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        // Create background music using Web Audio API
+        let audioContext, oscillators = [], gainNode;
+        
+        function initMusic() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            gainNode = audioContext.createGain();
+            gainNode.connect(audioContext.destination);
+            gainNode.gain.value = 0.1; // Start quiet
+        }
+
+        function playChord(frequencies, duration = 2000) {
+            // Stop any existing oscillators
+            oscillators.forEach(osc => {
+                try { osc.stop(); } catch(e) {}
+            });
+            oscillators = [];
+            
+            // Create new oscillators for each frequency
+            frequencies.forEach(freq => {
+                const osc = audioContext.createOscillator();
+                const oscGain = audioContext.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                
+                // Envelope
+                oscGain.gain.setValueAtTime(0, audioContext.currentTime);
+                oscGain.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+                oscGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration/1000);
+                
+                osc.connect(oscGain);
+                oscGain.connect(gainNode);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + duration/1000);
+                oscillators.push(osc);
+            });
+        }
+
+        let musicInterval;
+        function toggleMusic() {
+            if (!audioContext) initMusic();
+            
+            if (musicPlaying) {
+                clearInterval(musicInterval);
+                oscillators.forEach(osc => {
+                    try { osc.stop(); } catch(e) {}
+                });
+                musicToggleBtn.textContent = '🎵 Music: Off';
+                musicPlaying = false;
+            } else {
+                // Classical chord progressions (frequencies in Hz)
+                const chords = [
+                    [261.63, 329.63, 392.00], // C major
+                    [220.00, 261.63, 329.63], // A minor
+                    [174.61, 220.00, 261.63], // F major
+                    [196.00, 246.94, 293.66], // G major
+                    [164.81, 196.00, 246.94], // E minor
+                    [146.83, 174.61, 220.00]  // D minor
+                ];
+                
+                let chordIndex = 0;
+                musicInterval = setInterval(() => {
+                    playChord(chords[chordIndex]);
+                    chordIndex = (chordIndex + 1) % chords.length;
+                }, 3000);
+                
+                // Start immediately
+                playChord(chords[0]);
+                
+                musicToggleBtn.textContent = '🎵 Music: On';
+                musicPlaying = true;
+            }
+        }
+
+        function updateVolume() {
+            if (gainNode) {
+                gainNode.gain.value = volumeSlider.value / 1000; // Convert to 0-0.1 range
+            }
+        }
 
         function createGrid() {
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < PRESIDENTS.length; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.id = `cell-${i}`;
@@ -388,12 +598,14 @@
 
         function updateGrid() {
             PRESIDENTS.forEach((pres, idx) => {
-                if (idx >= 25) return;
+                if (idx >= PRESIDENTS.length) return;
                 const cell = document.getElementById(`cell-${idx}`);
                 
                 if (current >= pres.birth) {
-                    cell.innerHTML = `<div class="name">${pres.name}</div>`;
-                    
+                    cell.innerHTML = `<div class="name">${pres.name}</div>
+                    <div class="age">${Math.min(current, pres.death || current) - pres.birth}yo</div>
+                    <div class="party">${pres.party}</div>`;
+
                     // Find current event
                     const currentEvent = pres.events.find(e => e.year <= current && 
                         (!pres.events.find(ne => ne.year > e.year && ne.year <= current)));
@@ -403,7 +615,9 @@
                     }
                     
                     // Set status
-                    if (pres.death && current >= pres.death) {
+                    if (isPresident(current, pres)) {
+                        cell.className = 'cell president';
+                    } else if (pres.death && current > pres.death) {
                         cell.className = 'cell dead';
                     } else {
                         cell.className = 'cell active';
@@ -503,6 +717,8 @@
         // Event listeners
         toggleBtn.onclick = toggle;
         document.getElementById('reset').onclick = reset;
+        musicToggleBtn.onclick = toggleMusic;
+        volumeSlider.oninput = updateVolume;        
         
         // Progress bar click/drag events
         progressContainer.addEventListener('mousedown', handleMouseDown);
