@@ -1,5 +1,14 @@
 import { PRESIDENTS, isPresident } from '../data/presidents';
 
+const PARTY_COLOURS: Record<string, string> = {
+  whig: '#1f77b4',
+  conservative: '#d62728',
+  labour: '#2ca02c',
+  gsc: '#9467bd',
+  donex: '#ff7f0e',
+  'skyborne font': '#7f7f7f'
+};
+
 interface TimelineGridProps {
   current: number;
 }
@@ -19,13 +28,21 @@ export default function TimelineGrid({ current }: TimelineGridProps) {
               ? 'cell dead'
               : 'cell active'
           : 'cell';
+        const partyColour = PARTY_COLOURS[pres.party.toLowerCase()] || '#999';
         return (
           <div className={className} key={idx}>
             {visible && (
               <>
                 <div className="name">{pres.name}</div>
-                <div className="age">{Math.min(current, pres.death ?? current) - pres.birth}yo</div>
-                <div className="party">{pres.party}</div>
+                <div className="lifespan">
+                  {pres.birth} – {pres.death ?? 'present'}
+                </div>
+                <div className="party" style={{ backgroundColor: partyColour }}>
+                  {pres.party}
+                </div>
+                <div className="age">
+                  {Math.min(current, pres.death ?? current) - pres.birth}yo
+                </div>
                 {currentEvent && <div className="event">{currentEvent.text}</div>}
               </>
             )}
