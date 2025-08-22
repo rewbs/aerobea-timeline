@@ -1,16 +1,17 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import { START, END } from '../data/presidents';
 
 interface ProgressBarProps {
   current: number;
   setCurrent: (year: number) => void;
   running: boolean;
   setRunning: (running: boolean) => void;
+  start: number;
+  end: number;
 }
 
-export default function ProgressBar({ current, setCurrent, running, setRunning }: ProgressBarProps) {
+export default function ProgressBar({ current, setCurrent, running, setRunning, start, end }: ProgressBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -20,8 +21,8 @@ export default function ProgressBar({ current, setCurrent, running, setRunning }
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const rect = containerRef.current!.getBoundingClientRect();
       const percentage = (clientX - rect.left) / rect.width;
-      const year = START + percentage * (END - START);
-      setCurrent(Math.max(START, Math.min(END, Math.round(year))));
+      const year = start + percentage * (end - start);
+      setCurrent(Math.max(start, Math.min(end, Math.round(year))));
     };
     const handleUp = () => setIsDragging(false);
     window.addEventListener('mousemove', handleMove);
@@ -36,7 +37,7 @@ export default function ProgressBar({ current, setCurrent, running, setRunning }
     };
   }, [isDragging, setCurrent]);
 
-  const progress = ((current - START) / (END - START)) * 100;
+  const progress = ((current - start) / (end - start)) * 100;
 
   return (
     <div

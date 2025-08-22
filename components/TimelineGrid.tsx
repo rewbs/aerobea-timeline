@@ -1,4 +1,4 @@
-import { PRESIDENTS, isPresident } from '../data/presidents';
+import { isPresident, President } from '../data/presidents';
 
 const PARTY_COLOURS: Record<string, string> = {
   whig: '#95bde9ff',
@@ -11,12 +11,13 @@ const PARTY_COLOURS: Record<string, string> = {
 
 interface TimelineGridProps {
   current: number;
+  presidents: President[];
 }
 
-export default function TimelineGrid({ current }: TimelineGridProps) {
+export default function TimelineGrid({ current, presidents }: TimelineGridProps) {
   return (
     <div className="grid">
-      {PRESIDENTS.map((pres, idx) => {
+      {presidents.map((pres, idx) => {
         const visible = current >= pres.birth;
         const currentEvent = pres.events.find(
           e => e.year <= current && !pres.events.find(ne => ne.year > e.year && ne.year <= current)
