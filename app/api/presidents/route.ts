@@ -2,9 +2,12 @@ import OpenAI from 'openai';
 import {
   President,
   PRESIDENCY_BEGINS,
-  PRESIDENCY_ENDS
+  PRESIDENCY_ENDS,
+  DEATH,
+  EventType
 } from '../../../data/presidents';
 import { presidentialExitReasons } from '../../../data/exitReasons';
+import { deathReasons } from '../../../data/deathReasons';
 
 export async function POST() {
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -103,8 +106,20 @@ export async function POST() {
       }
       if ((deathYear??2025) - birthYear > 105) {
         // If they lived too long, set death year to null
-        deathYear = Math.max(exitYear, 105 * (1-Math.random()*0.2));
+        deathYear = Math.round(Math.max(exitYear, birthYear + 105*(1-Math.random()*0.4)));
       }
+    }
+
+    // Create a death reason event if they died under 60 and their term did not end in death
+    let deathEvent = undefined;
+    if (deathYear
+        && ((deathYear - birthYear) < 60)
+        && !exitReason.death) {
+          deathEvent = {
+            year: deathYear,
+            type: DEATH as EventType,
+            text: `${deathReasons[Math.floor(Math.random() * deathReasons.length)]}`
+          };
     }
 
     presidents.push({
@@ -114,7 +129,8 @@ export async function POST() {
       death: deathYear,
       events: [
         { year: electionYear, type: PRESIDENCY_BEGINS, text: 'Elected' },
-        { year: exitYear, type: PRESIDENCY_ENDS, text: exitReason.reason }
+        { year: exitYear, type: PRESIDENCY_ENDS, text: exitReason.reason },
+        ...(deathEvent ? [deathEvent] : [])
       ]
     });
 
