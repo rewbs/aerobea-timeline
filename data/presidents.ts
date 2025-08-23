@@ -2,8 +2,9 @@ export const START = 1672;
 export const END = 2025;
 export const PRESIDENCY_BEGINS = 1;
 export const PRESIDENCY_ENDS = 2;
+export const DEATH = 3;
 
-export type EventType = typeof PRESIDENCY_BEGINS | typeof PRESIDENCY_ENDS;
+export type EventType = typeof PRESIDENCY_BEGINS | typeof PRESIDENCY_ENDS | typeof DEATH;
 
 export interface TimelineEvent {
   year: number;
@@ -42,7 +43,9 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1701, text: "Elected as first President of Aerobea" },
       { year: 1702, type: PRESIDENCY_BEGINS, text: "Sworn into office" },
-      { year: 1722, type: PRESIDENCY_ENDS, text: "Resigned from office" }
+      { year: 1722, type: PRESIDENCY_ENDS, text: "Resigned from office" },
+      { year: 1735, type: DEATH, text: "Died of  rare cancer" }
+
     ]
   },
   {
@@ -52,7 +55,8 @@ export const PRESIDENTS : President[] = [
     death: 1765,
     events: [
       { year: 1722, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1727, type: PRESIDENCY_ENDS, text: "Lost re-election" }
+      { year: 1727, type: PRESIDENCY_ENDS, text: "Lost re-election" },
+      { year:1765, type: DEATH, text: "Died of cerebral haemorrhage" }
     ]
   },
   {
@@ -72,7 +76,8 @@ export const PRESIDENTS : President[] = [
     death: 1760,
     events: [
       { year: 1731, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1745, type: PRESIDENCY_ENDS, text: "stepped down" }
+      { year: 1745, type: PRESIDENCY_ENDS, text: "stepped down" },
+      { year: 1760, type: DEATH, text: "Died of diabetes complications" }
     ]
   },  
   {
@@ -82,7 +87,8 @@ export const PRESIDENTS : President[] = [
     death: 1779,
     events: [
       { year: 1745, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1761, type: PRESIDENCY_ENDS, text: "Resigned" }
+      { year: 1761, type: PRESIDENCY_ENDS, text: "Resigned" },
+      { year: 1779, type: DEATH, text: "Died of typhoid fever" }
     ]
   },
   {
@@ -94,7 +100,8 @@ export const PRESIDENTS : President[] = [
       { year: 1761, type: PRESIDENCY_BEGINS, text: "Assumed office" },
       { year: 1779, type: PRESIDENCY_ENDS, text: "Resigned in favour of Conservative Party" },
       { year:1785, type: PRESIDENCY_BEGINS, text: "Re-Elected" },
-      { year: 1787, type: PRESIDENCY_ENDS, text: "Retired" }
+      { year: 1787, type: PRESIDENCY_ENDS, text: "Retired" },
+      { year: 1797, type: DEATH, text: "Died of heart failure" }
     ]
   },
   {
@@ -107,6 +114,7 @@ export const PRESIDENTS : President[] = [
       { year: 1785, type: PRESIDENCY_ENDS, text: "Stepped down" },
       { year: 1794, type: PRESIDENCY_BEGINS, text: "Re-elected" },
       { year: 1796, type: PRESIDENCY_ENDS, text: "Loses re-elections" },
+      { year: 1806, type: DEATH, text: "Died of pneumonia" }  
     ]
   },
   {
@@ -115,8 +123,9 @@ export const PRESIDENTS : President[] = [
     birth: 1717,
     death: 1798,
     events: [
-      { year: 1785, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1794, type: PRESIDENCY_ENDS, text: "Resigned due to age" }
+      { year: 1787, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1794, type: PRESIDENCY_ENDS, text: "Resigned due to age" },
+      { year: 1798, type: DEATH, text: "Died of natural causes" }
     ]
   },
   {
@@ -126,7 +135,8 @@ export const PRESIDENTS : President[] = [
     death: 1827,
     events: [
       { year: 1796, type: PRESIDENCY_BEGINS, text: "Appointed Acting President" },
-      { year: 1812, type: PRESIDENCY_ENDS, text: "Stepped down" }
+      { year: 1812, type: PRESIDENCY_ENDS, text: "Stepped down" },
+      { year: 1827, type: DEATH, text: "Died of tuberculosis" }
     ]
   },
   {
@@ -137,6 +147,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1812, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1818, type: PRESIDENCY_ENDS, text: "Poisoned" },
+      { year: 1818, type: DEATH, text: "Died of poisoning" }
     ]
   },  
 
@@ -147,7 +158,8 @@ export const PRESIDENTS : President[] = [
     death: 1830,
     events: [
       { year: 1818, type: PRESIDENCY_BEGINS, text: "Appointed Acting President (GSC-aligned dog)" },
-      { year: 1821, type: PRESIDENCY_ENDS, text: "Resigned" }
+      { year: 1821, type: PRESIDENCY_ENDS, text: "Resigned" },
+      { year: 1830, type: DEATH, text: "Died of hydration issues" },
     ]
   },
   {
@@ -157,7 +169,7 @@ export const PRESIDENTS : President[] = [
     death: 1821,
     events: [
       { year: 1821, type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
-      { year: 1821, type: PRESIDENCY_ENDS, text: "died" }
+      { year: 1821, type: PRESIDENCY_ENDS, text: "died crashing into a blimp while trying to fly", }
     ]
   },
   {
@@ -167,7 +179,8 @@ export const PRESIDENTS : President[] = [
     death: 1870,
     events: [
       { year: 1821, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1840, type: PRESIDENCY_ENDS, text: "Retired" }
+      { year: 1840, type: PRESIDENCY_ENDS, text: "Retired" },
+      { year: 1870, type: DEATH, text: "Died of old age" }
     ]
   },
   {
@@ -177,7 +190,8 @@ export const PRESIDENTS : President[] = [
     death: 1917,
     events: [
       { year: 1840, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1853, type: PRESIDENCY_ENDS, text: "Stepped down" }
+      { year: 1853, type: PRESIDENCY_ENDS, text: "Stepped down" },
+      { year: 1917, type: DEATH, text: "Died of old age" }
     ]
   },
   {
@@ -187,7 +201,7 @@ export const PRESIDENTS : President[] = [
     death: 1863,
     events: [
       { year: 1853, type: PRESIDENCY_BEGINS, text: "Elected (by retroactive declaration)" },
-      { year: 1863, type: PRESIDENCY_ENDS, text: "died" }
+      { year: 1863, type: PRESIDENCY_ENDS, text: "died of stroke" }
     ]
   },
   {
@@ -197,7 +211,8 @@ export const PRESIDENTS : President[] = [
     death: 1910,
     events: [
       { year: 1863, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1869, type: PRESIDENCY_ENDS, text: "overthrown" }
+      { year: 1869, type: PRESIDENCY_ENDS, text: "overthrown" },
+      { year: 1910, type: DEATH, text: "died of flu" }
     ]
   },
   {
@@ -207,7 +222,8 @@ export const PRESIDENTS : President[] = [
     death: 1906,
     events: [
       { year: 1869, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1889, type: PRESIDENCY_ENDS, text: "Resigned due to illness" }
+      { year: 1889, type: PRESIDENCY_ENDS, text: "Resigned due to illness" },
+      { year: 1906, type: DEATH, text: "died of scurvy" }
     ]
   },
 
@@ -218,17 +234,19 @@ export const PRESIDENTS : President[] = [
     death: 1948,
     events: [
       { year: 1889, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1899, type: PRESIDENCY_ENDS, text: "lost re election" }
+      { year: 1899, type: PRESIDENCY_ENDS, text: "lost re election" },
+      { year: 1948, type: DEATH, text: "died of dropsy" }
     ]
   },
   {
     name: "lila file",
     party: "independent",
     birth: 1867,
-    death:1957,
+    death: 1957,
     events: [
       { year: 1899, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1910, type: PRESIDENCY_ENDS, text: "Retired" }
+      { year: 1910, type: PRESIDENCY_ENDS, text: "Retired" },
+      { year: 1957, type: DEATH, text: "died of old age" }
     ]
   },
   {
@@ -238,29 +256,32 @@ export const PRESIDENTS : President[] = [
     death: 1959,
     events: [
       { year: 1910, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1920, type: PRESIDENCY_ENDS, text: "retired" }
+      { year: 1920, type: PRESIDENCY_ENDS, text: "Resigned" },
+      { year: 1959, type: DEATH, text: "died of stroke" }
     ]
   },
   {
     name: "Rob Reddik",
     party: "conservative",
-    birth: 1867,
+    birth: 1863,
     death: 1930,
     events: [
       { year: 1920, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1929, type: PRESIDENCY_ENDS, text: "Lost re-election" },
+      { year: 1930, type: DEATH, text: "died of kidney failure" }
     ]
   },    
   {
     name: "Avae Romrowabala",
-    party: "labour",
+    party: 'whig',
     birth: 1887,
     death: 1970,
     events: [
       { year: 1929, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1947, type: PRESIDENCY_ENDS, text: "Kicked out" },
       { year: 1948, type: PRESIDENCY_BEGINS, text: "Resumed office" },
-      { year: 1954, type: PRESIDENCY_ENDS, text: "Retired" }
+      { year: 1954, type: PRESIDENCY_ENDS, text: "Retired" },
+      { year: 1970, type: DEATH, text: "died of stomach cancer" }
     ]
   },
   {
@@ -271,6 +292,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1947, type: PRESIDENCY_BEGINS, text: "Seized power" },
       { year: 1948, type: PRESIDENCY_ENDS, text: "Overthrown" },
+      { year: 1992, type: DEATH, text: "died of old age" }
     ]
   },  
   {
@@ -280,18 +302,18 @@ export const PRESIDENTS : President[] = [
     death: 1980,
     events: [
       { year: 1954, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1957, type: PRESIDENCY_ENDS, text: "Term ended" }
+      { year: 1957, type: PRESIDENCY_ENDS, text: "Term ended" },
+      { year: 1980, type: DEATH, text: "died of  throat cancer" }
     ]
   },
   {
     name: "Avia Gow",
     birth: 1933,
-    party: "skyborne font",
-
+    party: "liberal democratic",
     death: null,
     events: [
       { year: 1957, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1965, type: PRESIDENCY_ENDS, text: "Term ended" }
+      { year: 1965, type: PRESIDENCY_ENDS, text: "Term ended" },
     ]
   },
   {
@@ -301,7 +323,8 @@ export const PRESIDENTS : President[] = [
     death: 1989,
     events: [
       { year: 1965, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1967, type: PRESIDENCY_ENDS, text: "Lost re-election" }
+      { year: 1967, type: PRESIDENCY_ENDS, text: "Lost re-election" },
+      { year: 1989, type: DEATH, text: "died of heart attack" }
     ]
   },
   {
@@ -311,12 +334,12 @@ export const PRESIDENTS : President[] = [
     death: null,
     events: [
       { year: 1967, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1981, type: PRESIDENCY_ENDS, text: "Term ended" }
+      { year: 1981, type: PRESIDENCY_ENDS, text: "Term ended" },
     ]
   },
   {
     name: "Herbert Lovvbert",
-    birth: 1927,
+    birth: 1951,
     party:"labour",
     death: null,
     events: [
@@ -333,12 +356,12 @@ export const PRESIDENTS : President[] = [
     death: null,
     events: [
       { year: 1981, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1988, type: PRESIDENCY_ENDS, text: "Lost election" }
+      { year: 1988, type: PRESIDENCY_ENDS, text: "Lost election" },
     ]
   },  
   {
     name: "Baahram Linco",
-    party: "labour",
+    party: "whig",
     birth: 1979,
     death: null,
     events: [
