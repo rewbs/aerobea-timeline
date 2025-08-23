@@ -35,7 +35,7 @@ export default function Page() {
     const births = presidents.filter(p => p.birth === current).length;
     const deaths = presidents.filter(p => p.death === current).length;
     if (births) playSound('/pop-cartoon-328167.mp3', births);
-    if (deaths) playSound('/bell-323942.mp3', deaths, 1, 2);
+    if (deaths) playSound('/bell-323942.mp3', deaths, 1, 1);
   }, [current, presidents]);
 
   const generatePresidents = async () => {
