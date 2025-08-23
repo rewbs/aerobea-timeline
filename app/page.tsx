@@ -13,6 +13,13 @@ export default function Page() {
   const [current, setCurrent] = useState<number>(START);
   const [running, setRunning] = useState<boolean>(true);
 
+  const playSound = (src: string, count: number) => {
+    for (let i = 0; i < count; i++) {
+      const audio = new Audio(src);
+      setTimeout(() => audio.play(), i * 200);
+    }
+  };
+
   useEffect(() => {
     if (running) {
       const timer = setInterval(() => {
@@ -21,6 +28,13 @@ export default function Page() {
       return () => clearInterval(timer);
     }
   }, [running, start, end]);
+
+  useEffect(() => {
+    const births = presidents.filter(p => p.birth === current).length;
+    const deaths = presidents.filter(p => p.death === current).length;
+    if (births) playSound('/pop-cartoon-328167.mp3', births);
+    if (deaths) playSound('/bell-323942.mp3', deaths);
+  }, [current, presidents]);
 
   const generatePresidents = async () => {
     try {
