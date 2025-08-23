@@ -13,9 +13,11 @@ export default function Page() {
   const [current, setCurrent] = useState<number>(START);
   const [running, setRunning] = useState<boolean>(true);
 
-  const playSound = (src: string, count: number) => {
+  const playSound = (src: string, count: number, volume = 1, offset = 0) => {
     for (let i = 0; i < count; i++) {
       const audio = new Audio(src);
+      audio.volume = volume;
+      audio.currentTime = offset;
       setTimeout(() => audio.play(), i * 200);
     }
   };
@@ -33,7 +35,7 @@ export default function Page() {
     const births = presidents.filter(p => p.birth === current).length;
     const deaths = presidents.filter(p => p.death === current).length;
     if (births) playSound('/pop-cartoon-328167.mp3', births);
-    if (deaths) playSound('/bell-323942.mp3', deaths);
+    if (deaths) playSound('/bell-323942.mp3', deaths, 1, 2);
   }, [current, presidents]);
 
   const generatePresidents = async () => {

@@ -6,7 +6,10 @@ const PARTY_COLOURS: Record<string, string> = {
   labour: '#d51313ff',
   gsc: '#9467bd',
   donex: '#ff7f0e',
-  'liberal democratic': '#7f7f7f'
+  'liberal democratic': '#c4d76eff',
+  'Independent': '#c3dae9ff',
+  'socialist': '#f79badff',
+  'radical': '#0b3e16ff',
 };
 
 interface TimelineGridProps {
@@ -36,7 +39,7 @@ export default function TimelineGrid({ current, presidents }: TimelineGridProps)
               <>
                 <div className="name">{pres.name}</div>
                 <div className="lifespan">
-                  {pres.birth} – {pres.death ?? 'present'}
+                  {pres.birth} – {pres.death ?? 'present'} ()
                 </div>
                 <div className="party" style={{ backgroundColor: partyColour }}>
                   {pres.party}
