@@ -48,7 +48,7 @@ export default function Page() {
         window.innerHeight / el.scrollHeight,
         1
       );
-      el.style.transform = `scale(${scale})`;
+      //el.style.transform = `scale(${scale})`;
     };
     resize();
     window.addEventListener('resize', resize);
@@ -79,7 +79,6 @@ export default function Page() {
   return (
     <div className="container" ref={containerRef}>
       <h2>Aerobea Presidential Timeline</h2>
-      <TimelineGrid current={current} presidents={presidents} />
       <div className="year">{current}</div>
       <ProgressBar
         current={current}
@@ -94,7 +93,9 @@ export default function Page() {
         <button onClick={() => setCurrent(start)}>Reset</button>
         <button onClick={generatePresidents}>Generate</button>
       </div>
-      <MusicControls />
+      <MusicControls />      
+      <TimelineGrid current={current} presidents={presidents} />
+
     </div>
   );
 }

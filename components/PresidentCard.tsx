@@ -10,9 +10,11 @@ interface PresidentCardProps {
   current: number;
   partyColour: string;
   currentEvent?: TimelineEvent;
+  isPresident: boolean;
+  isDead: boolean;
 }
 
-export default function PresidentCard({ pres, visible, className, current, partyColour, currentEvent }: PresidentCardProps) {
+export default function PresidentCard({ pres, visible, className, current, partyColour, currentEvent, isDead, isPresident }: PresidentCardProps) {
   const [bgUrl, setBgUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export default function PresidentCard({ pres, visible, className, current, party
     (async () => {
       for (const base of bases) {
         for (const ext of exts) {
-          const url = `${base}/${encodeURIComponent(pres.name)}.${ext}`;
+          const url = `${base}/${encodeURIComponent(pres.name.toLowerCase())}.${ext}`;
           try {
             const res = await fetch(url, { method: 'HEAD' });
             if (res.ok) {
@@ -42,7 +44,11 @@ export default function PresidentCard({ pres, visible, className, current, party
 
   const style = bgUrl
     ? {
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${bgUrl})`,
+        backgroundImage: isDead
+          ? `linear-gradient(rgba(100,0,0,0.5), rgba(100,0,0,0)), url(${bgUrl})`
+          : isPresident
+          ? `linear-gradient(rgba(0,100,0,0.5), rgba(0,100,0,0)), url(${bgUrl})`
+          : `url(${bgUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -55,7 +61,7 @@ export default function PresidentCard({ pres, visible, className, current, party
         <>
           <div className="name">{pres.name}</div>
           <div className="lifespan">
-            {pres.birth} – {pres.death ?? 'present'} ()
+            {pres.birth} – {pres.death ?? 'present'}
           </div>
           <div className="party" style={{ backgroundColor: partyColour }}>
             {pres.party}

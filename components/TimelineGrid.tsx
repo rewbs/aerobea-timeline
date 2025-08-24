@@ -28,10 +28,12 @@ export default function TimelineGrid({ current, presidents }: TimelineGridProps)
         const currentEvent = pres.events.find(
           e => e.year <= current && !pres.events.find(ne => ne.year > e.year && ne.year <= current)
         );
+        const isDead = pres.death !== null && current >= pres.death;
+        const isPres = isPresident(current, pres);
         const className = visible
-          ? isPresident(current, pres)
+          ? isPres
             ? 'cell president'
-            : pres.death && current > pres.death
+            : isDead
               ? 'cell dead'
               : 'cell active'
           : 'cell';
@@ -45,6 +47,8 @@ export default function TimelineGrid({ current, presidents }: TimelineGridProps)
             current={current}
             partyColour={partyColour}
             currentEvent={currentEvent}
+            isPresident={isPres}
+            isDead={isDead}
           />
         );
       })}
