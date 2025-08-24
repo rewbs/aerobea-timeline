@@ -285,7 +285,7 @@ export const PRESIDENTS : President[] = [
     ]
   },
   {
-    name: "Edwin Peak",
+    name: "Edwin Peake",
     birth: 1904,
     party: "conservative",
     death: 1992,
