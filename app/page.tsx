@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
 import { START, END, PRESIDENTS, President } from '../data/presidents';
 
 export default function Page() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [presidents, setPresidents] = useState<President[]>(PRESIDENTS);
   const [start, setStart] = useState<number>(START);
   const [end, setEnd] = useState<number>(END);
@@ -38,6 +39,22 @@ export default function Page() {
     if (deaths) playSound('/bell.mp3', deaths);
   }, [current, presidents]);
 
+  useEffect(() => {
+    const resize = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const scale = Math.min(
+        window.innerWidth / el.scrollWidth,
+        window.innerHeight / el.scrollHeight,
+        1
+      );
+      el.style.transform = `scale(${scale})`;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
   const generatePresidents = async () => {
     try {
       const res = await fetch('/api/presidents', { method: 'POST' });
@@ -60,11 +77,18 @@ export default function Page() {
   };
 
   return (
-    <div className="container">
+    <div className="container" ref={containerRef}>
       <h2>Aerobea Presidential Timeline</h2>
       <TimelineGrid current={current} presidents={presidents} />
       <div className="year">{current}</div>
-      <ProgressBar current={current} setCurrent={setCurrent} running={running} setRunning={setRunning} start={start} end={end} />
+      <ProgressBar
+        current={current}
+        setCurrent={setCurrent}
+        running={running}
+        setRunning={setRunning}
+        start={start}
+        end={end}
+      />
       <div>
         <button onClick={() => setRunning(r => !r)}>{running ? 'Pause' : 'Play'}</button>
         <button onClick={() => setCurrent(start)}>Reset</button>
