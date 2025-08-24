@@ -1,4 +1,7 @@
+"use client";
+
 import { isPresident, President } from '../data/presidents';
+import PresidentCard from './PresidentCard';
 
 const PARTY_COLOURS: Record<string, string> = {
   whig: '#95bde9ff',
@@ -34,23 +37,15 @@ export default function TimelineGrid({ current, presidents }: TimelineGridProps)
           : 'cell';
         const partyColour = PARTY_COLOURS[pres.party.toLowerCase()] || '#999';
         return (
-          <div className={className} key={idx}>
-            {visible && (
-              <>
-                <div className="name">{pres.name}</div>
-                <div className="lifespan">
-                  {pres.birth} – {pres.death ?? 'present'} ()
-                </div>
-                <div className="party" style={{ backgroundColor: partyColour }}>
-                  {pres.party}
-                </div>
-                <div className="age">
-                  {Math.min(current, pres.death ?? current) - pres.birth}yo
-                </div>
-                {currentEvent && <div className="event">{currentEvent.text}</div>}
-              </>
-            )}
-          </div>
+          <PresidentCard
+            key={idx}
+            pres={pres}
+            visible={visible}
+            className={className}
+            current={current}
+            partyColour={partyColour}
+            currentEvent={currentEvent}
+          />
         );
       })}
     </div>
