@@ -180,7 +180,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1821, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1840, type: PRESIDENCY_ENDS, text: "Retired" },
-      { year: 1870, type: DEATH, text: "Died of old age" }
+      { year: 1870, type: DEATH, text: "Died of cerebrovascular disease" }
     ]
   },
   {
@@ -191,7 +191,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1840, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1853, type: PRESIDENCY_ENDS, text: "Stepped down" },
-      { year: 1917, type: DEATH, text: "Died of old age" }
+      { year: 1917, type: DEATH, text: "died of stroke" }
     ]
   },
   {
@@ -246,7 +246,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1899, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1910, type: PRESIDENCY_ENDS, text: "Retired" },
-      { year: 1957, type: DEATH, text: "died of old age" }
+      { year: 1957, type: DEATH, text: "died of carrotaminia" }
     ]
   },
   {
@@ -292,7 +292,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1947, type: PRESIDENCY_BEGINS, text: "Seized power" },
       { year: 1948, type: PRESIDENCY_ENDS, text: "Overthrown" },
-      { year: 1992, type: DEATH, text: "died of old age" }
+      { year: 1992, type: DEATH, text: "died of parkinson's disease" }
     ]
   },  
   {
