@@ -44,7 +44,7 @@ export const PRESIDENTS : President[] = [
       { year: 1701, text: "Elected as first President of Aerobea" },
       { year: 1702, type: PRESIDENCY_BEGINS, text: "Sworn into office" },
       { year: 1722, type: PRESIDENCY_ENDS, text: "Resigned from office" },
-      { year: 1735, type: DEATH, text: "Died of  rare cancer" }
+      { year: 1735, type: DEATH, text: "Died of  blood cancer" }
 
     ]
   },
@@ -98,12 +98,27 @@ export const PRESIDENTS : President[] = [
     death: 1797,
     events: [
       { year: 1761, type: PRESIDENCY_BEGINS, text: "Assumed office" },
+      { year: 1777, type: PRESIDENCY_ENDS, text: "Kicked out" },
+      { year: 1777, type: PRESIDENCY_BEGINS, text: "Seized power back" },
       { year: 1779, type: PRESIDENCY_ENDS, text: "Resigned in favour of Conservative Party" },
       { year:1785, type: PRESIDENCY_BEGINS, text: "Re-Elected" },
       { year: 1787, type: PRESIDENCY_ENDS, text: "Retired" },
       { year: 1797, type: DEATH, text: "Died of heart failure" }
     ]
   },
+  {
+    name: "emory di marison",
+    party: "radical",
+    birth: 1720,
+    death: 1778,
+    events: [
+      { year: 1777, type: PRESIDENCY_BEGINS, text: "Seized power" },
+      { year: 1777, type: PRESIDENCY_ENDS, text: "Kicked out" },
+      { year: 1778, type: DEATH, text: "burnt at the steak" }
+    ]
+  },
+
+
   {
     name: "benjamin jones",
     party: "conservative",
@@ -125,7 +140,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1787, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1794, type: PRESIDENCY_ENDS, text: "Resigned due to age" },
-      { year: 1798, type: DEATH, text: "Died of natural causes" }
+      { year: 1798, type: DEATH, text: "Died of AIDS" }
     ]
   },
   {
@@ -135,10 +150,24 @@ export const PRESIDENTS : President[] = [
     death: 1827,
     events: [
       { year: 1796, type: PRESIDENCY_BEGINS, text: "Appointed Acting President" },
-      { year: 1812, type: PRESIDENCY_ENDS, text: "Stepped down" },
+      { year: 1808, type: PRESIDENCY_ENDS, text: "Kicked out" },
+      { year: 1809, type: PRESIDENCY_BEGINS, text: "Seized power back" },
+      { year: 1812, type: PRESIDENCY_ENDS, text: "Stepped down" },      
       { year: 1827, type: DEATH, text: "Died of tuberculosis" }
     ]
   },
+  {
+    name: "lucrene dapth",
+    party: "radical",
+    birth: 1779,
+    death: 1811,
+    events: [
+      { year: 1808, type: PRESIDENCY_BEGINS, text: "Seized power" },
+      { year: 1809, type: PRESIDENCY_ENDS, text: "Kicked out" },
+      { year: 1811, type: DEATH, text: "beheaded" }
+    ]
+  },
+
   {
     name: "Jack Prawn",
     party: "Conservative", 
@@ -183,13 +212,27 @@ export const PRESIDENTS : President[] = [
       { year: 1870, type: DEATH, text: "Died of cerebrovascular disease" }
     ]
   },
+
+  {
+    name: "tergo fluffbeard",
+    party: "GSC",
+    birth: 1790,
+    death: 1878,
+    events: [
+      { year: 1840, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1842, type: PRESIDENCY_ENDS, text: "lost re election" },
+      { year: 1878, type: DEATH, text: "halatosis" }
+    ]
+  },
+
+  
   {
     name: "Myreech Oiaboy",
     party: "whig",
     birth: 1824,
     death: 1917,
     events: [
-      { year: 1840, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1842, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1853, type: PRESIDENCY_ENDS, text: "Stepped down" },
       { year: 1917, type: DEATH, text: "died of stroke" }
     ]
@@ -211,10 +254,23 @@ export const PRESIDENTS : President[] = [
     death: 1910,
     events: [
       { year: 1863, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1869, type: PRESIDENCY_ENDS, text: "overthrown" },
+      { year: 1867, type: PRESIDENCY_ENDS, text: "resigned" },
       { year: 1910, type: DEATH, text: "died of flu" }
     ]
   },
+
+{
+    name: "flint vapourmark",
+    party: "radical",
+    birth: 1814,
+    death: 1872,
+    events: [
+      { year: 1867, type: PRESIDENCY_BEGINS, text: "" },
+      { year: 1869, type: PRESIDENCY_ENDS, text: "lost re election" },
+      { year: 1872, type: DEATH, text: "gangreene" }
+    ]
+  },
+
   {
     name: "davi rovfe",
     party: "conservative",
@@ -234,10 +290,24 @@ export const PRESIDENTS : President[] = [
     death: 1948,
     events: [
       { year: 1889, type: PRESIDENCY_BEGINS, text: "Elected" },
-      { year: 1899, type: PRESIDENCY_ENDS, text: "lost re election" },
+      { year: 1897, type: PRESIDENCY_ENDS, text: "lost re election" },
       { year: 1948, type: DEATH, text: "died of dropsy" }
     ]
   },
+  
+  {
+    name: "myrecceh beeryhorn",
+    party: "radical",
+    birth: 1868,
+    death: 1915,
+    events: [
+      { year: 1897, type: PRESIDENCY_BEGINS, text: "elected" },
+      { year: 1899, type: PRESIDENCY_ENDS, text: "elected" },
+      { year: 1915, type: DEATH, text: "tooth infection" }
+    ]
+  },
+
+
   {
     name: "lila file",
     party: "independent",
