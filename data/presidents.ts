@@ -136,11 +136,11 @@ export const PRESIDENTS : President[] = [
     name: "Jammes Jaglianviac",
     party: "Conservative",
     birth: 1717,
-    death: 1798,
+    death: 1796,
     events: [
       { year: 1787, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1794, type: PRESIDENCY_ENDS, text: "Resigned due to age" },
-      { year: 1798, type: DEATH, text: "Died of AIDS" }
+      { year: 1796, type: DEATH, text: "Died of blood clot" }
     ]
   },
   {
@@ -159,7 +159,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "lucrene dapth",
     party: "radical",
-    birth: 1779,
+    birth: 1770,
     death: 1811,
     events: [
       { year: 1808, type: PRESIDENCY_BEGINS, text: "Seized power" },
@@ -262,7 +262,7 @@ export const PRESIDENTS : President[] = [
 {
     name: "flint vapourmark",
     party: "radical",
-    birth: 1814,
+    birth: 1815,
     death: 1872,
     events: [
       { year: 1867, type: PRESIDENCY_BEGINS, text: "" },
@@ -275,11 +275,11 @@ export const PRESIDENTS : President[] = [
     name: "davi rovfe",
     party: "conservative",
     birth: 1840,
-    death: 1906,
+    death: 1926,
     events: [
       { year: 1869, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1889, type: PRESIDENCY_ENDS, text: "Resigned due to illness" },
-      { year: 1906, type: DEATH, text: "died of scurvy" }
+      { year: 1926, type: DEATH, text: "died of scurvy" }
     ]
   },
 
@@ -296,9 +296,9 @@ export const PRESIDENTS : President[] = [
   },
   
   {
-    name: "myrecceh beeryhorn",
+    name: "myrecce beeryhorn",
     party: "radical",
-    birth: 1868,
+    birth: 1857,
     death: 1915,
     events: [
       { year: 1897, type: PRESIDENCY_BEGINS, text: "elected" },
@@ -439,3 +439,94 @@ export const PRESIDENTS : President[] = [
     ]
   }
 ];
+
+export const MONARCHS = [
+
+  {
+    name: "benadict I",
+    birth: 1696,
+    death: 1759,
+    start_reign: 1701,
+    end_reign: 1759,
+    death_cause: "respetory infection",
+  },
+  {
+    name: "constantine",
+    birth: 1720,
+    death: 1793,
+    start_reign: 1759,
+    end_reign: 1793,
+    death_cause: "stroke",
+  },
+  {
+    name: "henry I",
+    birth: 1745,
+    death: 1796,
+    start_reign: 1793,
+    end_reign:1796,
+    death_cause: "shot 56 times by new army",
+  },
+  {
+    name: "henry II",
+    birth: 1763,
+    death: 1827,
+    start_reign: 1796,
+    end_reign: 1827,
+    death_cause: "pancreatic cancer",
+  },
+  {
+    name: "isabella I",
+    birth: 1801,
+    death: 1899,
+    start_reign: 1827,
+    end_reign: 1899,
+    death_cause: "toncil failure",
+  },
+  {
+    name: "henry III",
+    birth: 1832,
+    death: 1907,
+    start_reign: 1899,
+    end_reign: 1907,
+    death_cause: "lucemia",
+  },
+
+    {
+    name: "leopold I",
+    birth: 1858,
+    death: 1937,
+    start_reign: 1907,
+    end_reign: 1937,
+    death_cause: "heart attack",
+  },   
+
+
+    {
+    name: "leopold II",
+    birth: 1900,
+    death: 1981,
+    start_reign: 1837,
+    end_reign: 1981,
+    death_cause: "heart failure",
+  },   
+
+
+    {
+    name: "isabella II",
+    birth: 1927,
+    death: 2024,
+    start_reign: 1981,
+    end_reign: 2024,
+    death_cause: "heart deisese",
+  },   
+  
+  {
+    name: "leopold II",
+    birth: 1960,
+    death: null,
+    start_reign: 2024,
+    end_reign: null,
+    death_cause: null
+  }
+
+]
