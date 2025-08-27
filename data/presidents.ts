@@ -2,8 +2,12 @@ export const START = 1672;
 export const END = 2025;
 export const PRESIDENCY_BEGINS = 1;
 export const PRESIDENCY_ENDS = 2;
+export const DEATH = 3;
 
-export type EventType = typeof PRESIDENCY_BEGINS | typeof PRESIDENCY_ENDS;
+export type EventType =
+  | typeof PRESIDENCY_BEGINS
+  | typeof PRESIDENCY_ENDS
+  | typeof DEATH;
 
 export interface TimelineEvent {
   year: number;
