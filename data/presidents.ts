@@ -459,7 +459,22 @@ export const PRESIDENTS : President[] = [
 ];
 
 export const MONARCHS: Monarch[] = [
-
+  {
+    name: "high crust",
+    birth: 1635,
+    death: 1683,
+    start_reign: 1656,
+    end_reign: 1683,
+    death_cause: "starved to death",
+  },
+  {
+    name: "chumble vainbatter",
+    birth: 1636,
+    death: 1701,
+    start_reign: 1683,
+    end_reign: 1701,
+    death_cause: "quatering",
+  },  
   {
     name: "benadict I",
     birth: 1696,
@@ -482,7 +497,7 @@ export const MONARCHS: Monarch[] = [
     death: 1796,
     start_reign: 1793,
     end_reign:1796,
-    death_cause: "shot 56 times by new army",
+    death_cause: "shot 3 times by army",
   },
   {
     name: "henry II",
