@@ -33,6 +33,24 @@ export function isPresident(year: number, president: President): boolean {
   return false;
 }
 
+export interface Monarch {
+  name: string;
+  birth: number;
+  death: number | null;
+  start_reign: number;
+  end_reign: number | null;
+  death_cause: string | null;
+}
+
+export function getMonarch(
+  year: number,
+  monarchs: Monarch[]
+): Monarch | undefined {
+  return monarchs.find(
+    m => year >= m.start_reign && (m.end_reign === null || year <= m.end_reign)
+  );
+}
+
 
 export const PRESIDENTS : President[] = [
   {
@@ -440,7 +458,7 @@ export const PRESIDENTS : President[] = [
   }
 ];
 
-export const MONARCHS = [
+export const MONARCHS: Monarch[] = [
 
   {
     name: "benadict I",
