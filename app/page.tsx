@@ -4,7 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
-import { START, END, PRESIDENTS, President } from '../data/presidents';
+import {
+  START,
+  END,
+  PRESIDENTS,
+  President,
+  MONARCHS,
+  getMonarch,
+} from '../data/presidents';
 
 export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,6 +20,8 @@ export default function Page() {
   const [end, setEnd] = useState<number>(END);
   const [current, setCurrent] = useState<number>(START);
   const [running, setRunning] = useState<boolean>(true);
+
+  const currentMonarch = getMonarch(current, MONARCHS);
 
   const playSound = (src: string, count: number, volume = 1, offset = 0) => {
     for (let i = 0; i < count; i++) {
@@ -80,6 +89,16 @@ export default function Page() {
     <div className="container" ref={containerRef}>
       <h2>Aerobea Presidential Timeline</h2>
       <div className="year">{current}</div>
+      <div
+        className="monarch"
+        title={
+          currentMonarch?.death_cause
+            ? `Died of ${currentMonarch.death_cause}`
+            : undefined
+        }
+      >
+        Monarch: {currentMonarch ? currentMonarch.name : '—'}
+      </div>
       <ProgressBar
         current={current}
         setCurrent={setCurrent}

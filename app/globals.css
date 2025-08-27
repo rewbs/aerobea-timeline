@@ -111,6 +111,11 @@ body {
   margin: 15px 0;
 }
 
+.monarch {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
 .progress-container {
   position: relative;
   width: 100%;
