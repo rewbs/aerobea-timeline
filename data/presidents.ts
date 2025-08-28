@@ -194,7 +194,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1812, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1818, type: PRESIDENCY_ENDS, text: "Poisoned" },
-      { year: 1818, type: DEATH, text: "Died of poisoning" }
+      { year: 1818, type: DEATH, text: "Died of poisoned pipe that stanley roberts forgot to clean" }
     ]
   },  
 
@@ -215,7 +215,7 @@ export const PRESIDENTS : President[] = [
     birth: 1791,
     death: 1821,
     events: [
-      { year: 1821, type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
+      { year: 1820, type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
       { year: 1821, type: PRESIDENCY_ENDS, text: "died crashing into a blimp while trying to fly", }
     ]
   },
@@ -391,7 +391,7 @@ export const PRESIDENTS : President[] = [
     events: [
       { year: 1954, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1957, type: PRESIDENCY_ENDS, text: "Term ended" },
-      { year: 1980, type: DEATH, text: "died of  throat cancer" }
+      { year: 1980, type: DEATH, text: "died of  throat cancer and stabbed by servant" }
     ]
   },
   {
@@ -408,11 +408,11 @@ export const PRESIDENTS : President[] = [
     name: "Ajaxio Collad",
     party:"snackalist",
     birth: 1915,
-    death: 1989,
+    death: 1992,
     events: [
       { year: 1965, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1967, type: PRESIDENCY_ENDS, text: "Lost re-election" },
-      { year: 1989, type: DEATH, text: "died of heart attack" }
+      { year: 1991, type: DEATH, text: "died of heart attack" }
     ]
   },
   {
@@ -461,9 +461,9 @@ export const PRESIDENTS : President[] = [
 export const MONARCHS: Monarch[] = [
   {
     name: "high crust",
-    birth: 1635,
-    death: 1683,
-    start_reign: 1656,
+    birth: 1,
+    death: 1,
+    start_reign: 1635,
     end_reign: 1683,
     death_cause: "starved to death",
   },
