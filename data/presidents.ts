@@ -320,7 +320,7 @@ export const PRESIDENTS : President[] = [
     death: 1915,
     events: [
       { year: 1897, type: PRESIDENCY_BEGINS, text: "elected" },
-      { year: 1899, type: PRESIDENCY_ENDS, text: "elected" },
+      { year: 1899, type: PRESIDENCY_ENDS, text: "lost re election"},
       { year: 1915, type: DEATH, text: "tooth infection" }
     ]
   },
@@ -394,34 +394,56 @@ export const PRESIDENTS : President[] = [
       { year: 1980, type: DEATH, text: "died of  throat cancer and stabbed by servant" }
     ]
   },
+ {
+    name: "featerry joilpb",
+    party: "labour",
+    birth: 1910,
+    death: 2000,
+    events: [
+      { year: 1957, type: PRESIDENCY_BEGINS, text: "elected" },
+      { year: 1961, type: PRESIDENCY_ENDS, text: "resigned" },
+      { year: 2000, type: DEATH, text: "died of TB" }
+    ]
+  },
   {
     name: "Avia Gow",
     birth: 1933,
     party: "liberal democratic",
     death: null,
     events: [
-      { year: 1957, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1961, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1965, type: PRESIDENCY_ENDS, text: "Term ended" },
     ]
-  },
+  },  
   {
     name: "Ajaxio Collad",
     party:"snackalist",
     birth: 1915,
-    death: 1992,
+    death: 2007,
     events: [
       { year: 1965, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1967, type: PRESIDENCY_ENDS, text: "Lost re-election" },
-      { year: 1991, type: DEATH, text: "died of heart attack" }
+      { year: 2007, type: DEATH, text: "died of heart attack" }
     ]
   },
+  {
+    name: "shorn oatly",
+    party: "labour",
+    birth: 1920,
+    death: 2014,
+    events: [
+      { year: 1967, type: PRESIDENCY_BEGINS, text: "elected" },
+      { year: 1970, type: PRESIDENCY_ENDS, text: "lost re election" },
+      { year: 2014, type: DEATH, text: "died of heart failure" }
+    ]
+  },  
   {
     name: "Ajaysoionvasao Foallowa",
     birth: 1931,
     party:"labour",
-    death: null,
+    death: 20,
     events: [
-      { year: 1967, type: PRESIDENCY_BEGINS, text: "Elected" },
+      { year: 1970, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1981, type: PRESIDENCY_ENDS, text: "Term ended" },
     ]
   },
@@ -461,9 +483,9 @@ export const PRESIDENTS : President[] = [
 export const MONARCHS: Monarch[] = [
   {
     name: "high crust",
-    birth: 1,
-    death: 1,
-    start_reign: 1635,
+    birth: 1635,
+    death: 1683,
+    start_reign: 1656,
     end_reign: 1683,
     death_cause: "starved to death",
   },
