@@ -13,12 +13,14 @@ import {
   getMonarch,
 } from '../data/presidents';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [presidents, setPresidents] = useState<President[]>(PRESIDENTS);
-  const [start, setStart] = useState<number>(START);
-  const [end, setEnd] = useState<number>(END);
-  const [current, setCurrent] = useState<number>(START);
+  const [start, setStart] = useState<Date>(START);
+  const [end, setEnd] = useState<Date>(END);
+  const [current, setCurrent] = useState<Date>(START);
   const [running, setRunning] = useState<boolean>(true);
 
   const currentMonarch = getMonarch(current, MONARCHS);
@@ -35,15 +37,17 @@ export default function Page() {
   useEffect(() => {
     if (running) {
       const timer = setInterval(() => {
-        setCurrent(prev => (prev < end ? prev + 1 : start));
-      }, 1000);
+        setCurrent(prev =>
+          prev < end ? new Date(prev.getTime() + DAY_MS) : start
+        );
+      }, 4);
       return () => clearInterval(timer);
     }
   }, [running, start, end]);
 
   useEffect(() => {
-    const births = presidents.filter(p => p.birth === current).length;
-    const deaths = presidents.filter(p => p.death === current).length;
+    const births = presidents.filter(p => p.birth.getTime() === current.getTime()).length;
+    const deaths = presidents.filter(p => p.death && p.death.getTime() === current.getTime()).length;
     if (births) playSound('/pop-cartoon-328167.mp3', births);
     if (deaths) playSound('/bell.mp3', deaths);
   }, [current, presidents]);
@@ -70,13 +74,18 @@ export default function Page() {
       if (!res.ok) return;
       const data: President[] = await res.json();
       setPresidents(data);
-      const years = data.flatMap(p => [
-        p.birth,
-        p.death ?? p.birth,
-        ...p.events.map(e => e.year)
+      data.forEach(p => {
+        p.birth = new Date(p.birth as unknown as string);
+        if (p.death) p.death = new Date(p.death as unknown as string);
+        p.events = p.events.map(e => ({ ...e, date: new Date(e.date as unknown as string) }));
+      });
+      const times = data.flatMap(p => [
+        p.birth.getTime(),
+        (p.death ?? p.birth).getTime(),
+        ...p.events.map(e => e.date.getTime())
       ]);
-      const newStart = Math.min(...years);
-      const newEnd = Math.max(...years);
+      const newStart = new Date(Math.min(...times));
+      const newEnd = new Date(Math.max(...times));
       setStart(newStart);
       setEnd(newEnd);
       setCurrent(newStart);
@@ -88,7 +97,7 @@ export default function Page() {
   return (
     <div className="container" ref={containerRef}>
       <h2>Aerobea Presidential Timeline</h2>
-      <div className="year">{current}</div>
+      <div className="year">{current.toISOString().slice(0, 10)}</div>
       <div
         className="monarch"
         title={

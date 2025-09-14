@@ -6,6 +6,8 @@ import {
   DEATH,
   EventType
 } from '../../../data/presidents';
+
+const d = (y: number, m = 1, day = 1) => new Date(Date.UTC(y, m - 1, day));
 import { presidentialExitReasons } from '../../../data/exitReasons';
 import { deathReasons } from '../../../data/deathReasons';
 
@@ -112,24 +114,22 @@ export async function POST() {
 
     // Create a death reason event if they died under 60 and their term did not end in death
     let deathEvent = undefined;
-    if (deathYear
-        && ((deathYear - birthYear) < 60)
-        && !exitReason.death) {
-          deathEvent = {
-            year: deathYear,
-            type: DEATH as EventType,
-            text: `${deathReasons[Math.floor(Math.random() * deathReasons.length)]}`
-          };
+    if (deathYear && deathYear - birthYear < 60 && !exitReason.death) {
+      deathEvent = {
+        date: d(deathYear),
+        type: DEATH as EventType,
+        text: `${deathReasons[Math.floor(Math.random() * deathReasons.length)]}`
+      };
     }
 
     presidents.push({
       name,
       party: parties[Math.floor(Math.random() * parties.length)],
-      birth: birthYear,
-      death: deathYear,
+      birth: d(birthYear),
+      death: deathYear ? d(deathYear) : null,
       events: [
-        { year: electionYear, type: PRESIDENCY_BEGINS, text: 'Elected' },
-        { year: exitYear, type: PRESIDENCY_ENDS, text: exitReason.reason },
+        { date: d(electionYear), type: PRESIDENCY_BEGINS, text: 'Elected' },
+        { date: d(exitYear), type: PRESIDENCY_ENDS, text: exitReason.reason },
         ...(deathEvent ? [deathEvent] : [])
       ]
     });
@@ -139,14 +139,22 @@ export async function POST() {
 
   // Verify the timeline
   console.log(`Generated ${presidents.length} presidents`);
-  console.log(`Timeline: ${presidents[0]?.events[0]?.year} - ${presidents[presidents.length - 1]?.events[1]?.year}`);
+  console.log(
+    `Timeline: ${presidents[0]?.events[0]?.date.getUTCFullYear()} - ${
+      presidents[presidents.length - 1]?.events[1]?.date.getUTCFullYear()
+    }`
+  );
   
   // Check for gaps or overlaps
   for (let i = 1; i < presidents.length; i++) {
-    const prevEnd = presidents[i - 1].events[1].year;
-    const currentStart = presidents[i].events[0].year;
+    const prevEnd = presidents[i - 1].events[1].date.getTime();
+    const currentStart = presidents[i].events[0].date.getTime();
     if (prevEnd !== currentStart) {
-      console.warn(`Gap/overlap detected: President ${i - 1} ends ${prevEnd}, President ${i} starts ${currentStart}`);
+      console.warn(
+        `Gap/overlap detected: President ${i - 1} ends ${new Date(
+          prevEnd
+        ).getUTCFullYear()}, President ${i} starts ${new Date(currentStart).getUTCFullYear()}`
+      );
     }
   }
 

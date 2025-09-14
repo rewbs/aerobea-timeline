@@ -3,12 +3,12 @@
 import { useRef, useState, useEffect } from 'react';
 
 interface ProgressBarProps {
-  current: number;
-  setCurrent: (year: number) => void;
+  current: Date;
+  setCurrent: (date: Date) => void;
   running: boolean;
   setRunning: (running: boolean) => void;
-  start: number;
-  end: number;
+  start: Date;
+  end: Date;
 }
 
 export default function ProgressBar({ current, setCurrent, running, setRunning, start, end }: ProgressBarProps) {
@@ -21,8 +21,9 @@ export default function ProgressBar({ current, setCurrent, running, setRunning, 
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const rect = containerRef.current!.getBoundingClientRect();
       const percentage = (clientX - rect.left) / rect.width;
-      const year = start + percentage * (end - start);
-      setCurrent(Math.max(start, Math.min(end, Math.round(year))));
+      const time =
+        start.getTime() + percentage * (end.getTime() - start.getTime());
+      setCurrent(new Date(Math.max(start.getTime(), Math.min(end.getTime(), time))));
     };
     const handleUp = () => setIsDragging(false);
     window.addEventListener('mousemove', handleMove);
@@ -37,7 +38,10 @@ export default function ProgressBar({ current, setCurrent, running, setRunning, 
     };
   }, [isDragging, setCurrent]);
 
-  const progress = ((current - start) / (end - start)) * 100;
+  const progress =
+    ((current.getTime() - start.getTime()) /
+      (end.getTime() - start.getTime())) *
+    100;
 
   return (
     <div
