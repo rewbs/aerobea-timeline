@@ -17,7 +17,7 @@ const PARTY_COLOURS: Record<string, string> = {
 };
 
 interface TimelineGridProps {
-  current: number;
+  current: Date;
   presidents: President[];
 }
 
@@ -27,7 +27,9 @@ export default function TimelineGrid({ current, presidents }: TimelineGridProps)
       {presidents.map((pres, idx) => {
         const visible = current >= pres.birth;
         const currentEvent = pres.events.find(
-          e => e.year <= current && !pres.events.find(ne => ne.year > e.year && ne.year <= current)
+          e =>
+            e.date <= current &&
+            !pres.events.find(ne => ne.date > e.date && ne.date <= current)
         );
         const isDead = pres.death !== null && current >= pres.death;
         const isPres = isPresident(current, pres);

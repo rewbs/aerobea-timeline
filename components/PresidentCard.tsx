@@ -7,7 +7,7 @@ interface PresidentCardProps {
   pres: President;
   visible: boolean;
   className: string;
-  current: number;
+  current: Date;
   partyColour: string;
   currentEvent?: TimelineEvent;
   isPresident: boolean;
@@ -61,13 +61,17 @@ export default function PresidentCard({ pres, visible, className, current, party
         <>
           <div className="name">{pres.name}</div>
           <div className="lifespan">
-            {pres.birth} – {pres.death ?? 'present'}
+            {pres.birth.toISOString().slice(0, 10)} – {pres.death ? pres.death.toISOString().slice(0, 10) : 'present'}
           </div>
           <div className="party" style={{ backgroundColor: partyColour }}>
             {pres.party}
           </div>
           <div className="age">
-            {Math.min(current, pres.death ?? current) - pres.birth}yo
+            {Math.floor(
+              (Math.min(current.getTime(), (pres.death ?? current).getTime()) -
+                pres.birth.getTime()) /
+                (1000 * 60 * 60 * 24 * 365.25)
+            )}yo
           </div>
           {currentEvent && <div className="event">{currentEvent.text}</div>}
         </>
