@@ -13,6 +13,7 @@ const PARTY_COLOURS: Record<string, string> = {
   'Independent': '#c3dae9ff',
   'socialist': '#f79badff',
   'radical': '#0b3e16ff',
+  'feather first': '#000000ff'
 };
 
 interface TimelineGridProps {
