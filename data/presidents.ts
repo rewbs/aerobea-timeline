@@ -441,7 +441,7 @@ export const PRESIDENTS : President[] = [
     name: "Ajaysoionvasao Foallowa",
     birth: 1931,
     party:"labour",
-    death: 20,
+    death: null,
     events: [
       { year: 1970, type: PRESIDENCY_BEGINS, text: "Elected" },
       { year: 1981, type: PRESIDENCY_ENDS, text: "Term ended" },
