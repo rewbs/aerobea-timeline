@@ -92,7 +92,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "joh gumn nocks",
     party: "liberal democratic",
-    birth: d(1693, 6, 11),
+    birth: d(1693, 2, 2),
     death: d(1760, 3, 28),
     events: [
       { date: d(1731, 5, 23), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -103,8 +103,8 @@ export const PRESIDENTS : President[] = [
   {
     name: "Valu Jezza",
     party: "Labour",
-    birth: d(1708, 8, 1),
-    death: d(1779, 6, 10),
+    birth: d(1708, 5, 3),
+    death: d(1779, 3, 12),
     events: [
       { date: d(1745, 10, 28), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1761, 5, 28), type: PRESIDENCY_ENDS, text: "Resigned" },
@@ -114,8 +114,8 @@ export const PRESIDENTS : President[] = [
   {
     name: "Commander Nullglyph",
     party: "Whig",
-    birth: d(1717, 12, 26),
-    death: d(1797, 8, 16),
+    birth: d(1717, 6, 30),
+    death: d(1797, 4, 29),
     events: [
       { date: d(1761, 10, 26), type: PRESIDENCY_BEGINS, text: "Assumed office" },
       { date: d(1777, 11, 18), type: PRESIDENCY_ENDS, text: "Kicked out" },
@@ -129,8 +129,8 @@ export const PRESIDENTS : President[] = [
   {
     name: "emory di marison",
     party: "radical",
-    birth: d(1720, 11, 5),
-    death: d(1778, 2, 16),
+    birth: d(1720, 6, 5),
+    death: d(1778, 6, 3),
     events: [
       { date: d(1777, 4, 9), type: PRESIDENCY_BEGINS, text: "Seized power" },
       { date: d(1777, 2, 23), type: PRESIDENCY_ENDS, text: "Kicked out" },
@@ -142,8 +142,8 @@ export const PRESIDENTS : President[] = [
   {
     name: "benjamin jones",
     party: "conservative",
-    birth: d(1730, 9, 7),
-    death: d(1806, 10, 8),
+    birth: d(1730, 12, 12),
+    death: d(1806, 11, 10),
     events: [
       { date: d(1779, 8, 11), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1785, 2, 8), type: PRESIDENCY_ENDS, text: "Stepped down" },
@@ -155,7 +155,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Jammes Jaglianviac",
     party: "Conservative",
-    birth: d(1717, 9, 3),
+    birth: d(1717, 5, 22),
     death: d(1796, 7, 27),
     events: [
       { date: d(1787, 11, 2), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -166,8 +166,8 @@ export const PRESIDENTS : President[] = [
   {
     name: "Stanley Roberts",
     party: "Conservative",
-    birth: d(1752, 9, 21),
-    death: d(1827, 8, 17),
+    birth: d(1752, 1, 6),
+    death: d(1827, 3, 13),
     events: [
       { date: d(1796, 10, 11), type: PRESIDENCY_BEGINS, text: "Appointed Acting President" },
       { date: d(1808, 5, 28), type: PRESIDENCY_ENDS, text: "Kicked out" },
@@ -179,7 +179,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "lucrene dapth",
     party: "radical",
-    birth: d(1770, 4, 22),
+    birth: d(1770, 12, 1),
     death: d(1811, 10, 1),
     events: [
       { date: d(1808, 5, 6), type: PRESIDENCY_BEGINS, text: "Seized power" },
@@ -191,19 +191,19 @@ export const PRESIDENTS : President[] = [
   {
     name: "Jack Prawn",
     party: "Conservative", 
-    birth: d(1773, 3, 13),
-    death: d(1818, 1, 8),
+    birth: d(1773, 12, 26),
+    death: d(1818, 2, 1),
     events: [
       { date: d(1812, 11, 14), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1818, 7, 24), type: PRESIDENCY_ENDS, text: "Poisoned" },
-      { date: d(1818, 7, 25), type: DEATH, text: "Died of poisoned pipe that stanley roberts forgot to clean" }
+      { date: d(1818, 2, 1), type: DEATH, text: "Died of poisoned pipe that stanley roberts forgot to clean" }
     ]
   },  
 
   {
     name: "Barkley Thunderflap",
     party: "GSC",
-    birth: d(1766, 10, 9),
+    birth: d(1766, 6, 17),
     death: d(1830, 12, 9),
     events: [
       { date: d(1818, 2, 13), type: PRESIDENCY_BEGINS, text: "Appointed Acting President (GSC-aligned dog)" },
