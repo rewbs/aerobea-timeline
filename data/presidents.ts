@@ -58,8 +58,8 @@ export const PRESIDENTS : President[] = [
   {
     name: "Baahram Edward Lincoln the Elder",
     party: "Whig",
-    birth: d(1674, 8, 27),
-    death: d(1735, 5, 3),
+    birth: d(1674, 24, 3),
+    death: d(1735, 28, 2),
     events: [
       { date: d(1701, 6, 25), text: "Elected as first President of Aerobea" },
       { date: d(1702, 6, 4), type: PRESIDENCY_BEGINS, text: "Sworn into office" },
@@ -71,7 +71,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Robert Crumbleton",
     party: "Whig",
-    birth: d(1698, 11, 15),
+    birth: d(1698, 5, 18),
     death: d(1765, 10, 6),
     events: [
       { date: d(1722, 8, 7), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -82,8 +82,8 @@ export const PRESIDENTS : President[] = [
   {
     name: "Ferito Beoe",
     party: "Conservative",
-    birth: d(1672, 5, 16),
-    death: d(1731, 7, 11),
+    birth: d(1672, 12, 28),
+    death: d(1731, 11, 30),
     events: [
       { date: d(1727, 8, 6), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1731, 7, 2), type: PRESIDENCY_ENDS, text: "assassinated" }
