@@ -58,10 +58,10 @@ export const PRESIDENTS : President[] = [
   {
     name: "Baahram Edward Lincoln the Elder",
     party: "Whig",
-    birth: d(1675, 12, 3),
-    death: d(1737, 4, 2),
+    birth: d(1674, 3,24 ),
+    death: d(1735, 2, 28),
     events: [
-      { date: d(1701, 6, 25), text: "Elected as first President of Aerobea" },
+      { date: d(1701, 5, 3), text: "Elected as first President of Aerobea" },
       { date: d(1702, 6, 4), type: PRESIDENCY_BEGINS, text: "Sworn into office" },
       { date: d(1722, 11, 18), type: PRESIDENCY_ENDS, text: "Resigned from office" },
       { date: d(1737, 4, 2), type: DEATH, text: "Died of  blood cancer" }
@@ -85,7 +85,7 @@ export const PRESIDENTS : President[] = [
     death: d(1731, 11, 30),
     events: [
       { date: d(1727, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
-      { date: d(1731, 11, 18), type: PRESIDENCY_ENDS, text: "assassinated" }
+      { date: d(1731, 11, 30), type: PRESIDENCY_ENDS, text: "assassinated" }
     ]
   },
   {
@@ -145,7 +145,7 @@ export const PRESIDENTS : President[] = [
       { date: d(1779, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1785, 11, 18), type: PRESIDENCY_ENDS, text: "Stepped down" },
       { date: d(1794, 11, 18), type: PRESIDENCY_BEGINS, text: "Re-elected" },
-      { date: d(1808, 5, 6), type: PRESIDENCY_ENDS, text: "Loses re-elections" },
+      { date: d(1796, 5, 6), type: PRESIDENCY_ENDS, text: "Loses re-elections" },
       { date: d(1806, 11, 10), type: DEATH, text: "Died of pneumonia" }
     ]
   },
@@ -156,7 +156,7 @@ export const PRESIDENTS : President[] = [
     death: d(1796, 7, 27),
     events: [
       { date: d(1787, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
-      { date: d(1796, 10, 11), type: PRESIDENCY_ENDS, text: "Resigned due to age" },
+      { date: d(1794, 10, 11), type: PRESIDENCY_ENDS, text: "Resigned due to age" },
       { date: d(1796, 7, 27), type: DEATH, text: "Died of blood clot" }
     ]
   },
@@ -191,7 +191,7 @@ export const PRESIDENTS : President[] = [
     death: d(1818, 2, 1),
     events: [
       { date: d(1812, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
-      { date: d(1820, 6, 11), type: PRESIDENCY_ENDS, text: "Poisoned" },
+      { date: d(1818, 2, 1), type: PRESIDENCY_ENDS, text: "Poisoned" },
       { date: d(1818, 2, 1), type: DEATH, text: "Died of poisoned pipe that stanley roberts forgot to clean" }
     ]
   },
@@ -209,28 +209,28 @@ export const PRESIDENTS : President[] = [
   {
     name: "Feathery Quill",
     party: "feather first",
-    birth: d(1791, 3, 26),
+    birth: d(1791, 2, 16),
     death: d(1821, 5, 23),
     events: [
-      { date: d(1820, 6, 11), type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
-      { date: d(1821, 1, 25), type: PRESIDENCY_ENDS, text: "died crashing into a blimp while trying to fly" }
+      { date: d(1821, 11, 18), type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
+      { date: d(1821, 11, 24), type: PRESIDENCY_ENDS, text: "died crashing into a blimp while trying to fly" }
     ]
   },
   {
     name: "Oreo Joshon Boeoer",
     party: "socialist",
-    birth: d(1780, 10, 21),
-    death: d(1870, 8, 10),
+    birth: d(1780, 6, 25),
+    death: d(1870, 6, 27),
     events: [
       { date: d(1821, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1840, 11, 18), type: PRESIDENCY_ENDS, text: "Retired" },
-      { date: d(1870, 8, 10), type: DEATH, text: "Died of cerebrovascular disease" }
+      { date: d(1870, 6, 27), type: DEATH, text: "Died of cerebrovascular disease" }
     ]
   },
   {
     name: "tergo fluffbeard",
     party: "GSC",
-    birth: d(1790, 3, 26),
+    birth: d(1790, 5, 5),
     death: d(1878, 8, 6),
     events: [
       { date: d(1840, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -241,7 +241,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Myreech Oiaboy",
     party: "whig",
-    birth: d(1824, 10, 27),
+    birth: d(1824, 6, 27),
     death: d(1917, 12, 6),
     events: [
       { date: d(1842, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -252,17 +252,17 @@ export const PRESIDENTS : President[] = [
   {
     name: "Tennisonopi Avots",
     party: "conservative",
-    birth: d(1798, 1, 4),
-    death: d(1863, 12, 18),
+    birth: d(1798, 6, 19),
+    death: d(1863, 5, 18),
     events: [
       { date: d(1853, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected (by retroactive declaration)" },
-      { date: d(1863, 11, 18), type: PRESIDENCY_ENDS, text: "died of stroke" }
+      { date: d(1863, 5, 18), type: PRESIDENCY_ENDS, text: "died of stroke" }
     ]
   },
   {
     name: "Spindle Gowlash",
     party: "radical",
-    birth: d(1839, 3, 17),
+    birth: d(1839, 11, 27),
     death: d(1910, 3, 3),
     events: [
       { date: d(1863, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -273,7 +273,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "flint vapourmark",
     party: "radical",
-    birth: d(1815, 2, 18),
+    birth: d(1815, 4, 1),
     death: d(1872, 3, 18),
     events: [
       { date: d(1867, 2, 24), type: PRESIDENCY_BEGINS, text: "" },
@@ -284,7 +284,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "davi rovfe",
     party: "conservative",
-    birth: d(1840, 3, 15),
+    birth: d(1840, 3, 1),
     death: d(1926, 8, 24),
     events: [
       { date: d(1869, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -350,7 +350,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Avae Romrowabala",
     party: "whig",
-    birth: d(1887, 11, 27),
+    birth: d(1887, 2, 14),
     death: d(1970, 11, 3),
     events: [
       { date: d(1929, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -374,7 +374,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Alec Oven",
     party: "DONEX",
-    birth: d(1924, 3, 5),
+    birth: d(1924, 4, 13),
     death: d(1980, 3, 24),
     events: [
       { date: d(1954, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -385,7 +385,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "featerry joilpb",
     party: "labour",
-    birth: d(1910, 9, 13),
+    birth: d(1910, 2, 13),
     death: d(2000, 8, 26),
     events: [
       { date: d(1957, 11, 18), type: PRESIDENCY_BEGINS, text: "elected" },
@@ -396,7 +396,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Avia Gow",
     party: "liberal democratic",
-    birth: d(1933, 11, 26),
+    birth: d(1933, 4, 26),
     death: null,
     events: [
       { date: d(1961, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -438,7 +438,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Herbert Lovvbert",
     party: "labour",
-    birth: d(1951, 11, 15),
+    birth: d(1951, 8, 16),
     death: null,
     events: [
       { date: d(1981, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected 1981 but for a few days only" },
@@ -450,7 +450,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Effesi Collad",
     party: "snackalist",
-    birth: d(1950, 4, 6),
+    birth: d(1950, 4, 4),
     death: null,
     events: [
       { date: d(1981, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
@@ -460,7 +460,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Baahram Linco",
     party: "whig",
-    birth: d(1979, 9, 24),
+    birth: d(1979, 7, 27),
     death: null,
     events: [
       { date: d(2023, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" }
@@ -471,7 +471,7 @@ export const PRESIDENTS : President[] = [
 export const MONARCHS: Monarch[] = [
   {
     name: "high crust",
-    birth: d(1635, 11, 21),
+    birth: d(1635, 8, 21),
     death: d(1683, 5, 27),
     start_reign: d(1656, 12, 1),
     end_reign: d(1683, 3, 2),
@@ -546,7 +546,7 @@ export const MONARCHS: Monarch[] = [
 
     {
     name: "leopold II",
-    birth: d(1900, 9, 24),
+    birth: d(1900, 5, 24),
     death: d(1981, 3, 13),
     start_reign: d(1837, 12, 2),
     end_reign: d(1981, 2, 8),
@@ -565,7 +565,7 @@ export const MONARCHS: Monarch[] = [
   
   {
     name: "leopold II",
-    birth: d(1960, 5, 3),
+    birth: d(1960, 2, 28),
     death: null,
     start_reign: d(2024, 9, 9),
     end_reign: null,
