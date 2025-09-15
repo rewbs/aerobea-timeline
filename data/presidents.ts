@@ -375,11 +375,11 @@ export const PRESIDENTS : President[] = [
     name: "Alec Oven",
     party: "DONEX",
     birth: d(1924, 4, 13),
-    death: d(1980, 3, 24),
+    death: d(1980, 9, 21),
     events: [
       { date: d(1954, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1957, 11, 25), type: PRESIDENCY_ENDS, text: "Term ended" },
-      { date: d(1980, 3, 24), type: DEATH, text: "died of  throat cancer and stabbed by servant" }
+      { date: d(1980, 9, 21), type: DEATH, text: "died of  throat cancer and stabbed by servant" }
     ]
   },
   {
@@ -428,7 +428,7 @@ export const PRESIDENTS : President[] = [
   {
     name: "Ajaysoionvasao Foallowa",
     party: "labour",
-    birth: d(1931, 6, 10),
+    birth: d(1931, 7, 17),
     death: null,
     events: [
       { date: d(1970, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },

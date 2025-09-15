@@ -4,7 +4,7 @@ import { isPresident, President } from '../data/presidents';
 import PresidentCard from './PresidentCard';
 
 const PARTY_COLOURS: Record<string, string> = {
-  whig: '#95bde9ff',
+  whig: '#93c8f4ff',
   conservative: '#2639e6ff',
   labour: '#d51313ff',
   gsc: '#9467bd',
@@ -13,7 +13,8 @@ const PARTY_COLOURS: Record<string, string> = {
   'Independent': '#c3dae9ff',
   'socialist': '#f79badff',
   'radical': '#0b3e16ff',
-  'feather first': '#000000ff'
+  'feather first': '#000000ff',
+  'snackalist': '#c15c22ff',
 };
 
 interface TimelineGridProps {
