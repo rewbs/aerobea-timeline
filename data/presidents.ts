@@ -442,7 +442,7 @@ export const PRESIDENTS : President[] = [
     death: null,
     events: [
       { date: d(1981, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected 1981 but for a few days only" },
-      { date: d(1981, 6, 1), type: PRESIDENCY_ENDS, text: "Elected 1981 but for a few days only" },
+      { date: d(1982, 6, 1), type: PRESIDENCY_ENDS, text: "Elected 1981 but for a few days only" },
       { date: d(1988, 11, 18), type: PRESIDENCY_BEGINS, text: "Re-elected" },
       { date: d(2023, 11, 18), type: PRESIDENCY_ENDS, text: "Retired" }
     ]
@@ -453,7 +453,7 @@ export const PRESIDENTS : President[] = [
     birth: d(1950, 4, 4),
     death: null,
     events: [
-      { date: d(1981, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1982, 6, 1), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1988, 11, 18), type: PRESIDENCY_ENDS, text: "Lost election" }
     ]
   },
