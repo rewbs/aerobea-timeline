@@ -22,6 +22,8 @@ export default function Page() {
   const [end, setEnd] = useState<Date>(END);
   const [current, setCurrent] = useState<Date>(START);
   const [running, setRunning] = useState<boolean>(true);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const currentMonarch = getMonarch(current, MONARCHS);
 
@@ -69,16 +71,24 @@ export default function Page() {
   }, []);
 
   const generatePresidents = async () => {
+    setIsGenerating(true);
+    setError(null);
     try {
       const res = await fetch('/api/presidents', { method: 'POST' });
-      if (!res.ok) return;
-      const data: President[] = await res.json();
-      setPresidents(data);
-      data.forEach(p => {
-        p.birth = new Date(p.birth as unknown as string);
-        if (p.death) p.death = new Date(p.death as unknown as string);
-        p.events = p.events.map(e => ({ ...e, date: new Date(e.date as unknown as string) }));
+      if (!res.ok) {
+        throw new Error(`Failed to generate presidents: ${res.status} ${res.statusText}`);
+      }
+      const raw = (await res.json()) as President[];
+      const data = raw.map(p => {
+        const birth = new Date(p.birth as unknown as string);
+        const death = p.death ? new Date(p.death as unknown as string) : null;
+        const events = p.events.map(e => ({
+          ...e,
+          date: new Date(e.date as unknown as string)
+        }));
+        return { ...p, birth, death, events };
       });
+      setPresidents(data);
       const times = data.flatMap(p => [
         p.birth.getTime(),
         (p.death ?? p.birth).getTime(),
@@ -91,6 +101,9 @@ export default function Page() {
       setCurrent(newStart);
     } catch (err) {
       console.error(err);
+      setError('Failed to generate new presidents. Please try again.');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -119,9 +132,13 @@ export default function Page() {
       <div>
         <button onClick={() => setRunning(r => !r)}>{running ? 'Pause' : 'Play'}</button>
         <button onClick={() => setCurrent(start)}>Reset</button>
-        <button onClick={generatePresidents}>Generate</button>
+        <button onClick={generatePresidents} disabled={isGenerating}>
+          {isGenerating ? 'Generating…' : 'Generate'}
+        </button>
       </div>
-      <MusicControls />      
+      {isGenerating && <div className="status">Generating timeline…</div>}
+      {error && <div className="error" role="alert">{error}</div>}
+      <MusicControls />
       <TimelineGrid current={current} presidents={presidents} />
 
     </div>
