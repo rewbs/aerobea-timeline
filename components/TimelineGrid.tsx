@@ -15,6 +15,8 @@ const PARTY_COLOURS: Record<string, string> = {
   'radical': '#0b3e16ff',
   'feather first': '#000000ff',
   'snackalist': '#c15c22ff',
+  'ghanaio party': '#1f6f50',
+  'organisational conservative party': '#1f3d7a',
 };
 
 interface TimelineGridProps {

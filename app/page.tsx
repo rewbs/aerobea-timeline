@@ -1,31 +1,56 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
+import { President, Monarch, getMonarch } from '../data/presidents';
 import {
-  START,
-  END,
-  PRESIDENTS,
-  President,
-  MONARCHS,
-  getMonarch,
-} from '../data/presidents';
+  COUNTRIES,
+  DEFAULT_COUNTRY_CODE,
+  getCountryByCode,
+} from '../data/countries';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [presidents, setPresidents] = useState<President[]>(PRESIDENTS);
-  const [start, setStart] = useState<Date>(START);
-  const [end, setEnd] = useState<Date>(END);
-  const [current, setCurrent] = useState<Date>(START);
+  const defaultCountry = getCountryByCode(DEFAULT_COUNTRY_CODE) ?? COUNTRIES[0];
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>(
+    defaultCountry?.code ?? DEFAULT_COUNTRY_CODE
+  );
+  const [presidents, setPresidents] = useState<President[]>(
+    defaultCountry?.presidents ?? []
+  );
+  const [monarchs, setMonarchs] = useState<Monarch[]>(
+    defaultCountry?.monarchs ?? []
+  );
+  const [start, setStart] = useState<Date>(defaultCountry?.start ?? new Date());
+  const [end, setEnd] = useState<Date>(defaultCountry?.end ?? new Date());
+  const [current, setCurrent] = useState<Date>(defaultCountry?.start ?? new Date());
   const [running, setRunning] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCustomTimeline, setIsCustomTimeline] = useState<boolean>(false);
 
-  const currentMonarch = getMonarch(current, MONARCHS);
+  const currentMonarch = getMonarch(current, monarchs);
+
+  const handleCountryChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const code = event.target.value;
+    setSelectedCountryCode(code);
+    if (code === 'custom') {
+      setIsCustomTimeline(true);
+      return;
+    }
+    const country = getCountryByCode(code);
+    if (!country) return;
+    setIsCustomTimeline(false);
+    setPresidents(country.presidents);
+    setMonarchs(country.monarchs);
+    setStart(country.start);
+    setEnd(country.end);
+    setCurrent(country.start);
+  };
 
   const playSound = (src: string, count: number, volume = 1, offset = 0) => {
     for (let i = 0; i < count; i++) {
@@ -89,6 +114,7 @@ export default function Page() {
         return { ...p, birth, death, events };
       });
       setPresidents(data);
+      setMonarchs([]);
       const times = data.flatMap(p => [
         p.birth.getTime(),
         (p.death ?? p.birth).getTime(),
@@ -99,6 +125,8 @@ export default function Page() {
       setStart(newStart);
       setEnd(newEnd);
       setCurrent(newStart);
+      setIsCustomTimeline(true);
+      setSelectedCountryCode('custom');
     } catch (err) {
       console.error(err);
       setError('Failed to generate new presidents. Please try again.');
@@ -107,9 +135,32 @@ export default function Page() {
     }
   };
 
+  const selectedCountry = getCountryByCode(selectedCountryCode);
+  const countryName = selectedCountry?.name ?? 'Custom';
+  const heading = isCustomTimeline
+    ? 'Generated Presidential Timeline'
+    : `${countryName} Presidential Timeline`;
+
   return (
     <div className="container" ref={containerRef}>
-      <h2>Aerobea Presidential Timeline</h2>
+      <h2>{heading}</h2>
+      <div className="controls-row">
+        <label htmlFor="country-select">Country:</label>
+        <select
+          id="country-select"
+          value={selectedCountryCode}
+          onChange={handleCountryChange}
+        >
+          {COUNTRIES.map(country => (
+            <option key={country.code} value={country.code}>
+              {country.name}
+            </option>
+          ))}
+          {(isCustomTimeline || selectedCountryCode === 'custom') && (
+            <option value="custom">Generated timeline</option>
+          )}
+        </select>
+      </div>
       <div className="year">{current.toISOString().slice(0, 10)}</div>
       <div
         className="monarch"
