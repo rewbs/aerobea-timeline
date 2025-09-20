@@ -21,19 +21,25 @@ export default function PresidentCard({ pres, visible, className, current, party
     let cancelled = false;
     const bases = ['', '/images', '/presidents'];
     const exts = ['jpg', 'jpeg', 'png', 'webp'];
+    const nameCandidates = Array.from(
+      new Set([pres.name.toLowerCase(), pres.name])
+    );
+
     (async () => {
       for (const base of bases) {
-        for (const ext of exts) {
-          const url = `${base}/${encodeURIComponent(pres.name.toLowerCase())}.${ext}`;
-          console.log('Trying', url);
-          try {
-            const res = await fetch(url, { method: 'HEAD' });
-            if (res.ok) {
-              if (!cancelled) setBgUrl(url);
-              return;
+        for (const candidate of nameCandidates) {
+          const encodedName = encodeURIComponent(candidate);
+          for (const ext of exts) {
+            const url = `${base}/${encodedName}.${ext}`;
+            try {
+              const res = await fetch(url, { method: 'HEAD' });
+              if (res.ok) {
+                if (!cancelled) setBgUrl(url);
+                return;
+              }
+            } catch {
+              // Ignore errors and try next extension
             }
-          } catch {
-            // Ignore errors and try next extension
           }
         }
       }
