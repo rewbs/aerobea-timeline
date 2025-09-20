@@ -102,7 +102,7 @@ const NITOPIA_PRESIDENTS: President[] = [
     ]
   },
   {
-    name: "Halvar Moo (Mooson Peak)",
+    name: "Halvar Moo - Mooson Peak",
     party: "ZXMO Party",
     birth: d(1842, 2, 25),
     death: d(1924, 8, 23),
@@ -244,7 +244,7 @@ const NITOPIA_PRESIDENTS: President[] = [
     ]
   },
   {
-    name: "Moo 18 (John Moo)",
+    name: "Moo 18 - John Moo",
     party: "Cow Party",
     birth: d(1958, 5, 5),
     death: null,
