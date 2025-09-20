@@ -160,22 +160,22 @@ const NITOPIA_PRESIDENTS: President[] = [
     name: "Kero Mason",
     party: "Organisational Conservative Party",
     birth: d(1901, 3, 25),
-    death: d(1986, 1, 1),
+    death: d(1986,12, 5),
     events: [
       { date: d(1947, 1, 1), type: PRESIDENCY_BEGINS, text: "Centralised fog permits" },
       { date: d(1955, 1, 1), type: PRESIDENCY_ENDS, text: "Term ended" },
-      { date: d(1986, 1, 1), type: DEATH, text: "Died of kidney failure" }
+      { date: d(1986, 12, 5), type: DEATH, text: "Died of kidney failure" }
     ]
   },
   {
     name: "Coiler Jacxs",
     party: "Republican Fogpipe Party",
-    birth: d(1911, 1, 1),
-    death: d(2006, 1, 1),
+    birth: d(1911, 3, 4),
+    death: d(2006, 6, 1),
     events: [
       { date: d(1955, 1, 1), type: PRESIDENCY_BEGINS, text: "Ritual fogpipe era" },
       { date: d(1957, 1, 1), type: PRESIDENCY_ENDS, text: "Party banned after Scroll Clog Incident" },
-      { date: d(2006, 1, 1), type: DEATH, text: "Died of natural causes" }
+      { date: d(2006, 6, 1), type: DEATH, text: "Died of natural causes" }
     ]
   },
   {
@@ -226,7 +226,7 @@ const NITOPIA_PRESIDENTS: President[] = [
   {
     name: "Molly Moo",
     party: "Cow Party",
-    birth: d(1935, 1, 1),
+    birth: d(1935, 7, 11),
     death: null,
     events: [
       { date: d(1981, 1, 1), type: PRESIDENCY_BEGINS, text: "Elected; expanded oatworker rights" },
@@ -246,7 +246,7 @@ const NITOPIA_PRESIDENTS: President[] = [
   {
     name: "Moo 18 (John Moo)",
     party: "Cow Party",
-    birth: d(1958, 1, 1),
+    birth: d(1958, 5, 5),
     death: null,
     events: [
       { date: d(2004, 1, 1), type: PRESIDENCY_BEGINS, text: "Milk-Scroll Initiative" },
@@ -277,7 +277,7 @@ const NITOPIA_PRESIDENTS: President[] = [
   {
     name: "Ally the Alpaca",
     party: "Alpaca Justice Party",
-    birth: d(1987, 1, 1),
+    birth: d(1987, 1, 4),
     death: null,
     events: [
       { date: d(2014, 1, 1), type: PRESIDENCY_BEGINS, text: "First alpaca president" },
@@ -287,7 +287,7 @@ const NITOPIA_PRESIDENTS: President[] = [
   {
     name: "Moploxoo Mala",
     party: "United Party",
-    birth: d(1965, 1, 1),
+    birth: d(1965, 8, 1),
     death: null,
     events: [
       { date: d(2015, 1, 1), type: PRESIDENCY_BEGINS, text: "Fog literacy and pasture-scroll equity" },
@@ -297,7 +297,7 @@ const NITOPIA_PRESIDENTS: President[] = [
   {
     name: "Losca Molpoa",
     party: "Goat Party",
-    birth: d(1977, 1, 1),
+    birth: d(1977, 5, 1),
     death: null,
     events: [
       { date: d(2019, 1, 1), type: PRESIDENCY_BEGINS, text: "Legalised scroll skipping" },
@@ -307,7 +307,7 @@ const NITOPIA_PRESIDENTS: President[] = [
   {
     name: "Andy Nittalot",
     party: "United Party",
-    birth: d(1983, 1, 1),
+    birth: d(1983, 8, 29),
     death: null,
     events: [
       { date: d(2023, 1, 1), type: PRESIDENCY_BEGINS, text: "First donkey president; scroll-to-data modernisation" }
