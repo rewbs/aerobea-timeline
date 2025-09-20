@@ -42,6 +42,7 @@ export interface Monarch {
   start_reign: Date;
   end_reign: Date | null;
   death_cause: string | null;
+  notes?: string; 
 }
 
 export function getMonarch(
