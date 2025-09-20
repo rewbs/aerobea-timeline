@@ -25,6 +25,7 @@ export default function PresidentCard({ pres, visible, className, current, party
       for (const base of bases) {
         for (const ext of exts) {
           const url = `${base}/${encodeURIComponent(pres.name.toLowerCase())}.${ext}`;
+          console.log('Trying', url);
           try {
             const res = await fetch(url, { method: 'HEAD' });
             if (res.ok) {
