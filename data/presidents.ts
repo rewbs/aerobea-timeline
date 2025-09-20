@@ -1,4 +1,4 @@
-const d = (y: number, m = 1, day = 1) => new Date(Date.UTC(y, m - 1, day));
+export const d = (y: number, m = 1, day = 1) => new Date(Date.UTC(y, m - 1, day));
 export const START = d(1672, 1, 1);
 export const END = d(2025, 12, 31);
 export const PRESIDENCY_BEGINS = 1;
