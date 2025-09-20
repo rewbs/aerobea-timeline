@@ -116,7 +116,7 @@ const NITOPIA_PRESIDENTS: President[] = [
     {
       "name": "Flann Woolbarrel",
       "party": "Fleece Party",
-      "birth": d(1879,1,1),
+      "birth": d(1879,5,10),
       "death": d(1930,1,1),
       "events": [
         { "date": d(1909,1,1), "type": PRESIDENCY_BEGINS, "text": "Father of the Nitopian Constitution" },
@@ -127,8 +127,8 @@ const NITOPIA_PRESIDENTS: President[] = [
     {
       "name": "Crispin Lintmane",
       "party": "Organisational Conservative Party",
-      "birth": d(1882,1,1),
-      "death": d(1940,1,1),
+      "birth": d(1882,9,9),
+      "death": d(1940,12,27),
       "events": [
         { "date": d(1917,1,1), "type": PRESIDENCY_BEGINS, "text": "Founded Silent Rotation Council" },
         { "date": d(1925,1,1), "type": PRESIDENCY_ENDS, "text": "Term ended" },
@@ -138,8 +138,8 @@ const NITOPIA_PRESIDENTS: President[] = [
     {
       "name": "Mabel Fluffback",
       "party": "Fleece Party",
-      "birth": d(1890,1,1),
-      "death": d(1958,1,1),
+      "birth": d(1890,1,28),
+      "death": d(1958,10,29),
       "events": [
         { "date": d(1925,1,1), "type": PRESIDENCY_BEGINS, "text": "First female president; Clean Fleece Program" },
         { "date": d(1934,1,1), "type": PRESIDENCY_ENDS, "text": "Term ended" },
@@ -149,8 +149,8 @@ const NITOPIA_PRESIDENTS: President[] = [
     {
       "name": "Lossa Milco",
       "party": "Cow Party",
-      "birth": d(1895,1,1),
-      "death": d(1978,1,1),
+      "birth": d(1895,5,23),
+      "death": d(1978,6,2),
       "events": [
         { "date": d(1934,1,1), "type": PRESIDENCY_BEGINS, "text": "Brokered Fog-Trough Accords with Aerobea" },
         { "date": d(1947,1,1), "type": PRESIDENCY_ENDS, "text": "Term ended" },
@@ -171,7 +171,7 @@ const NITOPIA_PRESIDENTS: President[] = [
     {
       "name": "Coiler Jacxs",
       "party": "Republican Fogpipe Party",
-      "birth": d(1911,1,1),
+      "birth": d(1911,3 14),
       "death": d(2006,1,1),
       "events": [
         { "date": d(1955,1,1), "type": PRESIDENCY_BEGINS, "text": "Elected; ritual Fogpipe era" },
@@ -319,39 +319,88 @@ const NITOPIA_PRESIDENTS: President[] = [
 
 
 const NITOPIA_MONARCHS: Monarch[] = [
-  {
-    name: 'Regent Solenne Thry',
-    birth: d(1770, 4, 2),
-    "death": d(1848, 6, 19),
-    start_reign: d(1798, 11, 1),
-    end_reign: d(1848, 6, 19),
-    death_cause: 'Complications of silver lung fever',
-  },
-  {
-    name: 'Crown Marshal Dagan Pell',
-    birth: d(1815, 8, 23),
-    "death": d(1892, 2, 17),
-    start_reign: d(1848, 6, 19),
-    end_reign: d(1892, 2, 17),
-    death_cause: 'Sky barge collision over the violet marshes',
-  },
-  {
-    name: 'Speaker Imara Quell',
-    birth: d(1860, 1, 14),
-    "death": d(1972, 9, 30),
-    start_reign: d(1892, 2, 17),
-    end_reign: d(1972, 9, 30),
-    death_cause: 'Quiet fade illness',
-  },
-  {
-    name: 'Crown Mediator Halevi Morcant',
-    birth: d(1938, 12, 5),
-    "death": null,
-    start_reign: d(1972, 10, 1),
-    end_reign: null,
-    death_cause: null,
-  },
-];
+    {
+      "name": "King Loo XII",
+      "birth": 1748,
+      "death": 1815,
+      "cause_of_death": "Stroke",
+      "reign_start": 1800,
+      "reign_end": 1815,
+      "notes": "Ruler of Nitopia when Bertram Woolcrest was born in 1801. Expanded fog levies."
+    },
+    {
+      "name": "King Loo XIII",
+      "birth": 1785,
+      "death": 1839,
+      "cause_of_death": "Tuberculosis",
+      "reign_start": 1815,
+      "reign_end": 1839,
+      "notes": "Presided over growing unrest between sheep and cow herds. Weak monarch who attempted limited reforms."
+    },
+    {
+      "name": "King Loo XIV",
+      "birth": 1810,
+      "death": 1843,
+      "cause_of_death": "Assassinated by graziers’ rebels",
+      "reign_start": 1839,
+      "reign_end": 1843,
+      "notes": "The last ruling monarch of Nitopia. His assassination in Needles triggered the 1843 revolution and the birth of the Republic."
+    },
+    {
+      "name": "King Loo XV",
+      "birth": 1835,
+      "death": 1890,
+      "cause_of_death": "Pneumonia",
+      "reign_start": 1843,
+      "reign_end": 1890,
+      "notes": "First ceremonial monarch of the Loo line after the monarchy lost power. Kept dynastic traditions alive."
+    },
+    {
+      "name": "King Loo XVI",
+      "birth": 1865,
+      "death": 1935,
+      "cause_of_death": "Stroke",
+      "reign_start": 1890,
+      "reign_end": 1935,
+      "notes": "Ceremonial monarch during Flann Woolbarrel’s constitution and early Republic era."
+    },
+    {
+      "name": "King Loo XVII",
+      "birth": 1900,
+      "death": 1987,
+      "cause_of_death": "Heart failure",
+      "reign_start": 1935,
+      "reign_end": 1987,
+      "notes": "A symbolic monarch during Nitopia’s turbulent 20th century. Abdicated ceremonial duties shortly before his death."
+    },
+    {
+      "name": "King Loo XVIII",
+      "birth": 1920,
+      "death": 2007,
+      "cause_of_death": "Natural causes",
+      "reign_start": 1987,
+      "reign_end": 1987,
+      "notes": "Briefly recognised in 1987 as ceremonial monarch but abdicated the same year. Lived privately until 2007."
+    },
+    {
+      "name": "King Loo XIX",
+      "birth": 1950,
+      "death": null,
+      "cause_of_death": null,
+      "reign_start": 1987,
+      "reign_end": 2018,
+      "notes": "Ceremonial monarch for three decades. Abdicated in 2018 but remains alive today. Attended Bertha the Sheep’s inauguration in 2012."
+    },
+    {
+      "name": "King Loo XX",
+      "birth": 1980,
+      "death": null,
+      "cause_of_death": null,
+      "reign_start": 2018,
+      "reign_end": null,
+      "notes": "Current ceremonial monarch of Nitopia. Still reigning in 2025, often appears alongside President Andy Nittalot."
+    }
+  ]
 
 export const COUNTRIES: CountryTimeline[] = [
   {
