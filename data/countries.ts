@@ -317,90 +317,180 @@ const NITOPIA_PRESIDENTS: President[] = [
 
 
 
-
 const NITOPIA_MONARCHS: Monarch[] = [
-    {
-      "name": "King Loo XII",
-      "birth": d(1748,1,1),
-      "death": d(1815,1,1),
-      "death_cause": "Stroke",
-      "start_reign": d(1800,1,1),
-      "end_reign": d(1815,1,1),
-      "notes": "Ruler of Nitopia when Bertram Woolcrest was born in 1801. Expanded fog levies."
-    },
-    {
-      "name": "King Loo XIII",
-      "birth": d(1785,1,1),
-      "death": d(1839,1,1),
-      "death_cause": "Tuberculosis",
-      "start_reign": d(1815,1,1),
-      "end_reign": d(1839,1,1),
-      "notes": "Presided over growing unrest between sheep and cow herds. Weak monarch who attempted limited reforms."
-    },
-    {
-      "name": "King Loo XIV",
-      "birth": d(1810,1,1),
-      "death": d(1843,1,1),
-      "death_cause": "Assassinated by graziers’ rebels",
-      "start_reign": d(1839,1,1),
-      "end_reign": d(1843,1,1),
-      "notes": "The last ruling monarch of Nitopia. His assassination in Needles triggered the 1843 revolution and the birth of the Republic."
-    },
-    {
-      "name": "King Loo XV",
-      "birth": d(1835,1,1),
-      "death": d(1890,1,1),
-      "death_cause": "Pneumonia",
-      "start_reign": d(1843,1,1),
-      "end_reign": d(1890,1,1),
-      "notes": "First ceremonial monarch of the Loo line after the monarchy lost power. Kept dynastic traditions alive."
-    },
-    {
-      "name": "King Loo XVI",
-      "birth": d(1865,1,1),
-      "death": d(1935,1,1),
-      "death_cause": "Stroke",
-      "start_reign": d(1890,1,1),
-      "end_reign": d(1935,1,1),
-      "notes": "Ceremonial monarch during Flann Woolbarrel’s constitution and early Republic era."
-    },
-    {
-      "name": "King Loo XVII",
-      "birth": d(1900,1,1),
-      "death": d(1987,1,1),
-      "death_cause": "Heart failure",
-      "start_reign": d(1935,1,1),
-      "end_reign": d(1987,1,1),
-      "notes": "A symbolic monarch during Nitopia’s turbulent 20th century. Abdicated ceremonial duties shortly before his death."
-    },
-    {
-      "name": "King Loo XVIII",
-      "birth": d(1920,1,1),
-      "death": d(2007,1,1),
-      "death_cause": "Natural causes",
-      "start_reign": d(1987,1,1),
-      "end_reign": d(1987,1,1),
-      "notes": "Briefly recognised in 1987 as ceremonial monarch but abdicated the same year. Lived privately until 2007."
-    },
-    {
-      "name": "King Loo XIX",
-      "birth": d(1950,1,1),
-      "death": null,
-      "death_cause": null,
-      "start_reign": d(1987,1,1),
-      "end_reign": d(2018,1,1),
-      "notes": "Ceremonial monarch for three decades. Abdicated in 2018 but remains alive today. Attended Bertha the Sheep’s inauguration in 2012."
-    },
-    {
-      "name": "King Loo XX",
-      "birth": d(1980,1,1),
-      "death": null,
-      "death_cause": null,
-      "start_reign": d(2018,1,1),
-      "end_reign": null,
-      "notes": "Current ceremonial monarch of Nitopia. Still reigning in 2025, often appears alongside President Andy Nittalot."
-    }
-  ]
+  {
+    name: "King Loo Loo I Lop",
+    birth: d(1530, 1, 24),
+    death: d(1600, 9, 12),
+    death_cause: "Old age",
+    start_reign: d(1560, 1, 1),
+    end_reign: d(1600, 9, 12),
+    notes: "Founder of Nitopia; united wool provinces and established the capital at Needles."
+  },
+  {
+    name: "King Woolbrain I",
+    birth: d(1554, 11, 15),
+    death: d(1604, 9, 5),
+    death_cause: "Fever",
+    start_reign: d(1600, 9, 12),
+    end_reign: d(1604, 9, 5),
+    notes: "Expanded fleece trade and built the first royal granaries in Needles."
+  },
+  {
+    name: "King Baahman I",
+    birth: d(1569, 7, 24),
+    death: d(1625, 6, 25),
+    death_cause: "Heart failure",
+    start_reign: d(1604, 9, 5),
+    end_reign: d(1625, 6, 25),
+    notes: "Brother of Woolbrain I; founded the Council of Scrolls and established early diplomacy with Aerobea."
+  },
+  {
+    name: "King Loo Loo II Lop",
+    birth: d(1570, 6, 1),
+    death: d(1633, 4, 22),
+    death_cause: "Killed in the crash of Zoom Air Flight 378",
+    start_reign: d(1625, 6, 25),
+    end_reign: d(1633, 4, 22),
+    notes: "Died in the 1633 airship disaster with poet Butter Chum; remembered as 'Loo Loo the Lost'."
+  },
+  {
+    name: "King Baahman II",
+    birth: d(1618, 7, 2),
+    death: d(1680, 8, 4),
+    death_cause: "Natural causes",
+    start_reign: d(1633, 4, 22),
+    end_reign: d(1680, 8, 4),
+    notes: "Restored calm after Loo Loo II's death; introduced fair fog-tax reforms."
+  },
+  {
+    name: "King Woolbrain II",
+    birth: d(1648, 8, 23),
+    death: d(1709, 9, 6),
+    death_cause: "Blood infection",
+    start_reign: d(1680, 8, 4),
+    end_reign: d(1709, 9, 6),
+    notes: "Known as 'Woolbrain the Clean'; introduced hygiene laws and standardised wool measures."
+  },
+  {
+    name: "King Baahman III",
+    birth: d(1658, 4, 26),
+    death: d(1720, 9, 3),
+    death_cause: "Stroke",
+    start_reign: d(1709, 9, 6),
+    end_reign: d(1720, 9, 3),
+    notes: "Philosopher-king who founded Needles University and promoted plain-language law."
+  },
+  {
+    name: "King John Woolman",
+    birth: d(1694, 5, 15),
+    death: d(1764, 8, 24),
+    death_cause: "Old age",
+    start_reign: d(1720, 9, 3),
+    end_reign: d(1764, 8, 24),
+    notes: "A humble and practical ruler; abolished fleece tithe and championed equality among herders."
+  },
+  {
+    name: "King Baahman IV",
+    birth: d(1725, 5, 6),
+    death: d(1809, 8, 25),
+    death_cause: "Old age",
+    start_reign: d(1764, 8, 24),
+    end_reign: d(1809, 8, 25),
+    notes: "Longest-reigning monarch; remembered as 'Baahman the Peaceful' of the Golden Fleece Era."
+  },
+  {
+    name: "King Baahman V",
+    birth: d(1770, 3, 22),
+    death: d(1810, 9, 3),
+    death_cause: "Assassinated at harvest banquet",
+    start_reign: d(1809, 8, 25),
+    end_reign: d(1810, 9, 3),
+    notes: "Poet-king known for gentleness and art; his death is mourned as the Lantern of Mercy tragedy."
+  },
+  {
+    name: "King Baahman VI",
+    birth: d(1780, 7, 1),
+    death: d(1828, 8, 2),
+    death_cause: "Killed in blimp crash (King's Dream airship)",
+    start_reign: d(1810, 9, 3),
+    end_reign: d(1828, 8, 2),
+    notes: "Visionary inventor; built the first fog-powered airship, dying during its maiden voyage."
+  },
+  {
+    name: "King Jorvic I",
+    birth: d(1810, 8, 5),
+    death: d(1878, 8, 5),
+    death_cause: "Heart attack on his birthday",
+    start_reign: d(1828, 8, 2),
+    end_reign: d(1843, 1, 1),
+    notes: "Accepted transition to republic; first ceremonial monarch; beloved as 'The Shepherd-King'."
+  },
+  {
+    name: "King Jorvic II",
+    birth: d(1815, 8, 24),
+    death: d(1890, 7, 23),
+    death_cause: "Lung failure after balloon accident",
+    start_reign: d(1878, 8, 5),
+    end_reign: d(1890, 7, 23),
+    notes: "Nicknamed 'Jorvic the Fast'; sponsored balloon flight experiments and modern communication towers."
+  },
+  {
+    name: "Queen Lamberta",
+    birth: d(1860, 5, 2),
+    death: d(1948, 9, 27),
+    death_cause: "Pneumonia",
+    start_reign: d(1890, 7, 23),
+    end_reign: d(1948, 9, 27),
+    notes: "Long-lived queen; industrial reformer who brought Nitopia into the 20th century."
+  },
+  {
+    name: "King Loo I",
+    birth: d(1880, 6, 24),
+    death: d(1948, 10, 31),
+    death_cause: "Heart failure",
+    start_reign: d(1948, 9, 27),
+    end_reign: d(1948, 10, 31),
+    notes: "Reigned just over a month; served as bridge between Lamberta and the modern Loo line."
+  },
+  {
+    name: "King Loo II",
+    birth: d(1909, 9, 12),
+    death: d(1987, 9, 22),
+    death_cause: "Natural causes",
+    start_reign: d(1948, 10, 31),
+    end_reign: d(1987, 9, 22),
+    notes: "Guided postwar reconstruction; remembered as 'Loo the Steady' for decades of peace."
+  },
+  {
+    name: "King Loo III",
+    birth: d(1927, 8, 3),
+    death: d(2009, 8, 1),
+    death_cause: "Old age",
+    start_reign: d(1987, 9, 22),
+    end_reign: d(2009, 8, 1),
+    notes: "A humble moderniser; opened government archives and promoted education for all citizens."
+  },
+  {
+    name: "King Loo IV",
+    birth: d(1945, 5, 24),
+    death: d(2018, 7, 6),
+    death_cause: "Heart complications after surgery",
+    start_reign: d(2009, 8, 1),
+    end_reign: d(2018, 7, 6),
+    notes: "Oversaw Nitopia's entry into the digital age; environmental advocate and reformer."
+  },
+  {
+    name: "King Loo V",
+    birth: d(1980, 1, 24),
+    death: null,
+    death_cause: null,
+    start_reign: d(2018, 7, 6),
+    end_reign: null,
+    notes: "Current monarch; ceremonial eco-king working alongside President Andy Nittalot; promotes environmental diplomacy and cultural unity."
+  }
+];
+
 
 export const COUNTRIES: CountryTimeline[] = [
   {
