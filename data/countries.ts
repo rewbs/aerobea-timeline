@@ -423,7 +423,7 @@ const NITOPIA_MONARCHS: Monarch[] = [
     death: d(1878, 8, 5),
     death_cause: "Heart attack on his birthday",
     start_reign: d(1828, 8, 2),
-    end_reign: d(1843, 1, 1),
+    end_reign: d(1878, 8, 5),
     notes: "Accepted transition to republic; first ceremonial monarch; beloved as 'The Shepherd-King'."
   },
   {
