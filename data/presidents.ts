@@ -90,12 +90,24 @@ export const PRESIDENTS : President[] = [
     ]
   },
   {
+    name: "gherry gortio feynorodero",
+    party: "whig",
+    birth: d(1674, 6, 18),
+    death: d(1734, 6, 18),
+    events: [
+      { date: d(1731, 11, 30), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1731, 12, 30), type: PRESIDENCY_ENDS, text: "stepped down" },
+      { date: d(1734, 6, 18), type: DEATH, text: "Died of heart attack " }
+    ]
+  },
+
+  {
     name: "joh gumn nocks",
     party: "liberal democratic",
     birth: d(1693, 2, 2),
     death: d(1760, 3, 28),
     events: [
-      { date: d(1731, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1731, 12, 30), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1745, 11, 18), type: PRESIDENCY_ENDS, text: "stepped down" },
       { date: d(1760, 3, 28), type: DEATH, text: "Died of diabetes complications" }
     ]
@@ -168,19 +180,54 @@ export const PRESIDENTS : President[] = [
     death: d(1827, 3, 13),
     events: [
       { date: d(1796, 10, 11), type: PRESIDENCY_BEGINS, text: "Appointed Acting President" },
-      { date: d(1808, 5, 6), type: PRESIDENCY_ENDS, text: "Kicked out" },
+      { date: d(1808, 5, 17), type: PRESIDENCY_ENDS, text: "Kicked out" },
       { date: d(1809, 6, 5), type: PRESIDENCY_BEGINS, text: "Seized power back" },
       { date: d(1812, 11, 18), type: PRESIDENCY_ENDS, text: "Stepped down" },
       { date: d(1827, 3, 13), type: DEATH, text: "Died of tuberculosis" }
     ]
   },
   {
+    name: "flanberry qoul",
+    party: "whig",
+    birth: d(1748, 2, 12),
+    death: d(1808, 11, 12),
+    events: [
+      { date: d(1808, 5, 17), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1808 , 11, 12), type: PRESIDENCY_ENDS, text: "died in office of scroll stress " },
+      { date: d(1808, 11, 12 ), type: DEATH, text: "Died of scroll stress" }
+    ]
+  },
+  {
+    name: "jovascxo jorto",
+    party: "whig ",
+    birth: d(1790, 3, 6),
+    death: d(1870, 1, 7),
+    events: [
+      { date: d(1808, 11, 12), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1745, 11, 13), type: PRESIDENCY_ENDS, text: "stepped down" },
+      { date: d(1870, 1, 7 ), type: DEATH, text: "Died of fog lung disease " }
+    ]
+  },  
+  {
+    name: "john johnson",
+    party: "whig ",
+    birth: d(1774, 8, 1),
+    death: d(1850, 8, 6),
+    events: [
+      { date: d(1808, 11, 13), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1808, 11, 18), type: PRESIDENCY_ENDS, text: "stepped down" },
+      { date: d(1821, 11,24), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1821, 12, 6), type: PRESIDENCY_ENDS, text: "stepped down" },      
+      { date: d(1850, 8, 6), type: DEATH, text: "Died of smallpox " }
+    ]
+  },      
+  {
     name: "lucrene dapth",
     party: "radical",
     birth: d(1770, 12, 1),
     death: d(1811, 10, 1),
     events: [
-      { date: d(1808, 5, 6), type: PRESIDENCY_BEGINS, text: "Seized power" },
+      { date: d(1808, 31, 12), type: PRESIDENCY_BEGINS, text: "Seized power" },
       { date: d(1809, 6, 5), type: PRESIDENCY_ENDS, text: "Kicked out" },
       { date: d(1811, 10, 1), type: DEATH, text: "beheaded" }
     ]
@@ -191,18 +238,29 @@ export const PRESIDENTS : President[] = [
     birth: d(1773, 12, 26),
     death: d(1818, 2, 1),
     events: [
-      { date: d(1812, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1812, 6, 5), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1818, 2, 1), type: PRESIDENCY_ENDS, text: "Poisoned" },
       { date: d(1818, 2, 1), type: DEATH, text: "Died of poisoned pipe that stanley roberts forgot to clean" }
     ]
   },
+  {
+    name: "gherty joutou jordon jordon jordon. jordon jordon jordon jordon jrk jordon jeruiopio",
+    party: "whig ",
+    birth: d(1800, 4, 1),
+    death: d(1860, 5, 7),
+    events: [
+      { date: d(1818, 2, 1), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1818, 8, 8), type: PRESIDENCY_ENDS, text: "stepped down" },
+      { date: d(1860, 5, 7), type: DEATH, text: "Died of joglop " }
+    ]
+  },  
   {
     name: "Barkley Thunderflap",
     party: "GSC",
     birth: d(1766, 6, 17),
     death: d(1830, 12, 9),
     events: [
-      { date: d(1818, 2, 13), type: PRESIDENCY_BEGINS, text: "Appointed Acting President (GSC-aligned dog)" },
+      { date: d(1818, 8, 8), type: PRESIDENCY_BEGINS, text: "Appointed Acting President (GSC-aligned dog)" },
       { date: d(1821, 11, 18), type: PRESIDENCY_ENDS, text: "Resigned" },
       { date: d(1830, 12, 9), type: DEATH, text: "Died of hydration issues" }
     ]
@@ -211,19 +269,30 @@ export const PRESIDENTS : President[] = [
     name: "Feathery Quill",
     party: "feather first",
     birth: d(1791, 2, 16),
-    death: d(1821, 5, 23),
+    death: d(1821, 11, 24),
     events: [
       { date: d(1821, 11, 18), type: PRESIDENCY_BEGINS, text: "served 6 symbolic days" },
       { date: d(1821, 11, 24), type: PRESIDENCY_ENDS, text: "died crashing into a blimp while trying to fly" }
     ]
   },
+   {
+    name: "lopo cavaso",
+    party: "whig",
+    birth: d(1775, 5, 27),
+    death: d(1840, 7, 8),
+    events: [
+      { date: d(1821, 11, 24), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1821, 12, 6), type: PRESIDENCY_ENDS, text: "stepped down" },
+      { date: d(1840, 7, 8), type: DEATH, text: "Died of velvet lung " }
+    ]
+  },   
   {
     name: "Oreo Joshon Boeoer",
     party: "socialist",
     birth: d(1780, 6, 25),
     death: d(1870, 6, 27),
     events: [
-      { date: d(1821, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1821, 12, 11), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1840, 11, 18), type: PRESIDENCY_ENDS, text: "Retired" },
       { date: d(1870, 6, 27), type: DEATH, text: "Died of cerebrovascular disease" }
     ]
@@ -254,19 +323,30 @@ export const PRESIDENTS : President[] = [
     name: "Tennisonopi Avots",
     party: "conservative",
     birth: d(1798, 6, 19),
-    death: d(1863, 5, 18),
+    death: d(1863, 5, 17),
     events: [
       { date: d(1853, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected (by retroactive declaration)" },
-      { date: d(1863, 5, 18), type: PRESIDENCY_ENDS, text: "died of stroke" }
+      { date: d(1863, 5, 17), type: PRESIDENCY_ENDS, text: "died of stroke" }
     ]
   },
+    {
+    name: "kloto maso",
+    party: "whig",
+    birth: d(1808, 9, 1),
+    death: d(1868, 8, 7),
+    events: [
+      { date: d(1863, 5, 17 ), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1863, 5, 6), type: PRESIDENCY_ENDS, text: "stepped down" },
+      { date: d(1868, 8, 7), type: DEATH, text: "Died of a scroll mould infection " }
+    ]
+  },  
   {
     name: "Spindle Gowlash",
     party: "radical",
     birth: d(1839, 11, 27),
     death: d(1910, 3, 3),
     events: [
-      { date: d(1863, 11, 18), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1863, 6, 5), type: PRESIDENCY_BEGINS, text: "Elected" },
       { date: d(1867, 4, 17), type: PRESIDENCY_ENDS, text: "resigned" },
       { date: d(1910, 3, 3), type: DEATH, text: "died of flu" }
     ]
@@ -368,10 +448,23 @@ export const PRESIDENTS : President[] = [
     death: d(1992, 8, 10),
     events: [
       { date: d(1947, 3, 15), type: PRESIDENCY_BEGINS, text: "Seized power" },
-      { date: d(1948, 7, 11), type: PRESIDENCY_ENDS, text: "Overthrown" },
+      { date: d(1947, 31, 12), type: PRESIDENCY_ENDS, text: "Overthrown" },
+      { date: d(1948, 1, 1), type: PRESIDENCY_BEGINS, text: "Seized power" },
+      { date: d(1948, 7, 11), type: PRESIDENCY_ENDS, text: "Overthrown" },      
       { date: d(1992, 8, 10), type: DEATH, text: "died of parkinson's disease" }
     ]
   },
+  {
+    name: "hunslet qourrin peaverson",
+    party: "whig",
+    birth: d(1895, 7, 5),
+    death: d(1953, 6, 7),
+    events: [
+      { date: d(1947, 12, 31), type: PRESIDENCY_BEGINS, text: "Elected" },
+      { date: d(1948, 1, 1), type: PRESIDENCY_ENDS, text: "stepped down" },
+      { date: d(1953, 6, 7), type: DEATH, text: "Died of deep scroll mecholisa cancer" }
+    ]
+  },  
   {
     name: "Alec Oven",
     party: "DONEX",
