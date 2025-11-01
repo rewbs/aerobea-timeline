@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { President, TimelineEvent } from '../data/presidents';
+import type { President, TimelineEvent } from '../lib/timeline';
 
 interface PresidentCardProps {
   pres: President;
@@ -86,4 +86,3 @@ export default function PresidentCard({ pres, visible, className, current, party
     </div>
   );
 }
-

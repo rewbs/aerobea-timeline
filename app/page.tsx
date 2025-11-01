@@ -4,30 +4,67 @@ import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
-import { President, Monarch, getMonarch } from '../data/presidents';
-import {
-  COUNTRIES,
-  DEFAULT_COUNTRY_CODE,
-  getCountryByCode,
-} from '../data/countries';
+import { getMonarch } from '../lib/timeline';
+import type { President, Monarch } from '../lib/timeline';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_COUNTRY_CODE = 'aerobea';
+
+interface TimelineEventJson {
+  date: string;
+  type?: number;
+  text: string;
+}
+
+interface PresidentJson {
+  name: string;
+  party: string;
+  birth: string;
+  death: string | null;
+  events: TimelineEventJson[];
+}
+
+interface MonarchJson {
+  name: string;
+  birth: string;
+  death: string | null;
+  start_reign: string;
+  end_reign: string | null;
+  death_cause: string | null;
+  notes?: string;
+}
+
+interface CountryResponse {
+  code: string;
+  name: string;
+  start: string;
+  end: string | null;
+  presidents: PresidentJson[];
+  monarchs: MonarchJson[];
+}
+
+interface CountryTimeline {
+  code: string;
+  name: string;
+  start: Date;
+  end: Date | null;
+  presidents: President[];
+  monarchs: Monarch[];
+}
 
 export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const defaultCountry = getCountryByCode(DEFAULT_COUNTRY_CODE) ?? COUNTRIES[0];
-  const [selectedCountryCode, setSelectedCountryCode] = useState<string>(
-    defaultCountry?.code ?? DEFAULT_COUNTRY_CODE
-  );
-  const [presidents, setPresidents] = useState<President[]>(
-    defaultCountry?.presidents ?? []
-  );
-  const [monarchs, setMonarchs] = useState<Monarch[]>(
-    defaultCountry?.monarchs ?? []
-  );
-  const [start, setStart] = useState<Date>(defaultCountry?.start ?? new Date());
-  const [end, setEnd] = useState<Date>(defaultCountry?.end ?? new Date());
-  const [current, setCurrent] = useState<Date>(defaultCountry?.start ?? new Date());
+  const initialisedRef = useRef(false);
+  const [countries, setCountries] = useState<CountryTimeline[]>([]);
+  const [countriesLoading, setCountriesLoading] = useState<boolean>(true);
+  const [countriesError, setCountriesError] = useState<string | null>(null);
+  const [selectedCountryCode, setSelectedCountryCode] =
+    useState<string>(DEFAULT_COUNTRY_CODE);
+  const [presidents, setPresidents] = useState<President[]>([]);
+  const [monarchs, setMonarchs] = useState<Monarch[]>([]);
+  const [start, setStart] = useState<Date>(new Date());
+  const [end, setEnd] = useState<Date>(new Date());
+  const [current, setCurrent] = useState<Date>(new Date());
   const [running, setRunning] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,13 +79,13 @@ export default function Page() {
       setIsCustomTimeline(true);
       return;
     }
-    const country = getCountryByCode(code);
+    const country = countries.find(c => c.code === code);
     if (!country) return;
     setIsCustomTimeline(false);
     setPresidents(country.presidents);
     setMonarchs(country.monarchs);
     setStart(country.start);
-    setEnd(country.end);
+    setEnd(country.end ?? country.start);
     setCurrent(country.start);
   };
 
@@ -60,6 +97,89 @@ export default function Page() {
       setTimeout(() => audio.play(), i * 200);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const hydrateCountries = (payload: CountryResponse[]): CountryTimeline[] =>
+      payload.map(country => ({
+        code: country.code,
+        name: country.name,
+        start: new Date(country.start),
+        end: country.end ? new Date(country.end) : null,
+        presidents: country.presidents.map(president => ({
+          ...president,
+          birth: new Date(president.birth),
+          death: president.death ? new Date(president.death) : null,
+          events: president.events.map(event => ({
+            ...event,
+            date: new Date(event.date),
+          })),
+        })),
+        monarchs: country.monarchs.map(monarch => ({
+          ...monarch,
+          birth: new Date(monarch.birth),
+          death: monarch.death ? new Date(monarch.death) : null,
+          start_reign: new Date(monarch.start_reign),
+          end_reign: monarch.end_reign ? new Date(monarch.end_reign) : null,
+        })),
+      }));
+
+    const loadCountries = async () => {
+      setCountriesLoading(true);
+      setCountriesError(null);
+      try {
+        const res = await fetch('/api/countries');
+        if (!res.ok) {
+          throw new Error(`Failed to load countries: ${res.status} ${res.statusText}`);
+        }
+        const json = (await res.json()) as { countries: CountryResponse[] };
+        if (!cancelled) {
+          setCountries(json.countries ? hydrateCountries(json.countries) : []);
+        }
+      } catch (err) {
+        console.error(err);
+        if (!cancelled) {
+          setCountriesError('Failed to load countries. Please bootstrap the database.');
+          setCountries([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setCountriesLoading(false);
+        }
+      }
+    };
+
+    loadCountries();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (initialisedRef.current) return;
+    if (!countries.length) return;
+    const defaultCountry =
+      countries.find(country => country.code === DEFAULT_COUNTRY_CODE) ??
+      countries[0];
+    if (!defaultCountry) return;
+    setSelectedCountryCode(defaultCountry.code);
+    setPresidents(defaultCountry.presidents);
+    setMonarchs(defaultCountry.monarchs);
+    setStart(defaultCountry.start);
+    setEnd(defaultCountry.end ?? defaultCountry.start);
+    setCurrent(defaultCountry.start);
+    setIsCustomTimeline(false);
+    initialisedRef.current = true;
+  }, [countries]);
+
+  useEffect(() => {
+    if (countriesLoading) return;
+    if (countries.length > 0) return;
+    setSelectedCountryCode('custom');
+    setIsCustomTimeline(true);
+  }, [countries, countriesLoading]);
 
   useEffect(() => {
     if (running) {
@@ -135,7 +255,9 @@ export default function Page() {
     }
   };
 
-  const selectedCountry = getCountryByCode(selectedCountryCode);
+  const selectedCountry = countries.find(
+    country => country.code === selectedCountryCode
+  );
   const countryName = selectedCountry?.name ?? 'Custom';
   const heading = isCustomTimeline
     ? 'Generated Presidential Timeline'
@@ -150,8 +272,9 @@ export default function Page() {
           id="country-select"
           value={selectedCountryCode}
           onChange={handleCountryChange}
+          disabled={countriesLoading && !countries.length}
         >
-          {COUNTRIES.map(country => (
+          {countries.map(country => (
             <option key={country.code} value={country.code}>
               {country.name}
             </option>
@@ -161,6 +284,12 @@ export default function Page() {
           )}
         </select>
       </div>
+      {countriesLoading && <div className="status">Loading countries…</div>}
+      {countriesError && (
+        <div className="error" role="alert">
+          {countriesError}
+        </div>
+      )}
       <div className="year">{current.toISOString().slice(0, 10)}</div>
       <div
         className="monarch"

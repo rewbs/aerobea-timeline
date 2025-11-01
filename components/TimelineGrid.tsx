@@ -1,6 +1,7 @@
 "use client";
 
-import { isPresident, President } from '../data/presidents';
+import { isPresident } from '../lib/timeline';
+import type { President } from '../lib/timeline';
 import PresidentCard from './PresidentCard';
 
 const PARTY_COLOURS: Record<string, string> = {

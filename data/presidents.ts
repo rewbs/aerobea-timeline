@@ -1,58 +1,15 @@
+import {
+  DEATH,
+  PRESIDENCY_BEGINS,
+  PRESIDENCY_ENDS,
+} from '../lib/timeline';
+import type { President, Monarch } from '../lib/timeline';
+
+export { DEATH, PRESIDENCY_BEGINS, PRESIDENCY_ENDS } from '../lib/timeline';
+export type { TimelineEvent, EventType } from '../lib/timeline';
 export const d = (y: number, m = 1, day = 1) => new Date(Date.UTC(y, m - 1, day));
 export const START = d(1672, 1, 1);
 export const END = d(2025, 12, 31);
-export const PRESIDENCY_BEGINS = 1;
-export const PRESIDENCY_ENDS = 2;
-export const DEATH = 3;
-
-export type EventType = typeof PRESIDENCY_BEGINS | typeof PRESIDENCY_ENDS | typeof DEATH;
-
-export interface TimelineEvent {
-  date: Date;
-  type?: EventType;
-  text: string;
-}
-
-export interface President {
-  name: string;
-  party: string;
-  birth: Date;
-  death: Date | null;
-  events: TimelineEvent[];
-}
-
-export function isPresident(date: Date, president: President): boolean {
-  const begins = president.events.filter(e => e.type === PRESIDENCY_BEGINS);
-  const ends = president.events.filter(e => e.type === PRESIDENCY_ENDS);
-  begins.sort((a, b) => a.date.getTime() - b.date.getTime());
-  ends.sort((a, b) => a.date.getTime() - b.date.getTime());
-  const cur = date.getTime();
-  for (let i = 0; i < begins.length; i++) {
-    const start = begins[i].date.getTime();
-    const end = (ends[i]?.date.getTime() ?? Infinity) - 1;
-    if (cur >= start && cur <= end) return true;
-  }
-  return false;
-}
-
-export interface Monarch {
-  name: string;
-  birth: Date;
-  death: Date | null;
-  start_reign: Date;
-  end_reign: Date | null;
-  death_cause: string | null;
-  notes?: string; 
-}
-
-export function getMonarch(
-  date: Date,
-  monarchs: Monarch[]
-): Monarch | undefined {
-  return monarchs.find(
-    m => date >= m.start_reign && (m.end_reign === null || date <= m.end_reign)
-  );
-}
 
 
 export const PRESIDENTS : President[] = [

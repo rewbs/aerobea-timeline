@@ -1,11 +1,6 @@
 import OpenAI from 'openai';
-import {
-  President,
-  PRESIDENCY_BEGINS,
-  PRESIDENCY_ENDS,
-  DEATH,
-  EventType
-} from '../../../data/presidents';
+import type { President, EventType } from '../../../lib/timeline';
+import { PRESIDENCY_BEGINS, PRESIDENCY_ENDS, DEATH } from '../../../lib/timeline';
 
 const d = (y: number, m = 1, day = 1) => new Date(Date.UTC(y, m - 1, day));
 import { presidentialExitReasons } from '../../../data/exitReasons';
