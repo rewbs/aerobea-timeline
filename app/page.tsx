@@ -4,8 +4,8 @@ import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
-import { getMonarch } from '../lib/timeline';
-import type { President, Monarch } from '../lib/timeline';
+import { getMonarch, PRESIDENCY_BEGINS, PRESIDENCY_ENDS, DEATH } from '../lib/timeline';
+import type { President, Monarch, EventType } from '../lib/timeline';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_COUNTRY_CODE = 'aerobea';
@@ -51,6 +51,9 @@ interface CountryTimeline {
   presidents: President[];
   monarchs: Monarch[];
 }
+
+const isEventType = (value: number | undefined): value is EventType =>
+  value === PRESIDENCY_BEGINS || value === PRESIDENCY_ENDS || value === DEATH;
 
 export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -114,6 +117,7 @@ export default function Page() {
           events: president.events.map(event => ({
             ...event,
             date: new Date(event.date),
+            type: isEventType(event.type) ? event.type : undefined,
           })),
         })),
         monarchs: country.monarchs.map(monarch => ({

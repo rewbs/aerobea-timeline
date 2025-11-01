@@ -1,11 +1,10 @@
+import { Monarch, President } from '../lib/timeline';
 import {
   d,
   START,
   END,
   PRESIDENTS,
   MONARCHS,
-  President,
-  Monarch,
   PRESIDENCY_BEGINS,
   PRESIDENCY_ENDS,
   DEATH,
