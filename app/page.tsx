@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, useState, useEffect, useRef } from 'react';
+import { ChangeEvent, useState, useEffect, useRef, useCallback } from 'react';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
@@ -73,23 +73,86 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [isCustomTimeline, setIsCustomTimeline] = useState<boolean>(false);
 
+  const updateHashFragment = useCallback((code: string) => {
+    if (typeof window === 'undefined') return;
+    const normalized = code.toLowerCase();
+    const { pathname, search } = window.location;
+    const newUrl = `${pathname}${search}#${normalized}`;
+    if (`#${normalized}` !== window.location.hash) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, []);
+
+  const getHashCountryCode = useCallback((): string | null => {
+    if (typeof window === 'undefined') return null;
+    const raw = window.location.hash ? window.location.hash.slice(1) : '';
+    if (!raw) return null;
+    return decodeURIComponent(raw).toLowerCase();
+  }, []);
+
+  const applyCountryState = useCallback(
+    (country: CountryTimeline, shouldUpdateHash: boolean) => {
+      setIsCustomTimeline(false);
+      setSelectedCountryCode(country.code);
+      setPresidents(country.presidents);
+      setMonarchs(country.monarchs);
+      setStart(country.start);
+      setEnd(country.end ?? country.start);
+      setCurrent(country.start);
+      if (shouldUpdateHash) {
+        updateHashFragment(country.code);
+      }
+    },
+    [updateHashFragment]
+  );
+
+  const selectCountryByCode = useCallback(
+    (
+      code: string,
+      options?: { updateHash?: boolean; allowFallback?: boolean }
+    ) => {
+      const { updateHash = true, allowFallback = true } = options ?? {};
+      const normalized = code.toLowerCase();
+      if (normalized === 'custom') {
+        setIsCustomTimeline(true);
+        setSelectedCountryCode('custom');
+        if (updateHash) {
+          updateHashFragment('custom');
+        }
+        return true;
+      }
+      const country = countries.find(
+        c => c.code.toLowerCase() === normalized
+      );
+      if (country) {
+        applyCountryState(country, updateHash);
+        return true;
+      }
+      if (allowFallback) {
+        const fallback =
+          countries.find(c => c.code.toLowerCase() === DEFAULT_COUNTRY_CODE) ??
+          countries[0];
+        if (fallback) {
+          applyCountryState(fallback, updateHash);
+          return true;
+        }
+      }
+      return false;
+    },
+    [applyCountryState, countries, updateHashFragment]
+  );
+
   const currentMonarch = getMonarch(current, monarchs);
 
   const handleCountryChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const code = event.target.value;
-    setSelectedCountryCode(code);
     if (code === 'custom') {
+      setSelectedCountryCode('custom');
       setIsCustomTimeline(true);
+      updateHashFragment('custom');
       return;
     }
-    const country = countries.find(c => c.code === code);
-    if (!country) return;
-    setIsCustomTimeline(false);
-    setPresidents(country.presidents);
-    setMonarchs(country.monarchs);
-    setStart(country.start);
-    setEnd(country.end ?? country.start);
-    setCurrent(country.start);
+    selectCountryByCode(code);
   };
 
   const playSound = (src: string, count: number, volume = 1, offset = 0) => {
@@ -164,25 +227,45 @@ export default function Page() {
   useEffect(() => {
     if (initialisedRef.current) return;
     if (!countries.length) return;
-    const defaultCountry =
-      countries.find(country => country.code === DEFAULT_COUNTRY_CODE) ??
-      countries[0];
-    if (!defaultCountry) return;
-    setSelectedCountryCode(defaultCountry.code);
-    setPresidents(defaultCountry.presidents);
-    setMonarchs(defaultCountry.monarchs);
-    setStart(defaultCountry.start);
-    setEnd(defaultCountry.end ?? defaultCountry.start);
-    setCurrent(defaultCountry.start);
-    setIsCustomTimeline(false);
+    const hashCode = getHashCountryCode();
+    let applied = false;
+    if (hashCode) {
+      applied = selectCountryByCode(hashCode, {
+        allowFallback: false,
+      });
+    }
+    if (!applied) {
+      selectCountryByCode(DEFAULT_COUNTRY_CODE);
+    }
     initialisedRef.current = true;
-  }, [countries]);
+  }, [countries, getHashCountryCode, selectCountryByCode]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handler = () => {
+      const hashCode = getHashCountryCode();
+      if (!hashCode) {
+        selectCountryByCode(DEFAULT_COUNTRY_CODE);
+        return;
+      }
+      selectCountryByCode(hashCode);
+    };
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, [getHashCountryCode, selectCountryByCode]);
 
   useEffect(() => {
     if (countriesLoading) return;
     if (countries.length > 0) return;
     setSelectedCountryCode('custom');
     setIsCustomTimeline(true);
+    updateHashFragment('custom');
+    const now = new Date();
+    setPresidents([]);
+    setMonarchs([]);
+    setStart(now);
+    setEnd(now);
+    setCurrent(now);
   }, [countries, countriesLoading]);
 
   useEffect(() => {
@@ -251,6 +334,7 @@ export default function Page() {
       setCurrent(newStart);
       setIsCustomTimeline(true);
       setSelectedCountryCode('custom');
+      updateHashFragment('custom');
     } catch (err) {
       console.error(err);
       setError('Failed to generate new presidents. Please try again.');

@@ -19,8 +19,8 @@ export default function PresidentCard({ pres, visible, className, current, party
 
   useEffect(() => {
     let cancelled = false;
-    const bases = ['', '/images', '/presidents'];
-    const exts = ['jpg', 'jpeg', 'png', 'webp'];
+    const bases = ['',];
+    const exts = ['png', 'jpg', 'jpeg', 'webp'];
     const nameCandidates = Array.from(
       new Set([pres.name.toLowerCase(), pres.name])
     );

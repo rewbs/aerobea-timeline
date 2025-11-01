@@ -27,7 +27,11 @@ const PARTY_COLOURS: Record<string, string> = {
   'fleece party': 'purple',
   'fish and curiosity party': 'green',
   'mischief party': 'black',
-  
+  'labour party': '#d51313ff',
+  'labour alliance': 'orange',
+  'national populist party': '#9467bd',
+  'liberal conservative party': '#1f3d7a'
+
 };
 
 
