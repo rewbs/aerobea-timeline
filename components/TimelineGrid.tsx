@@ -25,7 +25,11 @@ const PARTY_COLOURS: Record<string, string> = {
   'republican fogpipe party': 'black',
   'zxmo party': 'yellow',
   'fleece party': 'purple',
+  'fish and curiosity party': 'green',
+  'mischief party': 'black',
+  
 };
+
 
 interface TimelineGridProps {
   current: Date;
