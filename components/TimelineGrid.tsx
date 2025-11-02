@@ -11,7 +11,7 @@ const PARTY_COLOURS: Record<string, string> = {
   'gsc': '#9467bd',
   'donex': '#ff7f0e',
   'liberal democratic': '#c4d76eff',
-  'Independent': '#c3dae9ff',
+  'independent': '#c3dae9ff',
   'socialist': '#f79badff',
   'radical': '#0b3e16ff',
   'feather first': '#000000ff',
