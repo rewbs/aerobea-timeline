@@ -30,7 +30,10 @@ const PARTY_COLOURS: Record<string, string> = {
   'labour party': '#d51313ff',
   'labour alliance': 'orange',
   'national populist party': '#9467bd',
-  'liberal conservative party': '#1f3d7a'
+  'liberal conservative party': '#1f3d7a',
+  'moderate nationalist': '#1f3d7a',
+  'nationalist': 'black',
+
 
 };
 
