@@ -8,11 +8,11 @@ import type { President, Monarch } from '../lib/timeline';
 export { DEATH, PRESIDENCY_BEGINS, PRESIDENCY_ENDS } from '../lib/timeline';
 export type { TimelineEvent, EventType } from '../lib/timeline';
 export const d = (y: number, m = 1, day = 1) => new Date(Date.UTC(y, m - 1, day));
-export const START = d(1672, 1, 1);
-export const END = d(2025, 12, 31);
+export const BOOTSTRAP_TIMELINE_START = d(1672, 1, 1);
+export const BOOTSTRAP_TIMELINE_END = d(2025, 12, 31);
 
 
-export const PRESIDENTS : President[] = [
+export const BOOTSTRAP_PRESIDENTS : President[] = [
   {
     name: "Baahram Edward Lincoln the Elder",
     party: "Whig",
@@ -519,7 +519,7 @@ export const PRESIDENTS : President[] = [
   }
 ];
 
-export const MONARCHS: Monarch[] = [
+export const BOOTSTRAP_MONARCHS: Monarch[] = [
   {
     name: "high crust",
     birth: d(1635, 8, 21),
