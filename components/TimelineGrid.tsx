@@ -34,9 +34,10 @@ const PARTY_COLOURS: Record<string, string> = {
   'moderate nationalist': '#1f3d7a',
   'nationalist': 'black',
   'liberal democrat': '#c4d76eff',
-  'liberal': '#c15c22ff',
-  'conservative republican': '#d51313ff',
-  'liberal (populist wing)': '#c38c62ff'
+  'liberal': '#d51313ff',
+  'conservative republican': '#1f3d7a',
+  'liberal (populist wing)': '#fa862dff',
+  'fogpipe party': 'black'
 
 
 };
