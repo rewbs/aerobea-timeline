@@ -198,6 +198,136 @@ select {
   font-size: 0.9rem;
 }
 
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.admin-header,
+.admin-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+}
+
+.admin-header h1 {
+  margin: 0 0 8px;
+}
+
+.admin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-card-header h2 {
+  margin: 0;
+}
+
+.admin-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.admin-tag {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 600;
+}
+
+.admin-details {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.admin-details div {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-details dt {
+  font-weight: 600;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.admin-details dd {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+}
+
+.admin-json-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.admin-json-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-json-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-json {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  color: #f5f5f5;
+  font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.admin-copy-button {
+  margin: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .admin-container {
+    padding: 24px 16px 60px;
+  }
+
+  .admin-json {
+    font-size: 0.7rem;
+  }
+}
+
 select:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
