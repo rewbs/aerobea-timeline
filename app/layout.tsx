@@ -1,4 +1,5 @@
-import  Metadata  from 'next';
+
+import { Metadata } from 'next/types';
 import './globals.css';
 
 import { ReactNode } from 'react';
