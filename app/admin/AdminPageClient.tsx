@@ -1,18 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
-
-export interface AdminCountry {
-  id: number;
-  code: string;
-  name: string;
-  start: string;
-  end: string | null;
-  createdAt: string;
-  updatedAt: string;
-  presidents: unknown;
-  monarchs: unknown;
-}
+import { AdminCountry } from './types';
 
 interface AdminPageClientProps {
   countries: AdminCountry[];
@@ -116,11 +106,18 @@ const AdminPageClient = ({ countries }: AdminPageClientProps) => {
   return (
     <div className="admin-container">
       <header className="admin-header">
-        <h1>Admin JSON Explorer</h1>
-        <p>
-          Inspect the stored country records and copy their JSON payloads in a
-          single click.
-        </p>
+        <div className="admin-header-content">
+          <div>
+            <h1>Admin JSON Explorer</h1>
+            <p>
+              Inspect the stored country records, copy their JSON payloads, or
+              jump into the editor for detailed changes.
+            </p>
+          </div>
+          <Link className="admin-primary-button" href="/admin/countries/new">
+            + Add New Country
+          </Link>
+        </div>
       </header>
 
       {sortedCountries.map(country => {
@@ -146,13 +143,21 @@ const AdminPageClient = ({ countries }: AdminPageClientProps) => {
                   </span>
                 </div>
               </div>
-              <CopyButton
-                label="Copy Country JSON"
-                copyKey={`${baseKey}-all`}
-                payload={countryJson}
-                copiedKey={copiedKey}
-                onCopy={copy}
-              />
+              <div className="admin-card-actions">
+                <Link
+                  className="admin-secondary-button"
+                  href={`/admin/countries/${country.id}`}
+                >
+                  Edit
+                </Link>
+                <CopyButton
+                  label="Copy Country JSON"
+                  copyKey={`${baseKey}-all`}
+                  payload={countryJson}
+                  copiedKey={copiedKey}
+                  onCopy={copy}
+                />
+              </div>
             </div>
 
             <dl className="admin-details">
