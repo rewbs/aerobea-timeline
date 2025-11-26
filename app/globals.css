@@ -441,6 +441,23 @@ select {
   flex-wrap: wrap;
 }
 
+.admin-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 600;
+}
+
+.admin-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: rgba(0, 212, 255, 0.9);
+}
+
 .admin-feedback {
   border-radius: 12px;
   padding: 16px 18px;
