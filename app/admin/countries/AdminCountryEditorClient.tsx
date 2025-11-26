@@ -7,6 +7,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useRouter } from 'next/navigation';
@@ -506,6 +507,8 @@ const AdminCountryEditorClient = ({
     () => toCountryDraft(initialCountry),
     [initialCountry]
   );
+  const presidentRefs = useRef<Record<string, HTMLElement | null>>({});
+  const eventRefs = useRef<Record<string, HTMLElement | null>>({});
   const [baseline, setBaseline] = useState<CountryDraft>(initialDraft);
   const [draft, setDraft] = useState<CountryDraft>(initialDraft);
   const [history, setHistory] = useState<CountryDraft[]>([]);
@@ -701,6 +704,48 @@ const AdminCountryEditorClient = ({
 
   const isSaving = status.type === 'saving';
 
+  const presidentSummaries = useMemo(
+    () =>
+      draft.presidents.map((president, index) => {
+        const emptyEvents = president.events.filter(
+          event => !event.date || !event.text.trim()
+        );
+
+        return {
+          formId: president.formId,
+          label: president.name.trim() || `President ${index + 1}`,
+          emptyEvents,
+        };
+      }),
+    [draft.presidents]
+  );
+
+  const firstEmptyEvent = useMemo(() => {
+    for (const president of draft.presidents) {
+      for (const event of president.events) {
+        if (!event.date || !event.text.trim()) {
+          return { presidentId: president.formId, eventId: event.formId };
+        }
+      }
+    }
+    return null;
+  }, [draft.presidents]);
+
+  const scrollToPresident = (formId: string) => {
+    const element = presidentRefs.current[formId];
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const scrollToEvent = (presidentId: string, eventId: string) => {
+    scrollToPresident(presidentId);
+    const element = eventRefs.current[eventId];
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const saveDraft = useCallback(
     async (reason: 'manual' | 'auto' = 'manual') => {
       if (isSaving) return;
@@ -865,6 +910,52 @@ const AdminCountryEditorClient = ({
         </div>
       )}
 
+      {(draft.presidents.length > 0 || firstEmptyEvent) && (
+        <section className="admin-quick-nav" aria-label="Quick navigation">
+          <div className="admin-quick-nav-heading">
+            <h3>Jump around faster</h3>
+            {firstEmptyEvent && (
+              <button
+                className="admin-secondary-button"
+                type="button"
+                onClick={() =>
+                  scrollToEvent(
+                    firstEmptyEvent.presidentId,
+                    firstEmptyEvent.eventId
+                  )
+                }
+              >
+                Go to first empty event
+              </button>
+            )}
+          </div>
+          <div className="admin-quick-nav-grid">
+            <div className="admin-quick-nav-label">Presidents</div>
+            <div className="admin-quick-nav-buttons">
+              {draft.presidents.length === 0 && (
+                <span className="admin-chip-muted">None yet — add your first president below.</span>
+              )}
+              {presidentSummaries.map(summary => (
+                <button
+                  key={summary.formId}
+                  className="admin-chip-button"
+                  type="button"
+                  onClick={() => scrollToPresident(summary.formId)}
+                >
+                  <span className="admin-chip-label">{summary.label}</span>
+                  {summary.emptyEvents.length > 0 && (
+                    <span className="admin-chip-badge">
+                      {summary.emptyEvents.length} empty event
+                      {summary.emptyEvents.length > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="admin-editor-section">
         <h2>Country details</h2>
         <div className="admin-form-grid">
@@ -927,8 +1018,14 @@ const AdminCountryEditorClient = ({
           </p>
         )}
 
-        {draft.presidents.map((president, index) => (
-          <article className="admin-entity-card" key={president.formId}>
+          {draft.presidents.map((president, index) => (
+            <article
+              className="admin-entity-card"
+              key={president.formId}
+              ref={element => {
+                presidentRefs.current[president.formId] = element;
+              }}
+            >
             <header className="admin-entity-header">
               <h3>President {index + 1}</h3>
               <button
@@ -1003,68 +1100,81 @@ const AdminCountryEditorClient = ({
                 </p>
               )}
 
-              {president.events.map((event, eventIndex) => (
-                <div className="admin-event-row" key={event.formId}>
-                  <div className="admin-event-fields">
-                    <label>
-                      <span>Date &amp; time</span>
-                      <input
-                        type="datetime-local"
-                        value={event.date}
+                
+              {president.events.map((event, eventIndex) => {
+                const isIncomplete = !event.date || !event.text.trim();
+                return (
+                  <div
+                    className={`admin-event-row${
+                      isIncomplete ? ' admin-event-row-incomplete' : ''
+                    }`}
+                    key={event.formId}
+                    ref={element => {
+                      eventRefs.current[event.formId] = element;
+                    }}
+                  >
+                    <div className="admin-event-fields">
+                      <label>
+                        <span>Date &amp; time</span>
+                        <input
+                          type="datetime-local"
+                          value={event.date}
+                          onChange={handleEventFieldChange(
+                            index,
+                            eventIndex,
+                            'date'
+                          )}
+                          required
+                        />
+                      </label>
+                      <label>
+                        <span>Event type</span>
+                        <select
+                          value={event.type}
+                          onChange={handleEventFieldChange(
+                            index,
+                            eventIndex,
+                            'type'
+                          )}
+                        >
+                          {eventTypeOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <label className="admin-event-text">
+                      <span>Description</span>
+                      <textarea
+                        value={event.text}
                         onChange={handleEventFieldChange(
                           index,
                           eventIndex,
-                          'date'
+                          'text'
                         )}
+                        rows={3}
+                        placeholder="Describe what happened…"
                         required
                       />
                     </label>
-                    <label>
-                      <span>Event type</span>
-                      <select
-                        value={event.type}
-                        onChange={handleEventFieldChange(
-                          index,
-                          eventIndex,
-                          'type'
-                        )}
-                      >
-                        {eventTypeOptions.map(option => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <button
+                      className="admin-text-button admin-event-remove"
+                      type="button"
+                      onClick={() =>
+                        handleRemovePresidentEvent(index, eventIndex)
+                      }
+                    >
+                      Remove event
+                    </button>
                   </div>
-                  <label className="admin-event-text">
-                    <span>Description</span>
-                    <textarea
-                      value={event.text}
-                      onChange={handleEventFieldChange(
-                        index,
-                        eventIndex,
-                        'text'
-                      )}
-                      rows={3}
-                      placeholder="Describe what happened…"
-                      required
-                    />
-                  </label>
-                  <button
-                    className="admin-text-button admin-event-remove"
-                    type="button"
-                    onClick={() =>
-                      handleRemovePresidentEvent(index, eventIndex)
-                    }
-                  >
-                    Remove event
-                  </button>
-                </div>
-              ))}
-            </div>
-          </article>
-        ))}
+                );
+              })}
+
+              </div>
+            </article>
+          ))}
       </section>
 
       <section className="admin-editor-section">
