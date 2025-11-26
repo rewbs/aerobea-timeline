@@ -92,6 +92,13 @@ const createId = () =>
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2, 12);
 
+const DEFAULT_DATE = '1800-01-01';
+const DEFAULT_DATETIME = '1800-01-01T00:00';
+const DEFAULT_EVENT_TEXT = 'Details pending';
+const DEFAULT_NAME = 'Unnamed';
+const DEFAULT_PARTY = 'Independent';
+const DEFAULT_CODE = 'new-country';
+
 const cloneDraft = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 
 const areDraftsEqual = (a: CountryDraft, b: CountryDraft): boolean =>
@@ -357,6 +364,71 @@ const buildPayload = (draft: CountryDraft) => ({
     notes: monarch.notes.trim() || undefined,
   })),
 });
+
+const ensureDateValue = (value: string, fallback: string): string =>
+  isValidDateValue(value) ? value : fallback;
+
+const ensureDateTimeValue = (value: string, fallback: string): string =>
+  isValidDateValue(value) ? value : fallback;
+
+const ensureTextValue = (value: string, fallback: string): string =>
+  value.trim() || fallback;
+
+const normalizeDraftForSave = (draft: CountryDraft): CountryDraft => {
+  const normalizeCode = (value: string) => {
+    const trimmed = value.trim();
+    if (trimmed) return trimmed.toLowerCase();
+    const nameAsCode = draft.name.trim().toLowerCase().replace(/\s+/g, '-');
+    return nameAsCode || DEFAULT_CODE;
+  };
+
+  const normalizeEvent = (event: TimelineEventForm): TimelineEventForm => ({
+    ...event,
+    date: ensureDateTimeValue(event.date, DEFAULT_DATETIME),
+    text: ensureTextValue(event.text, DEFAULT_EVENT_TEXT),
+  });
+
+  const normalizePresident = (president: PresidentForm): PresidentForm => ({
+    ...president,
+    name: ensureTextValue(president.name, DEFAULT_NAME),
+    party: ensureTextValue(president.party, DEFAULT_PARTY),
+    birth: ensureDateValue(president.birth, DEFAULT_DATE),
+    death: president.death && !isValidDateValue(president.death)
+      ? DEFAULT_DATE
+      : president.death,
+    events: president.events.map(normalizeEvent),
+  });
+
+  const normalizeMonarch = (monarch: MonarchForm): MonarchForm => ({
+    ...monarch,
+    name: ensureTextValue(monarch.name, DEFAULT_NAME),
+    birth: ensureDateValue(monarch.birth, DEFAULT_DATE),
+    death:
+      monarch.death && !isValidDateValue(monarch.death)
+        ? DEFAULT_DATE
+        : monarch.death,
+    start_reign: ensureDateValue(monarch.start_reign, DEFAULT_DATE),
+    end_reign:
+      monarch.end_reign && !isValidDateValue(monarch.end_reign)
+        ? DEFAULT_DATE
+        : monarch.end_reign,
+    death_cause: monarch.death_cause,
+    notes: monarch.notes,
+  });
+
+  const start = ensureDateValue(draft.start, DEFAULT_DATE);
+  const end = draft.end && !isValidDateValue(draft.end) ? DEFAULT_DATE : draft.end;
+
+  return {
+    ...draft,
+    code: normalizeCode(draft.code),
+    name: ensureTextValue(draft.name, DEFAULT_NAME),
+    start,
+    end,
+    presidents: draft.presidents.map(normalizePresident),
+    monarchs: draft.monarchs.map(normalizeMonarch),
+  };
+};
 
 const validateDraft = (draft: CountryDraft): string[] => {
   const errors: string[] = [];
@@ -629,74 +701,91 @@ const AdminCountryEditorClient = ({
 
   const isSaving = status.type === 'saving';
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (isSaving) return;
-    const errors = validateDraft(draft);
-    if (errors.length) {
-      setValidationErrors(errors);
-      setStatus({
-        type: 'error',
-        message: 'Please fix the highlighted issues before saving.',
-      });
-      return;
-    }
+  const saveDraft = useCallback(
+    async (reason: 'manual' | 'auto' = 'manual') => {
+      if (isSaving) return;
 
-    setStatus({ type: 'saving', message: 'Saving changes…' });
+      const normalizedDraft = normalizeDraftForSave(draft);
+      setDraft(normalizedDraft);
 
-    try {
-      const payload = buildPayload(draft);
-      const endpoint =
-        mode === 'edit' && draft.id
-          ? `/api/admin/countries/${draft.id}`
-          : '/api/admin/countries';
-      const method = mode === 'edit' && draft.id ? 'PUT' : 'POST';
-
-      const response = await fetch(endpoint, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        const message =
-          typeof data?.error === 'string'
-            ? data.error
-            : 'Failed to save changes.';
-        setStatus({ type: 'error', message });
-        return;
-      }
-
-      if (!data?.country) {
+      const errors = validateDraft(normalizedDraft);
+      if (errors.length) {
+        setValidationErrors(errors);
         setStatus({
           type: 'error',
-          message: 'Unexpected response from the server.',
+          message: 'Please fix the highlighted issues before saving.',
         });
         return;
       }
 
-      const nextDraft = toCountryDraft(data.country as AdminCountry);
-      setBaseline(nextDraft);
-      setDraft(nextDraft);
-      setHistory([]);
-      setValidationErrors([]);
-      setStatus({ type: 'success', message: 'Changes saved successfully.' });
-
-      if (mode === 'create' && data.country?.id) {
-        router.replace(`/admin/countries/${data.country.id}`);
-        router.refresh();
-      } else {
-        router.refresh();
-      }
-    } catch (error) {
-      console.error('[admin editor] Failed to save country', error);
       setStatus({
-        type: 'error',
-        message: 'Something went wrong while saving. Please try again.',
+        type: 'saving',
+        message: reason === 'auto' ? 'Saving…' : 'Saving changes…',
       });
-    }
+
+      try {
+        const payload = buildPayload(normalizedDraft);
+        const endpoint =
+          mode === 'edit' && normalizedDraft.id
+            ? `/api/admin/countries/${normalizedDraft.id}`
+            : '/api/admin/countries';
+        const method = mode === 'edit' && normalizedDraft.id ? 'PUT' : 'POST';
+
+        const response = await fetch(endpoint, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          const message =
+            typeof data?.error === 'string'
+              ? data.error
+              : 'Failed to save changes.';
+          setStatus({ type: 'error', message });
+          return;
+        }
+
+        if (!data?.country) {
+          setStatus({
+            type: 'error',
+            message: 'Unexpected response from the server.',
+          });
+          return;
+        }
+
+        const nextDraft = toCountryDraft(data.country as AdminCountry);
+        setBaseline(nextDraft);
+        setDraft(nextDraft);
+        setHistory([]);
+        setValidationErrors([]);
+        setStatus({
+          type: 'success',
+          message: 'Changes saved successfully.',
+        });
+
+        if (mode === 'create' && data.country?.id) {
+          router.replace(`/admin/countries/${data.country.id}`);
+          router.refresh();
+        } else {
+          router.refresh();
+        }
+      } catch (error) {
+        console.error('[admin editor] Failed to save country', error);
+        setStatus({
+          type: 'error',
+          message: 'Something went wrong while saving. Please try again.',
+        });
+      }
+    },
+    [draft, isSaving, mode, router]
+  );
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void saveDraft('manual');
   };
 
   useEffect(() => {
@@ -709,6 +798,17 @@ const AdminCountryEditorClient = ({
     }
     return undefined;
   }, [status]);
+
+  useEffect(() => {
+    if (mode !== 'edit') return undefined;
+    if (!isDirty || isSaving) return undefined;
+
+    const timeout = setTimeout(() => {
+      void saveDraft('auto');
+    }, 1200);
+
+    return () => clearTimeout(timeout);
+  }, [isDirty, isSaving, mode, saveDraft]);
 
   return (
     <form className="admin-editor" onSubmit={handleSubmit}>
