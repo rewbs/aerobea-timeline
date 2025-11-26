@@ -514,6 +514,7 @@ const AdminCountryEditorClient = ({
   const [history, setHistory] = useState<CountryDraft[]>([]);
   const [status, setStatus] = useState<SaveStatus>({ type: 'idle' });
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [autosaveEnabled, setAutosaveEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     setBaseline(initialDraft);
@@ -851,6 +852,7 @@ const AdminCountryEditorClient = ({
 
   useEffect(() => {
     if (mode !== 'edit') return undefined;
+    if (!autosaveEnabled) return undefined;
     if (!isDirty || isSaving) return undefined;
 
     const timeout = setTimeout(() => {
@@ -858,7 +860,7 @@ const AdminCountryEditorClient = ({
     }, 1200);
 
     return () => clearTimeout(timeout);
-  }, [isDirty, isSaving, mode, saveDraft]);
+  }, [autosaveEnabled, isDirty, isSaving, mode, saveDraft]);
 
   return (
     <form className="admin-editor" onSubmit={handleSubmit}>
@@ -869,6 +871,16 @@ const AdminCountryEditorClient = ({
           <span>{mode === 'edit' ? draft.name || 'Edit Country' : 'New Country'}</span>
         </div>
         <div className="admin-editor-actions">
+          <label className="admin-toggle">
+            <input
+              type="checkbox"
+              checked={autosaveEnabled}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setAutosaveEnabled(event.target.checked)
+              }
+            />
+            <span>Autosave</span>
+          </label>
           <button
             className="admin-secondary-button"
             type="button"
