@@ -524,7 +524,11 @@ const AdminCountryEditorClient = ({
   }, [initialDraft]);
 
   const isDirty = useMemo(
-    () => !areDraftsEqual(draft, baseline),
+    () =>
+      !areDraftsEqual(
+        normalizeDraftForSave(draft),
+        normalizeDraftForSave(baseline)
+      ),
     [draft, baseline]
   );
 
@@ -751,7 +755,6 @@ const AdminCountryEditorClient = ({
       if (isSaving) return;
 
       const normalizedDraft = normalizeDraftForSave(draft);
-      setDraft(normalizedDraft);
 
       const errors = validateDraft(normalizedDraft);
       if (errors.length) {
@@ -803,7 +806,9 @@ const AdminCountryEditorClient = ({
 
         const nextDraft = toCountryDraft(data.country as AdminCountry);
         setBaseline(nextDraft);
-        setDraft(nextDraft);
+        if (reason === 'manual') {
+          setDraft(nextDraft);
+        }
         setHistory([]);
         setValidationErrors([]);
         setStatus({
