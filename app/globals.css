@@ -448,6 +448,12 @@ select {
   line-height: 1.4;
 }
 
+.admin-feedback-slot {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+}
+
 .admin-feedback ul {
   margin: 8px 0 0 18px;
   padding: 0;

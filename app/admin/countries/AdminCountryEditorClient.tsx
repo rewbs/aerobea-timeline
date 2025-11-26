@@ -895,14 +895,16 @@ const AdminCountryEditorClient = ({
         </div>
       </div>
 
-      {status.type !== 'idle' && status.message && (
-        <div
-          className={`admin-feedback admin-feedback-${status.type}`}
-          role={status.type === 'error' ? 'alert' : 'status'}
-        >
-          {status.message}
-        </div>
-      )}
+      <div className="admin-feedback-slot" aria-live="polite">
+        {status.type !== 'idle' && status.message && (
+          <div
+            className={`admin-feedback admin-feedback-${status.type}`}
+            role={status.type === 'error' ? 'alert' : 'status'}
+          >
+            {status.message}
+          </div>
+        )}
+      </div>
 
       {validationErrors.length > 0 && (
         <div className="admin-feedback admin-feedback-error" role="alert">
