@@ -438,7 +438,7 @@ export default function Page() {
       {isGenerating && <div className="status">Generating timeline…</div>}
       {error && <div className="error" role="alert">{error}</div>}
       <MusicControls />
-      <TimelineGrid current={current} presidents={presidents} partyColours={partyColours} />
+      <TimelineGrid current={current} presidents={presidents} partyColours={partyColours} start={start} />
 
     </div>
   );

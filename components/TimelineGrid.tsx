@@ -8,13 +8,15 @@ interface TimelineGridProps {
   current: Date;
   presidents: President[];
   partyColours: Record<string, string>;
+  start: Date;
 }
 
-export default function TimelineGrid({ current, presidents, partyColours }: TimelineGridProps) {
+export default function TimelineGrid({ current, presidents, partyColours, start }: TimelineGridProps) {
   return (
     <div className="grid">
       {presidents.map((pres, idx) => {
-        const visible = current >= pres.birth;
+        // Always visible to show the pre-birth pink bar
+        const visible = true;
         const currentEvent = pres.events.find(
           e =>
             e.date <= current &&
@@ -41,6 +43,7 @@ export default function TimelineGrid({ current, presidents, partyColours }: Time
             currentEvent={currentEvent}
             isPresident={isPres}
             isDead={isDead}
+            timelineStart={start}
           />
         );
       })}
