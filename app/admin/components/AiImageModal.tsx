@@ -55,7 +55,7 @@ export default function AiImageModal({
             // Cycle every 5 seconds
             interval = setInterval(() => {
                 setCurrentFact(historicalFacts[Math.floor(Math.random() * historicalFacts.length)]);
-            }, 5000);
+            }, 10000);
         }
         return () => clearInterval(interval);
     }, [loading]);
@@ -187,8 +187,9 @@ export default function AiImageModal({
                                 onChange={(e) => setSelectedModel(e.target.value)}
                             >
                                 <option value="fal-ai/nano-banana-pro">Nano Banana Pro (Default)</option>
-                                <option value="bytedance/seedream/v4/text-to-image">Seedream v4</option>
-                                <option value="gpt-image-1-mini">GPT Image 1 Mini</option>
+                                <option value="fal-ai/bytedance/seedream/v4/text-to-image">Seedream v4</option>
+                                <option value="fal-ai/gpt-image-1-mini">GPT Image 1 Mini</option>
+                                <option value="fal-ai/flux-2-pro">Flux 2 Pro</option>
                             </select>
                         </div>
                     ) : (
