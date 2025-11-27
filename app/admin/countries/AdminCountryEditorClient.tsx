@@ -543,6 +543,17 @@ const AdminCountryEditorClient = ({
   const [aiModalInitialImage, setAiModalInitialImage] = useState<string | undefined>(undefined);
   const [aiModalOnSelect, setAiModalOnSelect] = useState<(url: string) => void>(() => { });
 
+  // Refs to track state across refreshes (router.refresh() updates initialDraft with new IDs)
+  const draftRef = useRef(draft);
+  const activePresidentIdRef = useRef(activePresidentId);
+  const activeMonarchIdRef = useRef(activeMonarchId);
+
+  useEffect(() => {
+    draftRef.current = draft;
+    activePresidentIdRef.current = activePresidentId;
+    activeMonarchIdRef.current = activeMonarchId;
+  }, [draft, activePresidentId, activeMonarchId]);
+
   useEffect(() => {
     if (draft.presidents.length > 0 && !activePresidentId) {
       setActivePresidentId(draft.presidents[0].formId);
@@ -556,11 +567,38 @@ const AdminCountryEditorClient = ({
   }, [draft.monarchs, activeMonarchId]);
 
   useEffect(() => {
+    // Capture indices from the PREVIOUS draft state (stored in refs)
+    const prevDraft = draftRef.current;
+    const prevActivePresidentId = activePresidentIdRef.current;
+    const prevActiveMonarchId = activeMonarchIdRef.current;
+
+    const activePresidentIndex = prevDraft.presidents.findIndex(
+      p => p.formId === prevActivePresidentId
+    );
+    const activeMonarchIndex = prevDraft.monarchs.findIndex(
+      m => m.formId === prevActiveMonarchId
+    );
+
     setBaseline(initialDraft);
     setDraft(initialDraft);
     setHistory([]);
     setValidationErrors([]);
     setStatus({ type: 'idle' });
+
+    // Restore selection using indices
+    if (activePresidentIndex !== -1 && initialDraft.presidents[activePresidentIndex]) {
+      setActivePresidentId(initialDraft.presidents[activePresidentIndex].formId);
+    } else if (initialDraft.presidents.length > 0 && !activePresidentIdRef.current) {
+      // Fallback to first if no selection existed (or if it was lost), but only if we didn't have one before?
+      // Actually, the original logic was: if (draft.presidents.length > 0 && !activePresidentId) setActivePresidentId(...)
+      // We can rely on the other useEffects for the "no selection" case, but let's be explicit here to match the "restore" intent.
+      // If we had a selection and lost it (index out of bounds?), we might want to default to something.
+      // But for now, just restoring by index is the goal.
+    }
+
+    if (activeMonarchIndex !== -1 && initialDraft.monarchs[activeMonarchIndex]) {
+      setActiveMonarchId(initialDraft.monarchs[activeMonarchIndex].formId);
+    }
   }, [initialDraft]);
 
   const isDirty = useMemo(
@@ -861,6 +899,14 @@ const AdminCountryEditorClient = ({
         return;
       }
 
+      // Capture active indices before save to restore selection after ID regeneration
+      const activePresidentIndex = draft.presidents.findIndex(
+        p => p.formId === activePresidentId
+      );
+      const activeMonarchIndex = draft.monarchs.findIndex(
+        m => m.formId === activeMonarchId
+      );
+
       setStatus({
         type: 'saving',
         message: reason === 'auto' ? 'Saving…' : 'Saving changes…',
@@ -903,6 +949,14 @@ const AdminCountryEditorClient = ({
         setBaseline(nextDraft);
         if (reason === 'manual') {
           setDraft(nextDraft);
+
+          // Restore active selection by index
+          if (activePresidentIndex !== -1 && nextDraft.presidents[activePresidentIndex]) {
+            setActivePresidentId(nextDraft.presidents[activePresidentIndex].formId);
+          }
+          if (activeMonarchIndex !== -1 && nextDraft.monarchs[activeMonarchIndex]) {
+            setActiveMonarchId(nextDraft.monarchs[activeMonarchIndex].formId);
+          }
         }
         setHistory([]);
         setValidationErrors([]);
@@ -925,7 +979,7 @@ const AdminCountryEditorClient = ({
         });
       }
     },
-    [draft, isSaving, mode, router]
+    [draft, isSaving, mode, router, activePresidentId, activeMonarchId]
   );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
