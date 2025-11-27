@@ -1,6 +1,7 @@
 'use client';
 
 import { ChangeEvent, useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
@@ -22,6 +23,7 @@ interface PresidentJson {
   birth: string;
   death: string | null;
   events: TimelineEventJson[];
+  imageUrl?: string;
 }
 
 interface MonarchJson {
@@ -32,6 +34,7 @@ interface MonarchJson {
   end_reign: string | null;
   death_cause: string | null;
   notes?: string;
+  imageUrl?: string;
 }
 
 interface CountryResponse {
@@ -72,6 +75,7 @@ export default function Page() {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isCustomTimeline, setIsCustomTimeline] = useState<boolean>(false);
+  const [partyColours, setPartyColours] = useState<Record<string, string>>({});
 
   const updateHashFragment = useCallback((code: string) => {
     if (typeof window === 'undefined') return;
@@ -182,7 +186,11 @@ export default function Page() {
             date: new Date(event.date),
             type: isEventType(event.type) ? event.type : undefined,
           })),
-        })),
+        })).sort((a, b) => {
+          const startA = a.events.find(e => e.type === PRESIDENCY_BEGINS)?.date.getTime() ?? Infinity;
+          const startB = b.events.find(e => e.type === PRESIDENCY_BEGINS)?.date.getTime() ?? Infinity;
+          return startA - startB;
+        }),
         monarchs: country.monarchs.map(monarch => ({
           ...monarch,
           birth: new Date(monarch.birth),
@@ -218,6 +226,26 @@ export default function Page() {
     };
 
     loadCountries();
+
+    const loadPartyColours = async () => {
+      try {
+        const res = await fetch('/api/party-colours');
+        if (res.ok) {
+          const json = await res.json();
+          const colours: Record<string, string> = {};
+          for (const pc of json.partyColours || []) {
+            colours[pc.name] = pc.colour;
+          }
+          if (!cancelled) {
+            setPartyColours(colours);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load party colours:', err);
+      }
+    };
+
+    loadPartyColours();
 
     return () => {
       cancelled = true;
@@ -403,11 +431,14 @@ export default function Page() {
         <button onClick={generatePresidents} disabled={isGenerating}>
           {isGenerating ? 'Generating…' : 'Generate'}
         </button>
+        <Link href="/admin" style={{ marginLeft: '10px', color: '#00d4ff', textDecoration: 'none' }}>
+          Admin
+        </Link>
       </div>
       {isGenerating && <div className="status">Generating timeline…</div>}
       {error && <div className="error" role="alert">{error}</div>}
       <MusicControls />
-      <TimelineGrid current={current} presidents={presidents} />
+      <TimelineGrid current={current} presidents={presidents} partyColours={partyColours} />
 
     </div>
   );

@@ -19,6 +19,7 @@ export interface President {
   birth: Date;
   death: Date | null;
   events: TimelineEvent[];
+  imageUrl?: string;
 }
 
 export interface Monarch {
@@ -29,6 +30,7 @@ export interface Monarch {
   end_reign: Date | null;
   death_cause: string | null;
   notes?: string;
+  imageUrl?: string;
 }
 
 export function isPresident(date: Date, president: President): boolean {

@@ -18,3 +18,11 @@ model Country {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+model PartyColour {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  colour    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

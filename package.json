@@ -9,8 +9,12 @@
     "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
+    "@fal-ai/client": "^1.7.2",
+    "@fal-ai/serverless-client": "^0.15.0",
     "@prisma/client": "^6.18.0",
     "@prisma/extension-accelerate": "^2.0.2",
+    "@vercel/blob": "^2.0.0",
+    "dotenv": "^17.2.3",
     "next": "^16.0.1",
     "openai": "^6.7.0",
     "react": "^19.2.0",
