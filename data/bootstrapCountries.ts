@@ -1,16 +1,16 @@
 import { Monarch, President } from '../lib/timeline';
 import {
   d,
-  START,
-  END,
-  PRESIDENTS,
-  MONARCHS,
+  BOOTSTRAP_TIMELINE_START,
+  BOOTSTRAP_TIMELINE_END,
+  BOOTSTRAP_PRESIDENTS,
+  BOOTSTRAP_MONARCHS,
   PRESIDENCY_BEGINS,
   PRESIDENCY_ENDS,
   DEATH,
-} from './presidents';
+} from './bootstrapPresidents';
 
-export interface CountryTimeline {
+export interface BootstrapCountryTimeline {
   code: string;
   name: string;
   start: Date;
@@ -491,14 +491,14 @@ const NITOPIA_MONARCHS: Monarch[] = [
 ];
 
 
-export const COUNTRIES: CountryTimeline[] = [
+export const BOOTSTRAP_COUNTRIES: BootstrapCountryTimeline[] = [
   {
     code: 'aerobea',
     name: 'Aerobea',
-    start: START,
-    end: END,
-    presidents: PRESIDENTS,
-    monarchs: MONARCHS,
+    start: BOOTSTRAP_TIMELINE_START,
+    end: BOOTSTRAP_TIMELINE_END,
+    presidents: BOOTSTRAP_PRESIDENTS,
+    monarchs: BOOTSTRAP_MONARCHS,
   },
   {
     code: 'nitopia',
@@ -510,8 +510,4 @@ export const COUNTRIES: CountryTimeline[] = [
   },
 ];
 
-export const DEFAULT_COUNTRY_CODE = 'aerobea';
-
-export function getCountryByCode(code: string): CountryTimeline | undefined {
-  return COUNTRIES.find(country => country.code === code);
-}
+export const BOOTSTRAP_DEFAULT_COUNTRY_CODE = 'aerobea';
