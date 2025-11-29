@@ -884,8 +884,8 @@ const AdminCountryEditorClient = ({
   };
 
   const saveDraft = useCallback(
-    async (reason: 'manual' | 'auto' = 'manual') => {
-      if (isSaving) return;
+    async (reason: 'manual' | 'auto' = 'manual'): Promise<AdminCountry | null> => {
+      if (isSaving) return null;
 
       const normalizedDraft = normalizeDraftForSave(draft);
 
@@ -896,7 +896,7 @@ const AdminCountryEditorClient = ({
           type: 'error',
           message: 'Please fix the highlighted issues before saving.',
         });
-        return;
+        return null;
       }
 
       // Capture active indices before save to restore selection after ID regeneration
@@ -934,7 +934,7 @@ const AdminCountryEditorClient = ({
               ? data.error
               : 'Failed to save changes.';
           setStatus({ type: 'error', message });
-          return;
+          return null;
         }
 
         if (!data?.country) {
@@ -942,7 +942,7 @@ const AdminCountryEditorClient = ({
             type: 'error',
             message: 'Unexpected response from the server.',
           });
-          return;
+          return null;
         }
 
         const nextDraft = toCountryDraft(data.country as AdminCountry);
@@ -971,16 +971,34 @@ const AdminCountryEditorClient = ({
         } else {
           router.refresh();
         }
+
+        return data.country as AdminCountry;
       } catch (error) {
         console.error('[admin editor] Failed to save country', error);
         setStatus({
           type: 'error',
           message: 'Something went wrong while saving. Please try again.',
         });
+        return null;
       }
     },
     [draft, isSaving, mode, router, activePresidentId, activeMonarchId]
   );
+
+  const handleViewTimeline = useCallback(async () => {
+    if (mode !== 'edit' || isSaving) return;
+
+    const normalizedDraft = normalizeDraftForSave(draft);
+    let targetCode = normalizedDraft.code;
+
+    if (isDirty) {
+      const saved = await saveDraft('manual');
+      if (!saved) return;
+      targetCode = saved.code;
+    }
+
+    router.push(`/#${targetCode.toLowerCase()}`);
+  }, [draft, isDirty, isSaving, mode, router, saveDraft]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1037,6 +1055,16 @@ const AdminCountryEditorClient = ({
             />
             <span>Autosave</span>
           </label>
+          {mode === 'edit' && (
+            <button
+              className="admin-secondary-button"
+              type="button"
+              onClick={handleViewTimeline}
+              disabled={isSaving}
+            >
+              View Timeline
+            </button>
+          )}
           <button
             className="admin-secondary-button"
             type="button"
