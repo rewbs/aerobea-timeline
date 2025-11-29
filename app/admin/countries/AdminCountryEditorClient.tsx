@@ -105,6 +105,22 @@ const DEFAULT_NAME = 'Unnamed';
 const DEFAULT_PARTY = 'Independent';
 const DEFAULT_CODE = 'new-country';
 
+const MANUAL_DATE_INPUT_PROPS = {
+  type: 'text' as const,
+  inputMode: 'text' as const,
+  spellCheck: false,
+  autoComplete: 'off',
+  placeholder: 'YYYY-MM-DD',
+};
+
+const MANUAL_DATETIME_INPUT_PROPS = {
+  type: 'text' as const,
+  inputMode: 'text' as const,
+  spellCheck: false,
+  autoComplete: 'off',
+  placeholder: 'YYYY-MM-DDTHH:MM',
+};
+
 const cloneDraft = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 
 const areDraftsEqual = (a: CountryDraft, b: CountryDraft): boolean =>
@@ -663,6 +679,16 @@ const AdminCountryEditorClient = ({
     [applyChange]
   );
 
+  const handleClearCountryDate = useCallback(
+    (field: 'end') => () => {
+      applyChange(draft => {
+        draft[field] = '';
+        return draft;
+      });
+    },
+    [applyChange]
+  );
+
   const handleAddPresident = () => {
     applyChange(draft => {
       const newPresident = createEmptyPresident();
@@ -733,6 +759,12 @@ const AdminCountryEditorClient = ({
   const handlePresidentImageChange = (index: number) => (url: string) => {
     updatePresident(index, president => {
       president.imageUrl = url;
+    });
+  };
+
+  const handleClearPresidentDate = (index: number) => () => {
+    updatePresident(index, president => {
+      president.death = '';
     });
   };
 
@@ -836,6 +868,16 @@ const AdminCountryEditorClient = ({
   const handleMonarchImageChange = (index: number) => (url: string) => {
     updateMonarch(index, monarch => {
       monarch.imageUrl = url;
+    });
+  };
+
+  const handleClearMonarchDate = (
+    index: number,
+    field: 'death' | 'end_reign'
+  ) => () => {
+    updateMonarch(index, monarch => {
+      // @ts-ignore - dynamic key access
+      monarch[field] = '';
     });
   };
 
@@ -1112,16 +1154,26 @@ const AdminCountryEditorClient = ({
           <label>
             <span>Timeline start</span>
             <input
-              type="date"
+              {...MANUAL_DATE_INPUT_PROPS}
               value={draft.start}
               onChange={handleCountryFieldChange('start')}
               required
             />
           </label>
           <label>
-            <span>Timeline end</span>
+            <div className="admin-label-row">
+              <span>Timeline end</span>
+              <button
+                type="button"
+                className="admin-text-button admin-clear-button"
+                onClick={handleClearCountryDate('end')}
+                disabled={!draft.end}
+              >
+                Clear
+              </button>
+            </div>
             <input
-              type="date"
+              {...MANUAL_DATE_INPUT_PROPS}
               value={draft.end}
               onChange={handleCountryFieldChange('end')}
               placeholder="Leave blank if ongoing"
@@ -1235,16 +1287,26 @@ const AdminCountryEditorClient = ({
                 <label>
                   <span>Birth date</span>
                   <input
-                    type="date"
+                    {...MANUAL_DATE_INPUT_PROPS}
                     value={president.birth}
                     onChange={handlePresidentFieldChange(index, 'birth')}
                     required
                   />
                 </label>
                 <label>
-                  <span>Death date</span>
+                  <div className="admin-label-row">
+                    <span>Death date</span>
+                    <button
+                      type="button"
+                      className="admin-text-button admin-clear-button"
+                      onClick={handleClearPresidentDate(index)}
+                      disabled={!president.death}
+                    >
+                      Clear
+                    </button>
+                  </div>
                   <input
-                    type="date"
+                    {...MANUAL_DATE_INPUT_PROPS}
                     value={president.death}
                     onChange={handlePresidentFieldChange(index, 'death')}
                     placeholder="Leave blank if alive"
@@ -1287,7 +1349,7 @@ const AdminCountryEditorClient = ({
                         <label>
                           <span>Date &amp; time</span>
                           <input
-                            type="datetime-local"
+                            {...MANUAL_DATETIME_INPUT_PROPS}
                             value={event.date}
                             onChange={handleEventFieldChange(
                               index,
@@ -1436,16 +1498,26 @@ const AdminCountryEditorClient = ({
                 <label>
                   <span>Birth date</span>
                   <input
-                    type="date"
+                    {...MANUAL_DATE_INPUT_PROPS}
                     value={monarch.birth}
                     onChange={handleMonarchFieldChange(index, 'birth')}
                     required
                   />
                 </label>
                 <label>
-                  <span>Death date</span>
+                  <div className="admin-label-row">
+                    <span>Death date</span>
+                    <button
+                      type="button"
+                      className="admin-text-button admin-clear-button"
+                      onClick={handleClearMonarchDate(index, 'death')}
+                      disabled={!monarch.death}
+                    >
+                      Clear
+                    </button>
+                  </div>
                   <input
-                    type="date"
+                    {...MANUAL_DATE_INPUT_PROPS}
                     value={monarch.death}
                     onChange={handleMonarchFieldChange(index, 'death')}
                     placeholder="Leave blank if alive"
@@ -1454,16 +1526,26 @@ const AdminCountryEditorClient = ({
                 <label>
                   <span>Reign starts</span>
                   <input
-                    type="date"
+                    {...MANUAL_DATE_INPUT_PROPS}
                     value={monarch.start_reign}
                     onChange={handleMonarchFieldChange(index, 'start_reign')}
                     required
                   />
                 </label>
                 <label>
-                  <span>Reign ends</span>
+                  <div className="admin-label-row">
+                    <span>Reign ends</span>
+                    <button
+                      type="button"
+                      className="admin-text-button admin-clear-button"
+                      onClick={handleClearMonarchDate(index, 'end_reign')}
+                      disabled={!monarch.end_reign}
+                    >
+                      Clear
+                    </button>
+                  </div>
                   <input
-                    type="date"
+                    {...MANUAL_DATE_INPUT_PROPS}
                     value={monarch.end_reign}
                     onChange={handleMonarchFieldChange(index, 'end_reign')}
                     placeholder="Leave blank if ongoing"

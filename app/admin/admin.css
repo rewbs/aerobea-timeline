@@ -314,6 +314,13 @@
     letter-spacing: 0.5px;
 }
 
+.admin-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
 .admin-form-grid input,
 .admin-form-grid select,
 .admin-form-grid textarea {
@@ -376,6 +383,22 @@
 
 .admin-text-button:hover {
     color: #ff3232;
+}
+
+.admin-clear-button {
+    color: #9bd1ff;
+    text-decoration: none;
+    padding: 2px 4px;
+    font-size: 0.8rem;
+}
+
+.admin-clear-button:hover:not(:disabled) {
+    color: #c7e5ff;
+}
+
+.admin-clear-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .admin-subsection {
