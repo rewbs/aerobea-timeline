@@ -39,9 +39,15 @@ export function isPresident(date: Date, president: President): boolean {
   begins.sort((a, b) => a.date.getTime() - b.date.getTime());
   ends.sort((a, b) => a.date.getTime() - b.date.getTime());
   const cur = date.getTime();
+  const deathTime = president.death?.getTime();
   for (let i = 0; i < begins.length; i++) {
     const start = begins[i].date.getTime();
-    const end = (ends[i]?.date.getTime() ?? Infinity) - 1;
+    const nextEnd = ends[i]?.date.getTime();
+    const impliedEnd =
+      deathTime !== undefined && (nextEnd === undefined || deathTime < nextEnd)
+        ? deathTime
+        : nextEnd ?? Infinity;
+    const end = impliedEnd - 1;
     if (cur >= start && cur <= end) return true;
   }
   return false;
