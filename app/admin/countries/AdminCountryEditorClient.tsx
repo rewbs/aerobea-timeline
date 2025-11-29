@@ -19,6 +19,7 @@ import {
   DEATH,
   PRESIDENCY_BEGINS,
   PRESIDENCY_ENDS,
+  type EventType,
 } from '../../../lib/timeline';
 import type {
   SerializedMonarch,
