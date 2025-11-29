@@ -105,20 +105,25 @@ const DEFAULT_NAME = 'Unnamed';
 const DEFAULT_PARTY = 'Independent';
 const DEFAULT_CODE = 'new-country';
 
-const MANUAL_DATE_INPUT_PROPS = {
-  type: 'text' as const,
-  inputMode: 'text' as const,
+const DATE_INPUT_PROPS = {
+  type: 'date' as const,
+  inputMode: 'numeric' as const,
   spellCheck: false,
   autoComplete: 'off',
   placeholder: 'YYYY-MM-DD',
+  pattern: '\\d{4}-\\d{2}-\\d{2}',
+  title: 'Use the picker or type a date as YYYY-MM-DD',
 };
 
-const MANUAL_DATETIME_INPUT_PROPS = {
-  type: 'text' as const,
-  inputMode: 'text' as const,
+const DATETIME_INPUT_PROPS = {
+  type: 'datetime-local' as const,
+  inputMode: 'numeric' as const,
   spellCheck: false,
   autoComplete: 'off',
   placeholder: 'YYYY-MM-DDTHH:MM',
+  pattern: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}',
+  title: 'Use the picker or type a date and time as YYYY-MM-DDTHH:MM',
+  step: 60,
 };
 
 const cloneDraft = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
@@ -1154,7 +1159,7 @@ const AdminCountryEditorClient = ({
           <label>
             <span>Timeline start</span>
             <input
-              {...MANUAL_DATE_INPUT_PROPS}
+              {...DATE_INPUT_PROPS}
               value={draft.start}
               onChange={handleCountryFieldChange('start')}
               required
@@ -1173,7 +1178,7 @@ const AdminCountryEditorClient = ({
               </button>
             </div>
             <input
-              {...MANUAL_DATE_INPUT_PROPS}
+              {...DATE_INPUT_PROPS}
               value={draft.end}
               onChange={handleCountryFieldChange('end')}
               placeholder="Leave blank if ongoing"
@@ -1287,7 +1292,7 @@ const AdminCountryEditorClient = ({
                 <label>
                   <span>Birth date</span>
                   <input
-                    {...MANUAL_DATE_INPUT_PROPS}
+                    {...DATE_INPUT_PROPS}
                     value={president.birth}
                     onChange={handlePresidentFieldChange(index, 'birth')}
                     required
@@ -1306,7 +1311,7 @@ const AdminCountryEditorClient = ({
                     </button>
                   </div>
                   <input
-                    {...MANUAL_DATE_INPUT_PROPS}
+                    {...DATE_INPUT_PROPS}
                     value={president.death}
                     onChange={handlePresidentFieldChange(index, 'death')}
                     placeholder="Leave blank if alive"
@@ -1349,7 +1354,7 @@ const AdminCountryEditorClient = ({
                         <label>
                           <span>Date &amp; time</span>
                           <input
-                            {...MANUAL_DATETIME_INPUT_PROPS}
+                            {...DATETIME_INPUT_PROPS}
                             value={event.date}
                             onChange={handleEventFieldChange(
                               index,
@@ -1498,7 +1503,7 @@ const AdminCountryEditorClient = ({
                 <label>
                   <span>Birth date</span>
                   <input
-                    {...MANUAL_DATE_INPUT_PROPS}
+                    {...DATE_INPUT_PROPS}
                     value={monarch.birth}
                     onChange={handleMonarchFieldChange(index, 'birth')}
                     required
@@ -1517,7 +1522,7 @@ const AdminCountryEditorClient = ({
                     </button>
                   </div>
                   <input
-                    {...MANUAL_DATE_INPUT_PROPS}
+                    {...DATE_INPUT_PROPS}
                     value={monarch.death}
                     onChange={handleMonarchFieldChange(index, 'death')}
                     placeholder="Leave blank if alive"
@@ -1526,7 +1531,7 @@ const AdminCountryEditorClient = ({
                 <label>
                   <span>Reign starts</span>
                   <input
-                    {...MANUAL_DATE_INPUT_PROPS}
+                    {...DATE_INPUT_PROPS}
                     value={monarch.start_reign}
                     onChange={handleMonarchFieldChange(index, 'start_reign')}
                     required
@@ -1545,7 +1550,7 @@ const AdminCountryEditorClient = ({
                     </button>
                   </div>
                   <input
-                    {...MANUAL_DATE_INPUT_PROPS}
+                    {...DATE_INPUT_PROPS}
                     value={monarch.end_reign}
                     onChange={handleMonarchFieldChange(index, 'end_reign')}
                     placeholder="Leave blank if ongoing"
