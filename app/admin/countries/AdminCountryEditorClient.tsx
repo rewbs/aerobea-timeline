@@ -11,6 +11,10 @@ import {
   useState,
 } from 'react';
 import { useRouter } from 'next/navigation';
+import Editor from 'react-simple-code-editor';
+import Prism from 'prismjs';
+import 'react-simple-code-editor/lib/index.css';
+import 'prismjs/components/prism-json';
 import {
   DEATH,
   PRESIDENCY_BEGINS,
@@ -176,30 +180,6 @@ const eventTypeToNumber = (value: EventTypeString) => {
     default:
       return undefined;
   }
-};
-
-const escapeHtml = (value: string) =>
-  value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-
-const highlightJson = (value: string) => {
-  const escaped = escapeHtml(value);
-  const withStrings = escaped.replace(
-    /(&quot;(?:\\.|[^"\\])*&quot;)(\s*:)?/g,
-    (_match, str: string, colon: string | undefined) =>
-      colon
-        ? `<span class="json-key">${str}</span>${colon}`
-        : `<span class="json-string">${str}</span>`
-  );
-
-  return withStrings
-    .replace(/\b(true|false)\b/g, '<span class="json-boolean">$1</span>')
-    .replace(/\bnull\b/g, '<span class="json-null">null</span>')
-    .replace(/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g, '<span class="json-number">$&</span>');
 };
 
 const formatPresidentsJson = (presidents: PresidentForm[]) =>
@@ -779,8 +759,18 @@ const JsonEditor = ({
   error,
   dirty,
 }: JsonEditorProps) => {
-  const highlighted = useMemo(() => highlightJson(value || ''), [value]);
-  const editorHeight = Math.max(260, value.split('\n').length * 22);
+  const editorHeight = useMemo(
+    () => Math.max(260, value.split('\n').length * 22),
+    [value]
+  );
+  const renderHighlight = useCallback(
+    (code: string) => Prism.highlight(code, Prism.languages.json, 'json'),
+    []
+  );
+  const editorId = useMemo(
+    () => `${title.toLowerCase().replace(/\s+/g, '-')}-json-editor`,
+    [title]
+  );
 
   return (
     <div className="admin-json-editor-block">
@@ -808,18 +798,18 @@ const JsonEditor = ({
         </div>
       </header>
       <div className="admin-code-wrapper">
-        <pre
-          aria-hidden="true"
-          className="admin-code-highlight"
-          style={{ minHeight: editorHeight, height: editorHeight }}
-          dangerouslySetInnerHTML={{ __html: `${highlighted}\n` }}
-        />
-        <textarea
-          className="admin-code-input"
+        <Editor
           value={value}
-          onChange={event => onChange(event.target.value)}
+          onValueChange={onChange}
+          highlight={renderHighlight}
+          padding={14}
+          textareaId={editorId}
+          textareaClassName="admin-code-input"
+          className="admin-code-editor"
+          preClassName="admin-code-pre"
           spellCheck={false}
-          style={{ minHeight: editorHeight, height: editorHeight }}
+          aria-label={`${title} JSON editor`}
+          style={{ minHeight: editorHeight }}
         />
       </div>
       {error && (
@@ -1081,23 +1071,6 @@ const AdminCountryEditorClient = ({
   );
 
   const handleAddPresident = () => {
-    applyChange(draft => {
-      const newPresident = createEmptyPresident();
-      draft.presidents.push(newPresident);
-      // We can't set state inside applyChange callback directly if we want it to be sync with render
-      // But we can use a side effect or just set it after.
-      // However, applyChange is async in terms of React state updates.
-      // Better to set it in a useEffect or use a ref, but for now let's try setting it after.
-      return draft;
-    });
-    // We need to find the ID of the new president. Since we can't easily get it from applyChange return
-    // (it returns the new draft state, but we need the specific ID we just created),
-    // we might need to change how we create it.
-    // Actually, createEmptyPresident generates an ID. Let's generate it outside.
-  };
-
-  // Re-implementing handleAddPresident to capture ID
-  const handleAddPresidentWithId = () => {
     const newPresident = createEmptyPresident();
     applyChange(draft => {
       draft.presidents.push(newPresident);
@@ -1190,13 +1163,6 @@ const AdminCountryEditorClient = ({
       };
 
   const handleAddMonarch = () => {
-    applyChange(draft => {
-      draft.monarchs.push(createEmptyMonarch());
-      return draft;
-    });
-  };
-
-  const handleAddMonarchWithId = () => {
     const newMonarch = createEmptyMonarch();
     applyChange(draft => {
       draft.monarchs.push(newMonarch);
@@ -1553,7 +1519,7 @@ const AdminCountryEditorClient = ({
           <button
             className="admin-secondary-button"
             type="button"
-            onClick={handleAddPresidentWithId}
+            onClick={handleAddPresident}
           >
             + Add President
           </button>
@@ -1771,7 +1737,7 @@ const AdminCountryEditorClient = ({
           <button
             className="admin-secondary-button"
             type="button"
-            onClick={handleAddMonarchWithId}
+            onClick={handleAddMonarch}
           >
             + Add Monarch
           </button>

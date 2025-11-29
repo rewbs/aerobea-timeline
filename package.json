@@ -17,8 +17,10 @@
     "dotenv": "^17.2.3",
     "next": "^16.0.1",
     "openai": "^6.7.0",
+    "prismjs": "^1.30.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-simple-code-editor": "^0.14.1"
   },
   "devDependencies": {
     "@types/node": "^24.9.2",

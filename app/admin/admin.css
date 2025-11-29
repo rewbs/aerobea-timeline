@@ -977,55 +977,47 @@
 }
 
 .admin-code-wrapper {
-    position: relative;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 10px;
     background: #0d1117;
     overflow: hidden;
 }
 
-.admin-code-highlight,
-.admin-code-input {
+.admin-code-editor {
     font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
     font-size: 0.9rem;
     line-height: 1.5;
-    padding: 14px;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.admin-code-highlight {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    color: #a5d6ff;
-    overflow: auto;
-}
-
-.admin-code-input {
-    position: relative;
+    color: #e5e7eb;
     width: 100%;
-    min-height: 260px;
+}
+
+.admin-code-editor textarea.admin-code-input {
+    color: #e5e7eb;
     background: transparent;
-    color: transparent;
     caret-color: #00d4ff;
     border: none;
-    resize: none;
-    overflow: hidden;
-    z-index: 1;
+    outline: none;
+    min-height: 100%;
 }
 
-.admin-code-input:focus {
-    outline: none;
+.admin-code-editor textarea.admin-code-input:focus {
     box-shadow: inset 0 0 0 2px rgba(0, 212, 255, 0.3);
+}
+
+.admin-code-pre {
+    margin: 0;
+    min-height: 100%;
+    color: inherit;
+    background: transparent;
 }
 
 .admin-inline-feedback {
     margin-top: 10px;
 }
 
-.json-key { color: #7dd3fc; }
-.json-string { color: #86efac; }
-.json-number { color: #f9a8d4; }
-.json-boolean { color: #facc15; }
-.json-null { color: #f87171; }
+.admin-code-editor .token.property { color: #7dd3fc; }
+.admin-code-editor .token.string { color: #86efac; }
+.admin-code-editor .token.number { color: #f9a8d4; }
+.admin-code-editor .token.boolean { color: #facc15; }
+.admin-code-editor .token.null { color: #f87171; }
+.admin-code-editor .token.punctuation { color: #9ca3af; }
