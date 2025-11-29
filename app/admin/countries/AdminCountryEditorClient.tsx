@@ -561,7 +561,10 @@ const validateDraft = (draft: CountryDraft): string[] => {
   return errors;
 };
 
-const VALID_EVENT_TYPES = new Set([PRESIDENCY_BEGINS, PRESIDENCY_ENDS, DEATH]);
+const VALID_EVENT_TYPES = new Set<EventType>([PRESIDENCY_BEGINS, PRESIDENCY_ENDS, DEATH]);
+
+const isValidEventType = (value: unknown): value is EventType =>
+  typeof value === 'number' && VALID_EVENT_TYPES.has(value as EventType);
 
 const parseSerializedEvent = (
   value: unknown,
@@ -584,7 +587,7 @@ const parseSerializedEvent = (
 
   let parsedType: EventType | undefined;
   if (value.type !== undefined && value.type !== null) {
-    if (typeof value.type !== 'number' || !VALID_EVENT_TYPES.has(value.type)) {
+    if (!isValidEventType(value.type)) {
       errors.push(
         `${context} has an invalid type; expected one of ${[...VALID_EVENT_TYPES].join(', ')}.`,
       );
