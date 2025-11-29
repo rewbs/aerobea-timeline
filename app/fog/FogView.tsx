@@ -26,7 +26,17 @@ export default function FogView({ countries }: FogViewProps) {
     let min = new Date().getTime();
     let max = new Date().getTime();
     if (countries.length > 0) {
-      min = Math.min(...countries.map(c => c.start.getTime()));
+      const birthTimes = countries.flatMap(country => [
+        ...country.presidents.map(president => president.birth.getTime()),
+        ...country.monarchs.map(monarch => monarch.birth.getTime()),
+      ]);
+
+      if (birthTimes.length > 0) {
+        const earliestBirth = Math.min(...birthTimes);
+        const startDate = new Date(earliestBirth);
+        startDate.setFullYear(startDate.getFullYear() - 1);
+        min = startDate.getTime();
+      }
       // Use current date as max if no end date, or find max end date
       // Actually let's just go to today
     }
@@ -35,6 +45,10 @@ export default function FogView({ countries }: FogViewProps) {
 
   const [currentMs, setCurrentMs] = useState<number>(minDate);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    setCurrentMs(minDate);
+  }, [minDate]);
 
   const currentDate = useMemo(() => new Date(currentMs), [currentMs]);
 
