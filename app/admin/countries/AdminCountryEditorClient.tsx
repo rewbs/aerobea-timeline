@@ -11,211 +11,38 @@ import {
   useState,
 } from 'react';
 import { useRouter } from 'next/navigation';
-import Editor from 'react-simple-code-editor';
-import Prism from 'prismjs';
-import 'react-simple-code-editor/lib/index.css';
-import 'prismjs/components/prism-json';
 import {
-  DEATH,
-  PRESIDENCY_BEGINS,
-  PRESIDENCY_ENDS,
   type EventType,
 } from '../../../lib/timeline';
-import type {
-  SerializedMonarch,
-  SerializedPresident,
-  SerializedTimelineEvent,
-} from '../../../lib/serialize';
 import type { AdminCountry } from '../types';
 import '../admin.css';
 import ImageUploader from '../components/ImageUploader';
 import AiImageModal from '../components/AiImageModal';
-
-const MAX_HISTORY = 20;
-
-type EventTypeString = '' | '1' | '2' | '3';
-
-interface TimelineEventForm {
-  formId: string;
-  date: string;
-  type: EventTypeString;
-  text: string;
-}
-
-interface PresidentForm {
-  formId: string;
-  name: string;
-  party: string;
-  birth: string;
-  death: string;
-  events: TimelineEventForm[];
-  imageUrl?: string;
-}
-
-interface MonarchForm {
-  formId: string;
-  name: string;
-  birth: string;
-  death: string;
-  start_reign: string;
-  end_reign: string;
-  death_cause: string;
-  notes: string;
-  imageUrl?: string;
-}
-
-interface CountryDraft {
-  id?: number;
-  code: string;
-  name: string;
-  start: string;
-  end: string;
-  presidents: PresidentForm[];
-  monarchs: MonarchForm[];
-}
-
-type EditorMode = 'create' | 'edit';
+import {
+  CountryDraft,
+  EditorMode,
+  EventTypeString,
+  MonarchForm,
+  PresidentForm,
+  SaveStatus,
+  TimelineEventForm,
+  areDraftsEqual,
+  buildPayload,
+  cloneDraft,
+  createEmptyEvent,
+  createEmptyMonarch,
+  createEmptyPresident,
+  eventTypeOptions,
+  normalizeDraftForSave,
+  toCountryDraft,
+  validateDraft,
+  MAX_HISTORY,
+} from './shared';
 
 interface AdminCountryEditorClientProps {
   mode: EditorMode;
   initialCountry?: AdminCountry;
 }
-
-interface SaveStatus {
-  type: 'idle' | 'saving' | 'success' | 'error';
-  message?: string;
-}
-
-interface JsonEditorProps {
-  title: string;
-  description: string;
-  value: string;
-  onChange: (value: string) => void;
-  onApply: () => void;
-  onReset: () => void;
-  error?: string | null;
-  dirty: boolean;
-}
-
-const eventTypeOptions: Array<{ value: EventTypeString; label: string }> = [
-  { value: '', label: 'General' },
-  { value: '1', label: 'Presidency Begins' },
-  { value: '2', label: 'Presidency Ends' },
-  { value: '3', label: 'Death' },
-];
-
-const isObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
-
-const isString = (value: unknown): value is string => typeof value === 'string';
-
-const createId = () =>
-  typeof crypto !== 'undefined' && crypto.randomUUID
-    ? crypto.randomUUID()
-    : Math.random().toString(36).slice(2, 12);
-
-const DEFAULT_DATE = '1800-01-01';
-const DEFAULT_DATETIME = '1800-01-01T00:00';
-const DEFAULT_EVENT_TEXT = 'Details pending';
-const DEFAULT_NAME = 'Unnamed';
-const DEFAULT_PARTY = 'Independent';
-const DEFAULT_CODE = 'new-country';
-
-const cloneDraft = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
-
-const areDraftsEqual = (a: CountryDraft, b: CountryDraft): boolean =>
-  JSON.stringify(a) === JSON.stringify(b);
-
-const toDateInputValue = (value: string | null): string =>
-  value ? value.slice(0, 10) : '';
-
-const toDateTimeInputValue = (value: string): string =>
-  value ? value.slice(0, 16) : '';
-
-const createEmptyEvent = (): TimelineEventForm => ({
-  formId: createId(),
-  date: '',
-  type: '',
-  text: '',
-});
-
-const createEmptyPresident = (): PresidentForm => ({
-  formId: createId(),
-  name: '',
-  party: '',
-  birth: '',
-  death: '',
-  events: [],
-  imageUrl: undefined,
-});
-
-const createEmptyMonarch = (): MonarchForm => ({
-  formId: createId(),
-  name: '',
-  birth: '',
-  death: '',
-  start_reign: '',
-  end_reign: '',
-  death_cause: '',
-  notes: '',
-  imageUrl: undefined,
-});
-
-const createEmptyDraft = (): CountryDraft => ({
-  code: '',
-  name: '',
-  start: '',
-  end: '',
-  presidents: [],
-  monarchs: [],
-});
-
-const eventTypeToNumber = (value: EventTypeString) => {
-  if (!value) return undefined;
-  const parsed = Number(value);
-  switch (parsed) {
-    case PRESIDENCY_BEGINS:
-    case PRESIDENCY_ENDS:
-    case DEATH:
-      return parsed;
-    default:
-      return undefined;
-  }
-};
-
-const formatPresidentsJson = (presidents: PresidentForm[]) =>
-  JSON.stringify(
-    presidents.map(president => ({
-      name: president.name,
-      party: president.party,
-      birth: president.birth,
-      death: president.death || null,
-      events: president.events.map(event => ({
-        date: event.date,
-        type: eventTypeToNumber(event.type),
-        text: event.text,
-      })),
-      imageUrl: president.imageUrl,
-    })),
-    null,
-    2
-  );
-
-const formatMonarchsJson = (monarchs: MonarchForm[]) =>
-  JSON.stringify(
-    monarchs.map(monarch => ({
-      name: monarch.name,
-      birth: monarch.birth,
-      death: monarch.death || null,
-      start_reign: monarch.start_reign,
-      end_reign: monarch.end_reign || null,
-      death_cause: monarch.death_cause || null,
-      notes: monarch.notes || undefined,
-      imageUrl: monarch.imageUrl,
-    })),
-    null,
-    2
-  );
 
 const IMAGE_BASES = [''];
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
@@ -278,553 +105,6 @@ const useEntityImage = (name: string) => {
   return { imageUrl, status };
 };
 
-const AdminEntityImagePreview = ({
-  name,
-  label,
-}: {
-  name: string;
-  label: string;
-}) => {
-  const { imageUrl, status } = useEntityImage(name);
-
-  const placeholder =
-    name.trim().length < 3
-      ? 'Enter a name to look for a matching image.'
-      : status === 'loading'
-        ? 'Searching image library…'
-        : 'No matching image found.';
-
-  return (
-    <div className="admin-entity-image" aria-live="polite">
-      {imageUrl ? (
-        <>
-          <img
-            alt={`${label} portrait for ${name}`}
-            src={imageUrl}
-            loading="lazy"
-          />
-          <span className="admin-entity-image-caption">
-            Auto-detected from /public
-          </span>
-        </>
-      ) : (
-        <div className="admin-entity-image-placeholder">{placeholder}</div>
-      )}
-    </div>
-  );
-};
-
-const isSerializedEvent = (
-  value: unknown
-): value is SerializedTimelineEvent =>
-  isObject(value) && isString(value.date) && isString(value.text);
-
-const isSerializedPresident = (
-  value: unknown
-): value is SerializedPresident =>
-  isObject(value) &&
-  isString(value.name) &&
-  isString(value.party) &&
-  isString(value.birth) &&
-  Array.isArray(value.events) &&
-  value.events.every(isSerializedEvent);
-
-const isSerializedMonarch = (value: unknown): value is SerializedMonarch =>
-  isObject(value) &&
-  isString(value.name) &&
-  isString(value.birth) &&
-  isString(value.start_reign);
-
-const toEventForm = (event: SerializedTimelineEvent): TimelineEventForm => ({
-  formId: createId(),
-  date: toDateTimeInputValue(event.date),
-  type: typeof event.type === 'number' ? String(event.type) as EventTypeString : '',
-  text: event.text,
-});
-
-const toPresidentForm = (president: SerializedPresident): PresidentForm => ({
-  formId: createId(),
-  name: president.name,
-  party: president.party,
-  birth: toDateInputValue(president.birth),
-  death: president.death ? toDateInputValue(president.death) : '',
-  events: president.events.map(toEventForm),
-  imageUrl: president.imageUrl,
-});
-
-const toMonarchForm = (monarch: SerializedMonarch): MonarchForm => ({
-  formId: createId(),
-  name: monarch.name,
-  birth: toDateInputValue(monarch.birth),
-  death: monarch.death ? toDateInputValue(monarch.death) : '',
-  start_reign: toDateInputValue(monarch.start_reign),
-  end_reign: monarch.end_reign ? toDateInputValue(monarch.end_reign) : '',
-  death_cause: monarch.death_cause ?? '',
-  notes: monarch.notes ?? '',
-  imageUrl: monarch.imageUrl,
-});
-
-const toCountryDraft = (country?: AdminCountry): CountryDraft => {
-  if (!country) return createEmptyDraft();
-  const presidentsSource = Array.isArray(country.presidents)
-    ? (country.presidents as unknown[])
-    : [];
-  const monarchsSource = Array.isArray(country.monarchs)
-    ? (country.monarchs as unknown[])
-    : [];
-
-  const presidents = presidentsSource
-    .filter(isSerializedPresident)
-    .map(toPresidentForm);
-  const monarchs = monarchsSource
-    .filter(isSerializedMonarch)
-    .map(toMonarchForm);
-
-  return {
-    id: country.id,
-    code: country.code,
-    name: country.name,
-    start: toDateInputValue(country.start),
-    end: toDateInputValue(country.end),
-    presidents,
-    monarchs,
-  };
-};
-
-const isValidDateValue = (value: string): boolean =>
-  Boolean(value) && !Number.isNaN(Date.parse(value));
-
-const toIsoOrNull = (value: string): string | null =>
-  value ? new Date(value).toISOString() : null;
-
-const buildPayload = (draft: CountryDraft) => ({
-  id: draft.id,
-  code: draft.code.trim(),
-  name: draft.name.trim(),
-  start: draft.start,
-  end: draft.end || null,
-  presidents: draft.presidents.map(president => ({
-    name: president.name.trim(),
-    party: president.party.trim(),
-    birth: president.birth,
-    death: president.death || null,
-    events: president.events.map(event => ({
-      date: event.date,
-      type: eventTypeToNumber(event.type),
-      text: event.text.trim(),
-    })),
-    imageUrl: president.imageUrl,
-  })),
-  monarchs: draft.monarchs.map(monarch => ({
-    name: monarch.name.trim(),
-    birth: monarch.birth,
-    death: monarch.death || null,
-    start_reign: monarch.start_reign,
-    end_reign: monarch.end_reign || null,
-    death_cause: monarch.death_cause.trim() || null,
-    notes: monarch.notes.trim() || undefined,
-    imageUrl: monarch.imageUrl,
-  })),
-});
-
-const ensureDateValue = (value: string, fallback: string): string =>
-  isValidDateValue(value) ? value : fallback;
-
-const ensureDateTimeValue = (value: string, fallback: string): string =>
-  isValidDateValue(value) ? value : fallback;
-
-const ensureTextValue = (value: string, fallback: string): string =>
-  value.trim() || fallback;
-
-const normalizeDraftForSave = (draft: CountryDraft): CountryDraft => {
-  const normalizeCode = (value: string) => {
-    const trimmed = value.trim();
-    if (trimmed) return trimmed.toLowerCase();
-    const nameAsCode = draft.name.trim().toLowerCase().replace(/\s+/g, '-');
-    return nameAsCode || DEFAULT_CODE;
-  };
-
-  const normalizeEvent = (event: TimelineEventForm): TimelineEventForm => ({
-    ...event,
-    date: ensureDateTimeValue(event.date, DEFAULT_DATETIME),
-    text: ensureTextValue(event.text, DEFAULT_EVENT_TEXT),
-  });
-
-  const normalizePresident = (president: PresidentForm): PresidentForm => ({
-    ...president,
-    name: ensureTextValue(president.name, DEFAULT_NAME),
-    party: ensureTextValue(president.party, DEFAULT_PARTY),
-    birth: ensureDateValue(president.birth, DEFAULT_DATE),
-    death: president.death && !isValidDateValue(president.death)
-      ? DEFAULT_DATE
-      : president.death,
-    events: president.events.map(normalizeEvent),
-    imageUrl: president.imageUrl,
-  });
-
-  const normalizeMonarch = (monarch: MonarchForm): MonarchForm => ({
-    ...monarch,
-    name: ensureTextValue(monarch.name, DEFAULT_NAME),
-    birth: ensureDateValue(monarch.birth, DEFAULT_DATE),
-    death:
-      monarch.death && !isValidDateValue(monarch.death)
-        ? DEFAULT_DATE
-        : monarch.death,
-    start_reign: ensureDateValue(monarch.start_reign, DEFAULT_DATE),
-    end_reign:
-      monarch.end_reign && !isValidDateValue(monarch.end_reign)
-        ? DEFAULT_DATE
-        : monarch.end_reign,
-    death_cause: monarch.death_cause,
-    notes: monarch.notes,
-    imageUrl: monarch.imageUrl,
-  });
-
-  const start = ensureDateValue(draft.start, DEFAULT_DATE);
-  const end = draft.end && !isValidDateValue(draft.end) ? DEFAULT_DATE : draft.end;
-
-  return {
-    ...draft,
-    code: normalizeCode(draft.code),
-    name: ensureTextValue(draft.name, DEFAULT_NAME),
-    start,
-    end,
-    presidents: draft.presidents.map(normalizePresident),
-    monarchs: draft.monarchs.map(normalizeMonarch),
-  };
-};
-
-const validateDraft = (draft: CountryDraft): string[] => {
-  const errors: string[] = [];
-
-  if (!draft.code.trim()) {
-    errors.push('Country code is required.');
-  }
-
-  if (!draft.name.trim()) {
-    errors.push('Country name is required.');
-  }
-
-  if (!isValidDateValue(draft.start)) {
-    errors.push('A valid start date is required.');
-  }
-
-  if (draft.end && !isValidDateValue(draft.end)) {
-    errors.push('End date must be a valid date or left blank.');
-  }
-
-  draft.presidents.forEach((president, index) => {
-    if (!president.name.trim()) {
-      errors.push(`President ${index + 1}: name is required.`);
-    }
-    if (!president.party.trim()) {
-      errors.push(`President ${index + 1}: party is required.`);
-    }
-    if (!isValidDateValue(president.birth)) {
-      errors.push(`President ${index + 1}: birth date is required.`);
-    }
-    if (president.death && !isValidDateValue(president.death)) {
-      errors.push(`President ${index + 1}: death date must be valid or blank.`);
-    }
-    president.events.forEach((event, eventIndex) => {
-      if (!isValidDateValue(event.date)) {
-        errors.push(
-          `President ${index + 1}, event ${eventIndex + 1}: event date is required.`
-        );
-      }
-      if (!event.text.trim()) {
-        errors.push(
-          `President ${index + 1}, event ${eventIndex + 1}: description is required.`
-        );
-      }
-    });
-  });
-
-  draft.monarchs.forEach((monarch, index) => {
-    if (!monarch.name.trim()) {
-      errors.push(`Monarch ${index + 1}: name is required.`);
-    }
-    if (!isValidDateValue(monarch.birth)) {
-      errors.push(`Monarch ${index + 1}: birth date is required.`);
-    }
-    if (monarch.death && !isValidDateValue(monarch.death)) {
-      errors.push(`Monarch ${index + 1}: death date must be valid or blank.`);
-    }
-    if (!isValidDateValue(monarch.start_reign)) {
-      errors.push(`Monarch ${index + 1}: reign start date is required.`);
-    }
-    if (monarch.end_reign && !isValidDateValue(monarch.end_reign)) {
-      errors.push(`Monarch ${index + 1}: reign end date must be valid or blank.`);
-    }
-  });
-
-  return errors;
-};
-
-const VALID_EVENT_TYPES = new Set<EventType>([PRESIDENCY_BEGINS, PRESIDENCY_ENDS, DEATH]);
-
-const isValidEventType = (value: unknown): value is EventType =>
-  typeof value === 'number' && VALID_EVENT_TYPES.has(value as EventType);
-
-const parseSerializedEvent = (
-  value: unknown,
-  context: string,
-  errors: string[]
-): SerializedTimelineEvent | null => {
-  const initialErrorCount = errors.length;
-  if (!isObject(value)) {
-    errors.push(`${context} must be an object.`);
-    return null;
-  }
-
-  if (!isString(value.date) || !isValidDateValue(value.date)) {
-    errors.push(`${context} requires a valid date string.`);
-  }
-
-  if (!isString(value.text) || !value.text.trim()) {
-    errors.push(`${context} requires event text.`);
-  }
-
-  let parsedType: EventType | undefined;
-  if (value.type !== undefined && value.type !== null) {
-    if (!isValidEventType(value.type)) {
-      errors.push(
-        `${context} has an invalid type; expected one of ${[...VALID_EVENT_TYPES].join(', ')}.`,
-      );
-    } else {
-      parsedType = value.type as EventType;
-    }
-  }
-
-  if (errors.length !== initialErrorCount) return null;
-
-  return {
-    date: value.date as string,
-    ...(parsedType !== undefined ? { type: parsedType } : {}),
-    text: value.text as string,
-  };
-};
-
-const parseSerializedPresident = (
-  value: unknown,
-  index: number,
-  errors: string[]
-): SerializedPresident | null => {
-  const initialErrorCount = errors.length;
-  if (!isObject(value)) {
-    errors.push(`President ${index + 1} must be an object.`);
-    return null;
-  }
-
-  if (!isString(value.name) || !value.name.trim()) {
-    errors.push(`President ${index + 1} requires a name.`);
-  }
-
-  if (!isString(value.party) || !value.party.trim()) {
-    errors.push(`President ${index + 1} requires a party value.`);
-  }
-
-  if (!isString(value.birth) || !isValidDateValue(value.birth)) {
-    errors.push(`President ${index + 1} requires a valid birth date.`);
-  }
-
-  const events: SerializedTimelineEvent[] = [];
-  if (!Array.isArray(value.events)) {
-    errors.push(`President ${index + 1} must include an events array.`);
-  } else {
-    value.events.forEach((event, eventIndex) => {
-      const parsed = parseSerializedEvent(
-        event,
-        `President ${index + 1} event ${eventIndex + 1}`,
-        errors
-      );
-      if (parsed) {
-        events.push(parsed);
-      }
-    });
-  }
-
-  if (errors.length !== initialErrorCount) return null;
-
-  return {
-    name: value.name as string,
-    party: value.party as string,
-    birth: value.birth as string,
-    death: isString(value.death) ? value.death : null,
-    events,
-    imageUrl: isString(value.imageUrl) ? value.imageUrl : undefined,
-  };
-};
-
-const parseSerializedMonarch = (
-  value: unknown,
-  index: number,
-  errors: string[]
-): SerializedMonarch | null => {
-  const initialErrorCount = errors.length;
-  if (!isObject(value)) {
-    errors.push(`Monarch ${index + 1} must be an object.`);
-    return null;
-  }
-
-  if (!isString(value.name) || !value.name.trim()) {
-    errors.push(`Monarch ${index + 1} requires a name.`);
-  }
-
-  if (!isString(value.birth) || !isValidDateValue(value.birth)) {
-    errors.push(`Monarch ${index + 1} requires a valid birth date.`);
-  }
-
-  if (!isString(value.start_reign) || !isValidDateValue(value.start_reign)) {
-    errors.push(`Monarch ${index + 1} requires a valid reign start date.`);
-  }
-
-  const endReign = value.end_reign;
-  if (endReign && (!isString(endReign) || !isValidDateValue(endReign))) {
-    errors.push(`Monarch ${index + 1} has an invalid reign end date.`);
-  }
-
-  const death = value.death;
-  if (death && (!isString(death) || !isValidDateValue(death))) {
-    errors.push(`Monarch ${index + 1} has an invalid death date.`);
-  }
-
-  if (value.death_cause && !isString(value.death_cause)) {
-    errors.push(`Monarch ${index + 1} has an invalid death cause.`);
-  }
-
-  if (value.notes && !isString(value.notes)) {
-    errors.push(`Monarch ${index + 1} has invalid notes (must be text).`);
-  }
-
-  if (errors.length !== initialErrorCount) return null;
-
-  return {
-    name: value.name as string,
-    birth: value.birth as string,
-    death: isString(death) ? death : null,
-    start_reign: value.start_reign as string,
-    end_reign: isString(endReign) ? endReign : null,
-    death_cause: isString(value.death_cause) ? value.death_cause : null,
-    notes: isString(value.notes) ? value.notes : undefined,
-    imageUrl: isString(value.imageUrl) ? value.imageUrl : undefined,
-  };
-};
-
-const parseSerializedPresidents = (json: string): SerializedPresident[] => {
-  const parsed = JSON.parse(json);
-  if (!Array.isArray(parsed)) {
-    throw new Error('Presidents JSON must be an array of president objects.');
-  }
-
-  const errors: string[] = [];
-  const presidents = parsed
-    .map((value, index) => parseSerializedPresident(value, index, errors))
-    .filter((value): value is SerializedPresident => Boolean(value));
-
-  if (errors.length) {
-    throw new Error(errors.join(' '));
-  }
-
-  return presidents;
-};
-
-const parseSerializedMonarchs = (json: string): SerializedMonarch[] => {
-  const parsed = JSON.parse(json);
-  if (!Array.isArray(parsed)) {
-    throw new Error('Monarchs JSON must be an array of monarch objects.');
-  }
-
-  const errors: string[] = [];
-  const monarchs = parsed
-    .map((value, index) => parseSerializedMonarch(value, index, errors))
-    .filter((value): value is SerializedMonarch => Boolean(value));
-
-  if (errors.length) {
-    throw new Error(errors.join(' '));
-  }
-
-  return monarchs;
-};
-
-const parsePresidentsJson = (json: string): PresidentForm[] =>
-  parseSerializedPresidents(json).map(toPresidentForm);
-
-const parseMonarchsJson = (json: string): MonarchForm[] =>
-  parseSerializedMonarchs(json).map(toMonarchForm);
-
-const JsonEditor = ({
-  title,
-  description,
-  value,
-  onChange,
-  onApply,
-  onReset,
-  error,
-  dirty,
-}: JsonEditorProps) => {
-  const editorHeight = useMemo(
-    () => Math.max(260, value.split('\n').length * 22),
-    [value]
-  );
-  const renderHighlight = useCallback(
-    (code: string) => Prism.highlight(code, Prism.languages.json, 'json'),
-    []
-  );
-  const editorId = useMemo(
-    () => `${title.toLowerCase().replace(/\s+/g, '-')}-json-editor`,
-    [title]
-  );
-
-  return (
-    <div className="admin-json-editor-block">
-      <header className="admin-json-editor-header">
-        <div>
-          <h3>{title}</h3>
-          <p>{description}</p>
-        </div>
-        <div className="admin-json-editor-actions">
-          <button
-            type="button"
-            className="admin-secondary-button"
-            onClick={onReset}
-            disabled={!dirty}
-          >
-            Reset to form
-          </button>
-          <button
-            type="button"
-            className="admin-primary-button"
-            onClick={onApply}
-          >
-            Apply JSON
-          </button>
-        </div>
-      </header>
-      <div className="admin-code-wrapper">
-        <Editor
-          value={value}
-          onValueChange={onChange}
-          highlight={renderHighlight}
-          padding={14}
-          textareaId={editorId}
-          textareaClassName="admin-code-input"
-          className="admin-code-editor"
-          preClassName="admin-code-pre"
-          spellCheck={false}
-          aria-label={`${title} JSON editor`}
-          style={{ minHeight: editorHeight }}
-        />
-      </div>
-      {error && (
-        <div className="admin-feedback admin-feedback-error admin-inline-feedback" role="alert">
-          {error}
-        </div>
-      )}
-    </div>
-  );
-};
-
 const AdminCountryEditorClient = ({
   mode,
   initialCountry,
@@ -849,18 +129,6 @@ const AdminCountryEditorClient = ({
     initialDraft.monarchs[0]?.formId || null
   );
   const [immediateSavePending, setImmediateSavePending] = useState(false);
-  const [presidentsJson, setPresidentsJson] = useState(() =>
-    formatPresidentsJson(initialDraft.presidents)
-  );
-  const [monarchsJson, setMonarchsJson] = useState(() =>
-    formatMonarchsJson(initialDraft.monarchs)
-  );
-  const [presidentsJsonError, setPresidentsJsonError] = useState<string | null>(
-    null
-  );
-  const [monarchsJsonError, setMonarchsJsonError] = useState<string | null>(null);
-  const [isPresidentsJsonDirty, setIsPresidentsJsonDirty] = useState(false);
-  const [isMonarchsJsonDirty, setIsMonarchsJsonDirty] = useState(false);
 
   // AI Modal State
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -915,25 +183,12 @@ const AdminCountryEditorClient = ({
     if (activePresidentIndex !== -1 && initialDraft.presidents[activePresidentIndex]) {
       setActivePresidentId(initialDraft.presidents[activePresidentIndex].formId);
     } else if (initialDraft.presidents.length > 0 && !activePresidentIdRef.current) {
-      // Fallback to first if no selection existed (or if it was lost), but only if we didn't have one before?
-      // Actually, the original logic was: if (draft.presidents.length > 0 && !activePresidentId) setActivePresidentId(...)
-      // We can rely on the other useEffects for the "no selection" case, but let's be explicit here to match the "restore" intent.
-      // If we had a selection and lost it (index out of bounds?), we might want to default to something.
-      // But for now, just restoring by index is the goal.
+      // Fallback to first if no selection existed (or if it was lost)
     }
 
     if (activeMonarchIndex !== -1 && initialDraft.monarchs[activeMonarchIndex]) {
       setActiveMonarchId(initialDraft.monarchs[activeMonarchIndex].formId);
     }
-  }, [initialDraft]);
-
-  useEffect(() => {
-    setPresidentsJson(formatPresidentsJson(initialDraft.presidents));
-    setMonarchsJson(formatMonarchsJson(initialDraft.monarchs));
-    setPresidentsJsonError(null);
-    setMonarchsJsonError(null);
-    setIsPresidentsJsonDirty(false);
-    setIsMonarchsJsonDirty(false);
   }, [initialDraft]);
 
   const isDirty = useMemo(
@@ -944,18 +199,6 @@ const AdminCountryEditorClient = ({
       ),
     [draft, baseline]
   );
-
-  useEffect(() => {
-    if (!isPresidentsJsonDirty) {
-      setPresidentsJson(formatPresidentsJson(draft.presidents));
-    }
-  }, [draft.presidents, isPresidentsJsonDirty]);
-
-  useEffect(() => {
-    if (!isMonarchsJsonDirty) {
-      setMonarchsJson(formatMonarchsJson(draft.monarchs));
-    }
-  }, [draft.monarchs, isMonarchsJsonDirty]);
 
   const applyChange = useCallback(
     (updater: (current: CountryDraft) => CountryDraft) => {
@@ -993,71 +236,7 @@ const AdminCountryEditorClient = ({
     setHistory([]);
     setValidationErrors([]);
     setStatus({ type: 'idle' });
-    setPresidentsJson(formatPresidentsJson(baseline.presidents));
-    setMonarchsJson(formatMonarchsJson(baseline.monarchs));
-    setIsPresidentsJsonDirty(false);
-    setIsMonarchsJsonDirty(false);
-    setPresidentsJsonError(null);
-    setMonarchsJsonError(null);
   }, [baseline]);
-
-  const handlePresidentsJsonChange = useCallback((value: string) => {
-    setPresidentsJson(value);
-    setIsPresidentsJsonDirty(true);
-    setPresidentsJsonError(null);
-  }, []);
-
-  const handleMonarchsJsonChange = useCallback((value: string) => {
-    setMonarchsJson(value);
-    setIsMonarchsJsonDirty(true);
-    setMonarchsJsonError(null);
-  }, []);
-
-  const handleApplyPresidentsJson = useCallback(() => {
-    try {
-      const parsed = parsePresidentsJson(presidentsJson);
-      applyChange(draft => {
-        draft.presidents = parsed;
-        return draft;
-      });
-      setActivePresidentId(parsed[0]?.formId || null);
-      setPresidentsJsonError(null);
-      setIsPresidentsJsonDirty(false);
-    } catch (error) {
-      setPresidentsJsonError(
-        error instanceof Error ? error.message : 'Invalid presidents JSON.'
-      );
-    }
-  }, [applyChange, presidentsJson]);
-
-  const handleApplyMonarchsJson = useCallback(() => {
-    try {
-      const parsed = parseMonarchsJson(monarchsJson);
-      applyChange(draft => {
-        draft.monarchs = parsed;
-        return draft;
-      });
-      setActiveMonarchId(parsed[0]?.formId || null);
-      setMonarchsJsonError(null);
-      setIsMonarchsJsonDirty(false);
-    } catch (error) {
-      setMonarchsJsonError(
-        error instanceof Error ? error.message : 'Invalid monarchs JSON.'
-      );
-    }
-  }, [applyChange, monarchsJson]);
-
-  const handleResetPresidentsJson = useCallback(() => {
-    setPresidentsJson(formatPresidentsJson(draft.presidents));
-    setIsPresidentsJsonDirty(false);
-    setPresidentsJsonError(null);
-  }, [draft.presidents]);
-
-  const handleResetMonarchsJson = useCallback(() => {
-    setMonarchsJson(formatMonarchsJson(draft.monarchs));
-    setIsMonarchsJsonDirty(false);
-    setMonarchsJsonError(null);
-  }, [draft.monarchs]);
 
   const handleCountryFieldChange = useCallback(
     (field: 'code' | 'name' | 'start' | 'end') =>
@@ -1091,10 +270,7 @@ const AdminCountryEditorClient = ({
     });
     if (presidentToRemove.formId === activePresidentId) {
       // If we removed the active one, switch to the previous one, or the first one, or null
-      const newIndex = Math.max(0, index - 1);
-      // We need to wait for the draft to update to get the new list, 
-      // but we can predict it from the current draft.
-      // Actually, let's just set it to null and let the useEffect pick the first one if available.
+      // We rely on useEffect to pick a new one if needed
       setActivePresidentId(null);
     }
   };
@@ -1227,48 +403,6 @@ const AdminCountryEditorClient = ({
   };
 
   const isSaving = status.type === 'saving';
-
-  const presidentSummaries = useMemo(
-    () =>
-      draft.presidents.map((president, index) => {
-        const emptyEvents = president.events.filter(
-          event => !event.date || !event.text.trim()
-        );
-
-        return {
-          formId: president.formId,
-          label: president.name.trim() || `President ${index + 1}`,
-          emptyEvents,
-        };
-      }),
-    [draft.presidents]
-  );
-
-  const firstEmptyEvent = useMemo(() => {
-    for (const president of draft.presidents) {
-      for (const event of president.events) {
-        if (!event.date || !event.text.trim()) {
-          return { presidentId: president.formId, eventId: event.formId };
-        }
-      }
-    }
-    return null;
-  }, [draft.presidents]);
-
-  const scrollToPresident = (formId: string) => {
-    const element = presidentRefs.current[formId];
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  const scrollToEvent = (presidentId: string, eventId: string) => {
-    scrollToPresident(presidentId);
-    const element = eventRefs.current[eventId];
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
 
   const saveDraft = useCallback(
     async (reason: 'manual' | 'auto' = 'manual') => {
@@ -1414,6 +548,14 @@ const AdminCountryEditorClient = ({
           <span>{mode === 'edit' ? draft.name || 'Edit Country' : 'New Country'}</span>
         </div>
         <div className="admin-editor-actions">
+          {mode === 'edit' && draft.id && (
+            <Link
+              href={`/admin/countries/${draft.id}/json`}
+              className="admin-secondary-button"
+            >
+              Edit JSON
+            </Link>
+          )}
           <label className="admin-toggle">
             <input
               type="checkbox"
@@ -1471,8 +613,6 @@ const AdminCountryEditorClient = ({
           </ul>
         </div>
       )}
-
-      {/* Quick nav removed in favor of tabs */}
 
       <section className="admin-editor-section">
         <h2>Country details</h2>
@@ -1578,7 +718,6 @@ const AdminCountryEditorClient = ({
                 imageUrl={president.imageUrl}
                 onImageChange={handlePresidentImageChange(index)}
               />
-              {/* Debug: {president.imageUrl} */}
               <div className="admin-ai-buttons">
                 <button
                   type="button"
@@ -1878,42 +1017,6 @@ const AdminCountryEditorClient = ({
             </article>
           );
         })}
-      </section>
-
-      <section className="admin-editor-section">
-        <div className="admin-section-header">
-          <div>
-            <h2>Direct JSON editing</h2>
-            <p className="admin-section-subtitle">
-              Edit the raw president and monarch definitions. The JSON must
-              match the expected schema, including valid date strings and event
-              types.
-            </p>
-          </div>
-        </div>
-
-        <div className="admin-json-editor-grid">
-          <JsonEditor
-            title="Presidents JSON"
-            description="Edit presidents, parties, dates, and timeline events in one place."
-            value={presidentsJson}
-            onChange={handlePresidentsJsonChange}
-            onApply={handleApplyPresidentsJson}
-            onReset={handleResetPresidentsJson}
-            error={presidentsJsonError}
-            dirty={isPresidentsJsonDirty}
-          />
-          <JsonEditor
-            title="Monarchs JSON"
-            description="Edit monarch biographies, reigns, and optional notes."
-            value={monarchsJson}
-            onChange={handleMonarchsJsonChange}
-            onApply={handleApplyMonarchsJson}
-            onReset={handleResetMonarchsJson}
-            error={monarchsJsonError}
-            dirty={isMonarchsJsonDirty}
-          />
-        </div>
       </section>
 
       <AiImageModal
