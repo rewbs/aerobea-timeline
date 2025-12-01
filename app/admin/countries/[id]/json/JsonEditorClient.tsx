@@ -18,6 +18,7 @@ import {
     cloneDraft,
     validatePresidentsJson,
     validateMonarchsJson,
+    validateSemantics,
 } from '../../shared';
 import type { AdminCountry } from '../../../types';
 import '../../../admin.css';
@@ -50,6 +51,9 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
 
     const [presidentsWarnings, setPresidentsWarnings] = useState<string[]>([]);
     const [monarchsWarnings, setMonarchsWarnings] = useState<string[]>([]);
+    const [semanticWarnings, setSemanticWarnings] = useState<string[]>([]);
+    const [aiReviewIssues, setAiReviewIssues] = useState<string[]>([]);
+    const [isAiReviewing, setIsAiReviewing] = useState(false);
 
     const [isPresidentsJsonDirty, setIsPresidentsJsonDirty] = useState(false);
     const [isMonarchsJsonDirty, setIsMonarchsJsonDirty] = useState(false);
@@ -62,9 +66,17 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
         setMonarchsJsonError(null);
         setPresidentsWarnings([]);
         setMonarchsWarnings([]);
+        setSemanticWarnings([]);
+        setAiReviewIssues([]);
         setIsPresidentsJsonDirty(false);
         setIsMonarchsJsonDirty(false);
     }, [initialDraft]);
+
+    // Run semantic validation whenever draft changes
+    useEffect(() => {
+        const warnings = validateSemantics(draft);
+        setSemanticWarnings(warnings);
+    }, [draft]);
 
     const handlePresidentsJsonChange = useCallback((value: string) => {
         setPresidentsJson(value);
@@ -131,6 +143,35 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
         setMonarchsJsonError(null);
         setMonarchsWarnings([]);
     }, [draft.monarchs]);
+
+    const handleAiReview = async () => {
+        setIsAiReviewing(true);
+        setAiReviewIssues([]);
+        try {
+            // Ensure we are reviewing the latest applied state
+            const payload = {
+                presidents: draft.presidents,
+                monarchs: draft.monarchs,
+            };
+
+            const response = await fetch('/api/ai/review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+            if (data.issues) {
+                setAiReviewIssues(data.issues);
+            } else if (data.error) {
+                setAiReviewIssues([`Error: ${data.error}`]);
+            }
+        } catch (error) {
+            setAiReviewIssues(['Failed to run AI review.']);
+        } finally {
+            setIsAiReviewing(false);
+        }
+    };
 
     const isGlobalDirty = useMemo(() => {
         return !areDraftsEqual(normalizeDraftForSave(draft), normalizeDraftForSave(initialDraft));
@@ -226,6 +267,14 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
                 </div>
                 <div className="admin-editor-actions">
                     <button
+                        className="admin-secondary-button"
+                        type="button"
+                        onClick={handleAiReview}
+                        disabled={isAiReviewing}
+                    >
+                        {isAiReviewing ? 'Reviewing...' : 'AI Review'}
+                    </button>
+                    <button
                         className="admin-primary-button"
                         type="button"
                         onClick={handleSave}
@@ -246,6 +295,28 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
                     </div>
                 )}
             </div>
+
+            {semanticWarnings.length > 0 && (
+                <div className="admin-feedback admin-feedback-warning" role="alert" style={{ margin: '0 2rem' }}>
+                    <p><strong>Semantic Warnings:</strong></p>
+                    <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+                        {semanticWarnings.map((warning, i) => (
+                            <li key={i}>{warning}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {aiReviewIssues.length > 0 && (
+                <div className="admin-feedback admin-feedback-info" role="alert" style={{ margin: '1rem 2rem 0' }}>
+                    <p><strong>AI Review Suggestions:</strong></p>
+                    <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+                        {aiReviewIssues.map((issue, i) => (
+                            <li key={i}>{issue}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             <div className="admin-json-editor-grid full-page">
                 <JsonEditor
@@ -278,7 +349,7 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
           grid-template-columns: 1fr 1fr;
           gap: 2rem;
           padding: 2rem;
-          height: calc(100vh - 80px);
+          height: calc(100vh - 80px); /* Adjusted for warnings */
         }
         .admin-json-editor-grid.full-page .admin-json-editor-block {
           display: flex;

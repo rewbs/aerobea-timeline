@@ -428,6 +428,90 @@ export const validateDraft = (draft: CountryDraft): string[] => {
     return errors;
 };
 
+export const validateSemantics = (draft: CountryDraft): string[] => {
+    const warnings: string[] = [];
+
+    // President checks
+    draft.presidents.forEach((president, index) => {
+        const name = president.name.trim() || `President ${index + 1}`;
+
+        // Birth vs Death
+        if (president.birth && president.death) {
+            if (new Date(president.birth) >= new Date(president.death)) {
+                warnings.push(`${name}: Birth date must be before death date.`);
+            }
+        }
+
+        // Events vs Birth/Death
+        president.events.forEach((event, eventIndex) => {
+            if (!event.date) return;
+            const eventDate = new Date(event.date);
+
+            if (president.birth && eventDate < new Date(president.birth)) {
+                warnings.push(`${name}: Event "${event.text}" occurs before birth.`);
+            }
+
+            if (president.death && eventDate > new Date(president.death)) {
+                // Allow posthumous events if explicitly marked or context implies?
+                // For now, just warn.
+                warnings.push(`${name}: Event "${event.text}" occurs after death.`);
+            }
+        });
+    });
+
+    // Overlapping Presidencies
+    // Sort presidents by start date (assuming first event is start)
+    const sortedPresidents = [...draft.presidents]
+        .map((p, i) => {
+            const startEvent = p.events.find(e => e.type === '1'); // PRESIDENCY_BEGINS
+            const endEvent = p.events.find(e => e.type === '2'); // PRESIDENCY_ENDS
+            return {
+                ...p,
+                originalIndex: i,
+                startDate: startEvent ? new Date(startEvent.date) : null,
+                endDate: endEvent ? new Date(endEvent.date) : null,
+            };
+        })
+        .filter(p => p.startDate && p.endDate)
+        .sort((a, b) => (a.startDate!.getTime() - b.startDate!.getTime()));
+
+    for (let i = 0; i < sortedPresidents.length - 1; i++) {
+        const current = sortedPresidents[i];
+        const next = sortedPresidents[i + 1];
+
+        if (current.endDate && next.startDate && current.endDate > next.startDate) {
+            warnings.push(
+                `Overlap detected: ${current.name} ends (${current.endDate.toISOString().slice(0, 10)}) after ${next.name} starts (${next.startDate.toISOString().slice(0, 10)}).`
+            );
+        }
+    }
+
+    // Monarch checks
+    draft.monarchs.forEach((monarch, index) => {
+        const name = monarch.name.trim() || `Monarch ${index + 1}`;
+
+        if (monarch.birth && monarch.death) {
+            if (new Date(monarch.birth) >= new Date(monarch.death)) {
+                warnings.push(`${name}: Birth date must be before death date.`);
+            }
+        }
+
+        if (monarch.start_reign && monarch.end_reign) {
+            if (new Date(monarch.start_reign) >= new Date(monarch.end_reign)) {
+                warnings.push(`${name}: Reign start must be before reign end.`);
+            }
+        }
+
+        if (monarch.birth && monarch.start_reign) {
+            if (new Date(monarch.birth) >= new Date(monarch.start_reign)) {
+                warnings.push(`${name}: Birth date must be before reign start.`);
+            }
+        }
+    });
+
+    return warnings;
+};
+
 export const VALID_EVENT_TYPES = new Set<EventType>([PRESIDENCY_BEGINS, PRESIDENCY_ENDS, DEATH]);
 
 export const isValidEventType = (value: unknown): value is EventType =>
