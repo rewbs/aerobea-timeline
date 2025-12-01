@@ -345,26 +345,23 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
 
             <style jsx global>{`
         .admin-json-editor-grid.full-page {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 3rem;
           padding: 2rem;
-          height: calc(100vh - 80px); /* Adjusted for warnings */
+          padding-bottom: 5rem;
         }
         .admin-json-editor-grid.full-page .admin-json-editor-block {
           display: flex;
           flex-direction: column;
-          height: 100%;
         }
         .admin-json-editor-grid.full-page .admin-code-wrapper {
           flex: 1;
-          overflow: hidden;
           display: flex;
           flex-direction: column;
         }
         .admin-json-editor-grid.full-page .admin-code-editor {
           flex: 1;
-          overflow: auto;
         }
       `}</style>
         </div>
