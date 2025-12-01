@@ -14,6 +14,7 @@ export interface JsonEditorProps {
     onApply: () => void;
     onReset: () => void;
     error?: string | null;
+    warnings?: string[];
     dirty: boolean;
 }
 
@@ -25,6 +26,7 @@ const JsonEditor = ({
     onApply,
     onReset,
     error,
+    warnings = [],
     dirty,
 }: JsonEditorProps) => {
     const editorHeight = useMemo(
@@ -60,6 +62,7 @@ const JsonEditor = ({
                         type="button"
                         className="admin-primary-button"
                         onClick={onApply}
+                        disabled={warnings.length > 0}
                     >
                         Apply JSON
                     </button>
@@ -83,6 +86,16 @@ const JsonEditor = ({
             {error && (
                 <div className="admin-feedback admin-feedback-error admin-inline-feedback" role="alert">
                     {error}
+                </div>
+            )}
+            {warnings.length > 0 && (
+                <div className="admin-feedback admin-feedback-warning admin-inline-feedback" role="alert">
+                    <p><strong>Validation Warnings:</strong></p>
+                    <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+                        {warnings.map((warning, i) => (
+                            <li key={i}>{warning}</li>
+                        ))}
+                    </ul>
                 </div>
             )}
         </div>

@@ -578,10 +578,21 @@ export const parseSerializedMonarch = (
     };
 };
 
-export const parseSerializedPresidents = (json: string): SerializedPresident[] => {
-    const parsed = JSON.parse(json);
+export interface ValidationResult<T> {
+    data: T | null;
+    errors: string[];
+}
+
+export const validatePresidentsJson = (json: string): ValidationResult<SerializedPresident[]> => {
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(json);
+    } catch (e) {
+        return { data: null, errors: [(e as Error).message] };
+    }
+
     if (!Array.isArray(parsed)) {
-        throw new Error('Presidents JSON must be an array of president objects.');
+        return { data: null, errors: ['Presidents JSON must be an array of president objects.'] };
     }
 
     const errors: string[] = [];
@@ -590,16 +601,22 @@ export const parseSerializedPresidents = (json: string): SerializedPresident[] =
         .filter((value): value is SerializedPresident => Boolean(value));
 
     if (errors.length) {
-        throw new Error(errors.join(' '));
+        return { data: null, errors };
     }
 
-    return presidents;
+    return { data: presidents, errors: [] };
 };
 
-export const parseSerializedMonarchs = (json: string): SerializedMonarch[] => {
-    const parsed = JSON.parse(json);
+export const validateMonarchsJson = (json: string): ValidationResult<SerializedMonarch[]> => {
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(json);
+    } catch (e) {
+        return { data: null, errors: [(e as Error).message] };
+    }
+
     if (!Array.isArray(parsed)) {
-        throw new Error('Monarchs JSON must be an array of monarch objects.');
+        return { data: null, errors: ['Monarchs JSON must be an array of monarch objects.'] };
     }
 
     const errors: string[] = [];
@@ -608,10 +625,26 @@ export const parseSerializedMonarchs = (json: string): SerializedMonarch[] => {
         .filter((value): value is SerializedMonarch => Boolean(value));
 
     if (errors.length) {
-        throw new Error(errors.join(' '));
+        return { data: null, errors };
     }
 
-    return monarchs;
+    return { data: monarchs, errors: [] };
+};
+
+export const parseSerializedPresidents = (json: string): SerializedPresident[] => {
+    const result = validatePresidentsJson(json);
+    if (result.errors.length) {
+        throw new Error(result.errors.join(' '));
+    }
+    return result.data!;
+};
+
+export const parseSerializedMonarchs = (json: string): SerializedMonarch[] => {
+    const result = validateMonarchsJson(json);
+    if (result.errors.length) {
+        throw new Error(result.errors.join(' '));
+    }
+    return result.data!;
 };
 
 export const parsePresidentsJson = (json: string): PresidentForm[] =>

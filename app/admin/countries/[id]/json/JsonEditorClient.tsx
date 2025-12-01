@@ -16,6 +16,8 @@ import {
     validateDraft,
     areDraftsEqual,
     cloneDraft,
+    validatePresidentsJson,
+    validateMonarchsJson,
 } from '../../shared';
 import type { AdminCountry } from '../../../types';
 import '../../../admin.css';
@@ -33,8 +35,6 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
     const router = useRouter();
     const initialDraft = useMemo(() => toCountryDraft(initialCountry), [initialCountry]);
 
-    // We maintain a "draft" state similar to the main editor, but here we primarily
-    // manipulate it via JSON parsing.
     const [draft, setDraft] = useState<CountryDraft>(initialDraft);
     const [status, setStatus] = useState<SaveStatus>({ type: 'idle' });
 
@@ -48,16 +48,20 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
     const [presidentsJsonError, setPresidentsJsonError] = useState<string | null>(null);
     const [monarchsJsonError, setMonarchsJsonError] = useState<string | null>(null);
 
+    const [presidentsWarnings, setPresidentsWarnings] = useState<string[]>([]);
+    const [monarchsWarnings, setMonarchsWarnings] = useState<string[]>([]);
+
     const [isPresidentsJsonDirty, setIsPresidentsJsonDirty] = useState(false);
     const [isMonarchsJsonDirty, setIsMonarchsJsonDirty] = useState(false);
 
-    // Sync draft from initialCountry when it changes (e.g. after save)
     useEffect(() => {
         setDraft(initialDraft);
         setPresidentsJson(formatPresidentsJson(initialDraft.presidents));
         setMonarchsJson(formatMonarchsJson(initialDraft.monarchs));
         setPresidentsJsonError(null);
         setMonarchsJsonError(null);
+        setPresidentsWarnings([]);
+        setMonarchsWarnings([]);
         setIsPresidentsJsonDirty(false);
         setIsMonarchsJsonDirty(false);
     }, [initialDraft]);
@@ -67,19 +71,17 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
         setIsPresidentsJsonDirty(true);
         setPresidentsJsonError(null);
 
-        // Try to parse and update draft immediately to keep them in sync?
-        // Or just wait for "Apply"? The original editor had "Apply" buttons.
-        // But here, the whole page IS the editor.
-        // Let's keep the "Apply" logic for validation feedback, but maybe we don't strictly need it
-        // if we validate on save. However, the JsonEditor component has an "Apply" button.
-        // Let's use the Apply button to "commit" the JSON to the internal draft state,
-        // which then enables the global "Save" button.
+        const result = validatePresidentsJson(value);
+        setPresidentsWarnings(result.errors);
     }, []);
 
     const handleMonarchsJsonChange = useCallback((value: string) => {
         setMonarchsJson(value);
         setIsMonarchsJsonDirty(true);
         setMonarchsJsonError(null);
+
+        const result = validateMonarchsJson(value);
+        setMonarchsWarnings(result.errors);
     }, []);
 
     const handleApplyPresidentsJson = useCallback(() => {
@@ -91,11 +93,6 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
                 return next;
             });
             setPresidentsJsonError(null);
-            // We don't clear dirty flag here because "dirty" in JsonEditor means "different from prop value"
-            // But here we want to track "different from saved state".
-            // Actually, in the original component, `isPresidentsJsonDirty` tracked if the text area
-            // content differed from the `draft` state.
-            // Here, let's say "Apply" updates the draft.
             setIsPresidentsJsonDirty(false);
         } catch (error) {
             setPresidentsJsonError(
@@ -125,29 +122,30 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
         setPresidentsJson(formatPresidentsJson(draft.presidents));
         setIsPresidentsJsonDirty(false);
         setPresidentsJsonError(null);
+        setPresidentsWarnings([]);
     }, [draft.presidents]);
 
     const handleResetMonarchsJson = useCallback(() => {
         setMonarchsJson(formatMonarchsJson(draft.monarchs));
         setIsMonarchsJsonDirty(false);
         setMonarchsJsonError(null);
+        setMonarchsWarnings([]);
     }, [draft.monarchs]);
 
-    // Global save
     const isGlobalDirty = useMemo(() => {
-        // If JSON is dirty (not applied), we consider it dirty but maybe not saveable yet?
-        // Or we can try to apply on save.
-        // Let's check if the draft is different from initialDraft.
         return !areDraftsEqual(normalizeDraftForSave(draft), normalizeDraftForSave(initialDraft));
     }, [draft, initialDraft]);
 
     const handleSave = async () => {
         if (status.type === 'saving') return;
 
-        // First, try to apply any pending JSON changes
         let currentDraft = draft;
 
         if (isPresidentsJsonDirty) {
+            if (presidentsWarnings.length > 0) {
+                setPresidentsJsonError('Please fix validation warnings before saving.');
+                return;
+            }
             try {
                 const parsed = parsePresidentsJson(presidentsJson);
                 currentDraft = { ...currentDraft, presidents: parsed };
@@ -159,6 +157,10 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
         }
 
         if (isMonarchsJsonDirty) {
+            if (monarchsWarnings.length > 0) {
+                setMonarchsJsonError('Please fix validation warnings before saving.');
+                return;
+            }
             try {
                 const parsed = parseMonarchsJson(monarchsJson);
                 currentDraft = { ...currentDraft, monarchs: parsed };
@@ -169,13 +171,12 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
             }
         }
 
-        // Validate
         const normalizedDraft = normalizeDraftForSave(currentDraft);
         const errors = validateDraft(normalizedDraft);
         if (errors.length) {
             setStatus({
                 type: 'error',
-                message: 'Validation failed: ' + errors[0], // Just show first error for now
+                message: 'Validation failed: ' + errors[0],
             });
             return;
         }
@@ -228,7 +229,7 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
                         className="admin-primary-button"
                         type="button"
                         onClick={handleSave}
-                        disabled={(!isGlobalDirty && !isPresidentsJsonDirty && !isMonarchsJsonDirty) || status.type === 'saving'}
+                        disabled={(!isGlobalDirty && !isPresidentsJsonDirty && !isMonarchsJsonDirty) || status.type === 'saving' || presidentsWarnings.length > 0 || monarchsWarnings.length > 0}
                     >
                         {status.type === 'saving' ? 'Saving…' : 'Save Changes'}
                     </button>
@@ -255,6 +256,7 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
                     onApply={handleApplyPresidentsJson}
                     onReset={handleResetPresidentsJson}
                     error={presidentsJsonError}
+                    warnings={presidentsWarnings}
                     dirty={isPresidentsJsonDirty}
                 />
                 <JsonEditor
@@ -265,6 +267,7 @@ const JsonEditorClient = ({ initialCountry }: JsonEditorClientProps) => {
                     onApply={handleApplyMonarchsJson}
                     onReset={handleResetMonarchsJson}
                     error={monarchsJsonError}
+                    warnings={monarchsWarnings}
                     dirty={isMonarchsJsonDirty}
                 />
             </div>
