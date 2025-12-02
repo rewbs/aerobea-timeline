@@ -585,6 +585,20 @@
     margin-bottom: 20px;
 }
 
+.admin-image-actions {
+    margin-top: 8px;
+}
+
+.admin-image-link {
+    color: #00d4ff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.admin-image-link:hover {
+    text-decoration: underline;
+}
+
 .admin-image-dropzone {
     width: 100%;
     max-width: 200px;
