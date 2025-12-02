@@ -123,6 +123,19 @@ export default function ImageUploader({
                     </div>
                 )}
             </div>
+
+            {imageUrl && (
+                <div className="admin-image-actions">
+                    <a
+                        href={imageUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="admin-image-link"
+                    >
+                        Open image in new tab
+                    </a>
+                </div>
+            )}
         </div>
     );
 }
