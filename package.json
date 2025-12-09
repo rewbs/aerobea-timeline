@@ -15,7 +15,7 @@
     "@prisma/extension-accelerate": "^2.0.2",
     "@vercel/blob": "^2.0.0",
     "dotenv": "^17.2.3",
-    "next": "^16.0.1",
+    "next": "16.0.7",
     "openai": "^6.7.0",
     "prismjs": "^1.30.0",
     "react": "^19.2.0",
