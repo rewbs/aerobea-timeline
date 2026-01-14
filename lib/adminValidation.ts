@@ -1,4 +1,5 @@
 import type {
+    SerializedFlag,
     SerializedMonarch,
     SerializedPresident,
     SerializedTimelineEvent,
@@ -12,6 +13,7 @@ interface RawCountryPayload {
     end?: unknown;
     presidents?: unknown;
     monarchs?: unknown;
+    flags?: unknown;
 }
 
 const CODE_REGEX = /^[a-z0-9-]+$/i;
@@ -225,6 +227,74 @@ const parseMonarch = (
     };
 };
 
+const parseFlag = (
+    value: unknown,
+    index: number
+): SerializedFlag => {
+    if (!isObject(value)) {
+        throw new Error(`Flag ${index + 1} must be an object.`);
+    }
+
+    const imageUrl = expectString(
+        value.imageUrl,
+        `Flag ${index + 1} image URL`
+    ).trim();
+    const startDate = ensureDate(
+        expectString(
+            value.startDate,
+            `Flag ${index + 1} start date`
+        ),
+        `Flag ${index + 1} start date`
+    );
+    const endDate = ensureOptionalDate(
+        value.endDate,
+        `Flag ${index + 1} end date`
+    );
+    const description = expectString(
+        value.description,
+        `Flag ${index + 1} description`
+    ).trim();
+
+    const reasonForChange =
+        value.reasonForChange && typeof value.reasonForChange === 'string' && value.reasonForChange.trim()
+            ? value.reasonForChange.trim()
+            : undefined;
+
+    return {
+        imageUrl,
+        startDate,
+        endDate,
+        description,
+        reasonForChange,
+    };
+};
+
+const validateFlagOverlaps = (flags: SerializedFlag[]): void => {
+    if (flags.length < 2) return;
+
+    const sorted = [...flags].sort(
+        (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+
+    for (let i = 0; i < sorted.length - 1; i++) {
+        const current = sorted[i];
+        const next = sorted[i + 1];
+        const currentEnd = current.endDate ? new Date(current.endDate) : null;
+        const nextStart = new Date(next.startDate);
+
+        if (currentEnd && currentEnd > nextStart) {
+            throw new Error(
+                `Flag "${current.description}" (ends ${current.endDate}) overlaps with "${next.description}" (starts ${next.startDate}).`
+            );
+        }
+        if (!currentEnd) {
+            throw new Error(
+                `Flag "${current.description}" has no end date but is followed by "${next.description}". Only the last flag can have no end date.`
+            );
+        }
+    }
+};
+
 export interface ValidatedCountryInput {
     code: string;
     name: string;
@@ -232,6 +302,7 @@ export interface ValidatedCountryInput {
     end: Date | null;
     presidents: SerializedPresident[];
     monarchs: SerializedMonarch[];
+    flags: SerializedFlag[];
 }
 
 export const validateAdminCountryInput = (
@@ -258,9 +329,15 @@ export const validateAdminCountryInput = (
     const monarchsSource = Array.isArray(payload.monarchs)
         ? payload.monarchs
         : [];
+    const flagsSource = Array.isArray(payload.flags)
+        ? payload.flags
+        : [];
 
     const presidents = presidentsSource.map(parsePresident);
     const monarchs = monarchsSource.map(parseMonarch);
+    const flags = flagsSource.map(parseFlag);
+
+    validateFlagOverlaps(flags);
 
     return {
         code,
@@ -269,5 +346,6 @@ export const validateAdminCountryInput = (
         end: endIso ? new Date(endIso) : null,
         presidents,
         monarchs,
+        flags,
     };
 };

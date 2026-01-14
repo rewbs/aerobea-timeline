@@ -15,6 +15,7 @@ model Country {
   end        DateTime?
   presidents Json
   monarchs   Json
+  flags      Json     @default("[]")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

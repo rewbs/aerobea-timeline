@@ -5,6 +5,7 @@ import {
     type EventType,
 } from '../../../lib/timeline';
 import type {
+    SerializedFlag,
     SerializedMonarch,
     SerializedPresident,
     SerializedTimelineEvent,
@@ -44,6 +45,15 @@ export interface MonarchForm {
     imageUrl?: string;
 }
 
+export interface FlagForm {
+    formId: string;
+    imageUrl: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    reasonForChange: string;
+}
+
 export interface CountryDraft {
     id?: number;
     code: string;
@@ -52,6 +62,7 @@ export interface CountryDraft {
     end: string;
     presidents: PresidentForm[];
     monarchs: MonarchForm[];
+    flags: FlagForm[];
 }
 
 export type EditorMode = 'create' | 'edit';
@@ -125,6 +136,15 @@ export const createEmptyMonarch = (): MonarchForm => ({
     imageUrl: undefined,
 });
 
+export const createEmptyFlag = (): FlagForm => ({
+    formId: createId(),
+    imageUrl: '',
+    startDate: '',
+    endDate: '',
+    description: '',
+    reasonForChange: '',
+});
+
 export const createEmptyDraft = (): CountryDraft => ({
     code: '',
     name: '',
@@ -132,6 +152,7 @@ export const createEmptyDraft = (): CountryDraft => ({
     end: '',
     presidents: [],
     monarchs: [],
+    flags: [],
 });
 
 export const eventTypeToNumber = (value: EventTypeString) => {
@@ -181,6 +202,19 @@ export const formatMonarchsJson = (monarchs: MonarchForm[]) =>
         2
     );
 
+export const formatFlagsJson = (flags: FlagForm[]) =>
+    JSON.stringify(
+        flags.map(flag => ({
+            imageUrl: flag.imageUrl,
+            startDate: flag.startDate,
+            endDate: flag.endDate || null,
+            description: flag.description,
+            reasonForChange: flag.reasonForChange || undefined,
+        })),
+        null,
+        2
+    );
+
 export const isSerializedEvent = (
     value: unknown
 ): value is SerializedTimelineEvent =>
@@ -201,6 +235,12 @@ export const isSerializedMonarch = (value: unknown): value is SerializedMonarch 
     isString(value.name) &&
     isString(value.birth) &&
     isString(value.start_reign);
+
+export const isSerializedFlag = (value: unknown): value is SerializedFlag =>
+    isObject(value) &&
+    isString(value.imageUrl) &&
+    isString(value.startDate) &&
+    isString(value.description);
 
 export const toEventForm = (event: SerializedTimelineEvent): TimelineEventForm => ({
     formId: createId(),
@@ -231,6 +271,15 @@ export const toMonarchForm = (monarch: SerializedMonarch): MonarchForm => ({
     imageUrl: monarch.imageUrl,
 });
 
+export const toFlagForm = (flag: SerializedFlag): FlagForm => ({
+    formId: createId(),
+    imageUrl: flag.imageUrl,
+    startDate: toDateInputValue(flag.startDate),
+    endDate: flag.endDate ? toDateInputValue(flag.endDate) : '',
+    description: flag.description,
+    reasonForChange: flag.reasonForChange ?? '',
+});
+
 export const toCountryDraft = (country?: AdminCountry): CountryDraft => {
     if (!country) return createEmptyDraft();
     const presidentsSource = Array.isArray(country.presidents)
@@ -239,6 +288,9 @@ export const toCountryDraft = (country?: AdminCountry): CountryDraft => {
     const monarchsSource = Array.isArray(country.monarchs)
         ? (country.monarchs as unknown[])
         : [];
+    const flagsSource = Array.isArray(country.flags)
+        ? (country.flags as unknown[])
+        : [];
 
     const presidents = presidentsSource
         .filter(isSerializedPresident)
@@ -246,6 +298,9 @@ export const toCountryDraft = (country?: AdminCountry): CountryDraft => {
     const monarchs = monarchsSource
         .filter(isSerializedMonarch)
         .map(toMonarchForm);
+    const flags = flagsSource
+        .filter(isSerializedFlag)
+        .map(toFlagForm);
 
     return {
         id: country.id,
@@ -255,6 +310,7 @@ export const toCountryDraft = (country?: AdminCountry): CountryDraft => {
         end: toDateInputValue(country.end),
         presidents,
         monarchs,
+        flags,
     };
 };
 
@@ -291,6 +347,13 @@ export const buildPayload = (draft: CountryDraft) => ({
         death_cause: monarch.death_cause.trim() || null,
         notes: monarch.notes.trim() || undefined,
         imageUrl: monarch.imageUrl,
+    })),
+    flags: draft.flags.map(flag => ({
+        imageUrl: flag.imageUrl.trim(),
+        startDate: flag.startDate,
+        endDate: flag.endDate || null,
+        description: flag.description.trim(),
+        reasonForChange: flag.reasonForChange.trim() || undefined,
     })),
 });
 
@@ -347,6 +410,16 @@ export const normalizeDraftForSave = (draft: CountryDraft): CountryDraft => {
         imageUrl: monarch.imageUrl,
     });
 
+    const normalizeFlag = (flag: FlagForm): FlagForm => ({
+        ...flag,
+        startDate: ensureDateValue(flag.startDate, DEFAULT_DATE),
+        endDate:
+            flag.endDate && !isValidDateValue(flag.endDate)
+                ? DEFAULT_DATE
+                : flag.endDate,
+        description: ensureTextValue(flag.description, 'Flag'),
+    });
+
     const start = ensureDateValue(draft.start, DEFAULT_DATE);
     const end = draft.end && !isValidDateValue(draft.end) ? DEFAULT_DATE : draft.end;
 
@@ -358,6 +431,7 @@ export const normalizeDraftForSave = (draft: CountryDraft): CountryDraft => {
         end,
         presidents: draft.presidents.map(normalizePresident),
         monarchs: draft.monarchs.map(normalizeMonarch),
+        flags: draft.flags.map(normalizeFlag),
     };
 };
 
@@ -422,6 +496,21 @@ export const validateDraft = (draft: CountryDraft): string[] => {
         }
         if (monarch.end_reign && !isValidDateValue(monarch.end_reign)) {
             errors.push(`Monarch ${index + 1}: reign end date must be valid or blank.`);
+        }
+    });
+
+    draft.flags.forEach((flag, index) => {
+        if (!flag.imageUrl.trim()) {
+            errors.push(`Flag ${index + 1}: image URL is required.`);
+        }
+        if (!isValidDateValue(flag.startDate)) {
+            errors.push(`Flag ${index + 1}: start date is required.`);
+        }
+        if (flag.endDate && !isValidDateValue(flag.endDate)) {
+            errors.push(`Flag ${index + 1}: end date must be valid or blank.`);
+        }
+        if (!flag.description.trim()) {
+            errors.push(`Flag ${index + 1}: description is required.`);
         }
     });
 
@@ -736,3 +825,77 @@ export const parsePresidentsJson = (json: string): PresidentForm[] =>
 
 export const parseMonarchsJson = (json: string): MonarchForm[] =>
     parseSerializedMonarchs(json).map(toMonarchForm);
+
+export const parseSerializedFlag = (
+    value: unknown,
+    index: number,
+    errors: string[]
+): SerializedFlag | null => {
+    const initialErrorCount = errors.length;
+    if (!isObject(value)) {
+        errors.push(`Flag ${index + 1} must be an object.`);
+        return null;
+    }
+
+    if (!isString(value.imageUrl) || !value.imageUrl.trim()) {
+        errors.push(`Flag ${index + 1} requires an image URL.`);
+    }
+
+    if (!isString(value.startDate) || !isValidDateValue(value.startDate)) {
+        errors.push(`Flag ${index + 1} requires a valid start date.`);
+    }
+
+    if (!isString(value.description) || !value.description.trim()) {
+        errors.push(`Flag ${index + 1} requires a description.`);
+    }
+
+    const endDate = value.endDate;
+    if (endDate && (!isString(endDate) || !isValidDateValue(endDate))) {
+        errors.push(`Flag ${index + 1} has an invalid end date.`);
+    }
+
+    if (errors.length !== initialErrorCount) return null;
+
+    return {
+        imageUrl: value.imageUrl as string,
+        startDate: value.startDate as string,
+        endDate: isString(endDate) ? endDate : null,
+        description: value.description as string,
+        reasonForChange: isString(value.reasonForChange) ? value.reasonForChange : undefined,
+    };
+};
+
+export const validateFlagsJson = (json: string): ValidationResult<SerializedFlag[]> => {
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(json);
+    } catch (e) {
+        return { data: null, errors: [(e as Error).message] };
+    }
+
+    if (!Array.isArray(parsed)) {
+        return { data: null, errors: ['Flags JSON must be an array of flag objects.'] };
+    }
+
+    const errors: string[] = [];
+    const flags = parsed
+        .map((value, index) => parseSerializedFlag(value, index, errors))
+        .filter((value): value is SerializedFlag => Boolean(value));
+
+    if (errors.length) {
+        return { data: null, errors };
+    }
+
+    return { data: flags, errors: [] };
+};
+
+export const parseSerializedFlags = (json: string): SerializedFlag[] => {
+    const result = validateFlagsJson(json);
+    if (result.errors.length) {
+        throw new Error(result.errors.join(' '));
+    }
+    return result.data!;
+};
+
+export const parseFlagsJson = (json: string): FlagForm[] =>
+    parseSerializedFlags(json).map(toFlagForm);

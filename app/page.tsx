@@ -5,8 +5,9 @@ import Link from 'next/link';
 import TimelineGrid from '../components/TimelineGrid';
 import ProgressBar from '../components/ProgressBar';
 import MusicControls from '../components/MusicControls';
+import FlagDisplay from '../components/FlagDisplay';
 import { getMonarch, PRESIDENCY_BEGINS, PRESIDENCY_ENDS, DEATH } from '../lib/timeline';
-import type { President, Monarch, EventType } from '../lib/timeline';
+import type { President, Monarch, Flag, EventType } from '../lib/timeline';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_COUNTRY_CODE = 'aerobea';
@@ -37,6 +38,14 @@ interface MonarchJson {
   imageUrl?: string;
 }
 
+interface FlagJson {
+  imageUrl: string;
+  startDate: string;
+  endDate: string | null;
+  description: string;
+  reasonForChange?: string;
+}
+
 interface CountryResponse {
   code: string;
   name: string;
@@ -44,6 +53,7 @@ interface CountryResponse {
   end: string | null;
   presidents: PresidentJson[];
   monarchs: MonarchJson[];
+  flags: FlagJson[];
 }
 
 interface CountryTimeline {
@@ -53,6 +63,7 @@ interface CountryTimeline {
   end: Date | null;
   presidents: President[];
   monarchs: Monarch[];
+  flags: Flag[];
 }
 
 const isEventType = (value: number | undefined): value is EventType =>
@@ -68,6 +79,7 @@ export default function Page() {
     useState<string>(DEFAULT_COUNTRY_CODE);
   const [presidents, setPresidents] = useState<President[]>([]);
   const [monarchs, setMonarchs] = useState<Monarch[]>([]);
+  const [flags, setFlags] = useState<Flag[]>([]);
   const [start, setStart] = useState<Date>(new Date());
   const [end, setEnd] = useState<Date>(new Date());
   const [current, setCurrent] = useState<Date>(new Date());
@@ -100,6 +112,7 @@ export default function Page() {
       setSelectedCountryCode(country.code);
       setPresidents(country.presidents);
       setMonarchs(country.monarchs);
+      setFlags(country.flags);
       setStart(country.start);
       setEnd(country.end ?? country.start);
       setCurrent(country.start);
@@ -198,6 +211,11 @@ export default function Page() {
           start_reign: new Date(monarch.start_reign),
           end_reign: monarch.end_reign ? new Date(monarch.end_reign) : null,
         })),
+        flags: (country.flags ?? []).map(flag => ({
+          ...flag,
+          startDate: new Date(flag.startDate),
+          endDate: flag.endDate ? new Date(flag.endDate) : null,
+        })),
       }));
 
     const loadCountries = async () => {
@@ -291,6 +309,7 @@ export default function Page() {
     const now = new Date();
     setPresidents([]);
     setMonarchs([]);
+    setFlags([]);
     setStart(now);
     setEnd(now);
     setCurrent(now);
@@ -350,6 +369,7 @@ export default function Page() {
       });
       setPresidents(data);
       setMonarchs([]);
+      setFlags([]);
       const times = data.flatMap(p => [
         p.birth.getTime(),
         (p.death ?? p.birth).getTime(),
@@ -407,6 +427,7 @@ export default function Page() {
         </div>
       )}
       <div className="year">{current.toISOString().slice(0, 10)}</div>
+      <FlagDisplay flags={flags} current={current} />
       <div
         className="monarch"
         title={

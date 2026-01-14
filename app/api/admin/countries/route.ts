@@ -29,6 +29,7 @@ export async function POST(request: Request) {
         end: validated.end,
         presidents: validated.presidents as unknown as Prisma.InputJsonValue,
         monarchs: validated.monarchs as unknown as Prisma.InputJsonValue,
+        flags: validated.flags as unknown as Prisma.InputJsonValue,
       },
     });
 

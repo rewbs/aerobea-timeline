@@ -18,10 +18,12 @@ import type { AdminCountry } from '../types';
 import '../admin.css';
 import ImageUploader from '../components/ImageUploader';
 import AiImageModal from '../components/AiImageModal';
+import AiFlagModal from '../components/AiFlagModal';
 import {
   CountryDraft,
   EditorMode,
   EventTypeString,
+  FlagForm,
   MonarchForm,
   PresidentForm,
   SaveStatus,
@@ -30,6 +32,7 @@ import {
   buildPayload,
   cloneDraft,
   createEmptyEvent,
+  createEmptyFlag,
   createEmptyMonarch,
   createEmptyPresident,
   eventTypeOptions,
@@ -128,6 +131,9 @@ const AdminCountryEditorClient = ({
   const [activeMonarchId, setActiveMonarchId] = useState<string | null>(
     initialDraft.monarchs[0]?.formId || null
   );
+  const [activeFlagId, setActiveFlagId] = useState<string | null>(
+    initialDraft.flags[0]?.formId || null
+  );
   const [immediateSavePending, setImmediateSavePending] = useState(false);
 
   // AI Modal State
@@ -137,16 +143,23 @@ const AdminCountryEditorClient = ({
   const [aiModalInitialImage, setAiModalInitialImage] = useState<string | undefined>(undefined);
   const [aiModalOnSelect, setAiModalOnSelect] = useState<(url: string) => void>(() => { });
 
+  // AI Flag Modal State
+  const [isAiFlagModalOpen, setIsAiFlagModalOpen] = useState(false);
+  const [aiFlagModalInitialImage, setAiFlagModalInitialImage] = useState<string | undefined>(undefined);
+  const [aiFlagModalOnSelect, setAiFlagModalOnSelect] = useState<(url: string) => void>(() => { });
+
   // Refs to track state across refreshes (router.refresh() updates initialDraft with new IDs)
   const draftRef = useRef(draft);
   const activePresidentIdRef = useRef(activePresidentId);
   const activeMonarchIdRef = useRef(activeMonarchId);
+  const activeFlagIdRef = useRef(activeFlagId);
 
   useEffect(() => {
     draftRef.current = draft;
     activePresidentIdRef.current = activePresidentId;
     activeMonarchIdRef.current = activeMonarchId;
-  }, [draft, activePresidentId, activeMonarchId]);
+    activeFlagIdRef.current = activeFlagId;
+  }, [draft, activePresidentId, activeMonarchId, activeFlagId]);
 
   useEffect(() => {
     if (draft.presidents.length > 0 && !activePresidentId) {
@@ -161,16 +174,26 @@ const AdminCountryEditorClient = ({
   }, [draft.monarchs, activeMonarchId]);
 
   useEffect(() => {
+    if (draft.flags.length > 0 && !activeFlagId) {
+      setActiveFlagId(draft.flags[0].formId);
+    }
+  }, [draft.flags, activeFlagId]);
+
+  useEffect(() => {
     // Capture indices from the PREVIOUS draft state (stored in refs)
     const prevDraft = draftRef.current;
     const prevActivePresidentId = activePresidentIdRef.current;
     const prevActiveMonarchId = activeMonarchIdRef.current;
+    const prevActiveFlagId = activeFlagIdRef.current;
 
     const activePresidentIndex = prevDraft.presidents.findIndex(
       p => p.formId === prevActivePresidentId
     );
     const activeMonarchIndex = prevDraft.monarchs.findIndex(
       m => m.formId === prevActiveMonarchId
+    );
+    const activeFlagIndex = prevDraft.flags.findIndex(
+      f => f.formId === prevActiveFlagId
     );
 
     setBaseline(initialDraft);
@@ -188,6 +211,10 @@ const AdminCountryEditorClient = ({
 
     if (activeMonarchIndex !== -1 && initialDraft.monarchs[activeMonarchIndex]) {
       setActiveMonarchId(initialDraft.monarchs[activeMonarchIndex].formId);
+    }
+
+    if (activeFlagIndex !== -1 && initialDraft.flags[activeFlagIndex]) {
+      setActiveFlagId(initialDraft.flags[activeFlagIndex].formId);
     }
   }, [initialDraft]);
 
@@ -402,6 +429,58 @@ const AdminCountryEditorClient = ({
     });
   };
 
+  const handleAddFlag = () => {
+    const newFlag = createEmptyFlag();
+    applyChange(draft => {
+      draft.flags.push(newFlag);
+      return draft;
+    });
+    setActiveFlagId(newFlag.formId);
+  };
+
+  const handleRemoveFlag = (index: number) => {
+    const flagToRemove = draft.flags[index];
+    applyChange(draft => {
+      draft.flags.splice(index, 1);
+      return draft;
+    });
+    if (flagToRemove.formId === activeFlagId) {
+      setActiveFlagId(null);
+    }
+  };
+
+  const updateFlag = (
+    index: number,
+    updater: (flag: FlagForm) => void
+  ) => {
+    applyChange(draft => {
+      const flag = draft.flags[index];
+      if (flag) {
+        updater(flag);
+      }
+      return draft;
+    });
+  };
+
+  type FlagFieldKey = 'imageUrl' | 'startDate' | 'endDate' | 'description' | 'reasonForChange';
+
+  const handleFlagFieldChange =
+    (index: number, field: FlagFieldKey) =>
+      (
+        event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      ) => {
+        const value = event.target.value;
+        updateFlag(index, flag => {
+          flag[field] = value;
+        });
+      };
+
+  const handleFlagImageChange = (index: number) => (url: string) => {
+    updateFlag(index, flag => {
+      flag.imageUrl = url;
+    });
+  };
+
   const isSaving = status.type === 'saving';
 
   const saveDraft = useCallback(
@@ -426,6 +505,9 @@ const AdminCountryEditorClient = ({
       );
       const activeMonarchIndex = draft.monarchs.findIndex(
         m => m.formId === activeMonarchId
+      );
+      const activeFlagIndex = draft.flags.findIndex(
+        f => f.formId === activeFlagId
       );
 
       setStatus({
@@ -478,6 +560,9 @@ const AdminCountryEditorClient = ({
           if (activeMonarchIndex !== -1 && nextDraft.monarchs[activeMonarchIndex]) {
             setActiveMonarchId(nextDraft.monarchs[activeMonarchIndex].formId);
           }
+          if (activeFlagIndex !== -1 && nextDraft.flags[activeFlagIndex]) {
+            setActiveFlagId(nextDraft.flags[activeFlagIndex].formId);
+          }
         }
         setHistory([]);
         setValidationErrors([]);
@@ -503,7 +588,7 @@ const AdminCountryEditorClient = ({
         return null;
       }
     },
-    [draft, isSaving, mode, router, activePresidentId, activeMonarchId]
+    [draft, isSaving, mode, router, activePresidentId, activeMonarchId, activeFlagId]
   );
 
   const handleViewTimeline = useCallback(async () => {
@@ -1047,6 +1132,134 @@ const AdminCountryEditorClient = ({
         })}
       </section>
 
+      <section className="admin-editor-section">
+        <div className="admin-section-header">
+          <h2>Flags</h2>
+          <button
+            className="admin-secondary-button"
+            type="button"
+            onClick={handleAddFlag}
+          >
+            + Add Flag
+          </button>
+        </div>
+
+        {draft.flags.length === 0 && (
+          <p className="admin-empty-hint">
+            No flags recorded. Use &ldquo;Add Flag&rdquo; to include historical flags.
+          </p>
+        )}
+
+        {draft.flags.length > 0 && (
+          <div className="admin-tabs">
+            {draft.flags.map((flag, index) => (
+              <button
+                key={flag.formId}
+                type="button"
+                className={`admin-tab ${activeFlagId === flag.formId ? 'active' : ''}`}
+                onClick={() => setActiveFlagId(flag.formId)}
+              >
+                {flag.description.trim() || `Flag ${index + 1}`}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {draft.flags.map((flag, index) => {
+          if (flag.formId !== activeFlagId) return null;
+
+          return (
+            <article className="admin-entity-card" key={flag.formId}>
+              <header className="admin-entity-header">
+                <h3>{flag.description.trim() || `Flag ${index + 1}`}</h3>
+                <button
+                  className="admin-text-button"
+                  type="button"
+                  onClick={() => handleRemoveFlag(index)}
+                >
+                  Remove
+                </button>
+              </header>
+
+              <div className="admin-flag-preview-container">
+                {flag.imageUrl ? (
+                  <img
+                    src={flag.imageUrl}
+                    alt={flag.description || 'Flag'}
+                    className="admin-flag-preview-image"
+                  />
+                ) : (
+                  <div className="admin-flag-placeholder">
+                    No flag image
+                  </div>
+                )}
+              </div>
+
+              <ImageUploader
+                label={`Flag ${index + 1}`}
+                imageUrl={flag.imageUrl}
+                onImageChange={handleFlagImageChange(index)}
+              />
+
+              <div className="admin-ai-buttons">
+                <button
+                  type="button"
+                  className="admin-button ai"
+                  onClick={() => {
+                    setAiFlagModalInitialImage(flag.imageUrl || undefined);
+                    setAiFlagModalOnSelect(() => handleFlagImageChange(index));
+                    setIsAiFlagModalOpen(true);
+                  }}
+                >
+                  Generate / Edit AI Flag
+                </button>
+              </div>
+
+              <div className="admin-form-grid">
+                <label>
+                  <span>Start Date</span>
+                  <input
+                    type="date"
+                    value={flag.startDate}
+                    onChange={handleFlagFieldChange(index, 'startDate')}
+                    required
+                  />
+                </label>
+                <label>
+                  <span>End Date</span>
+                  <input
+                    type="date"
+                    value={flag.endDate}
+                    onChange={handleFlagFieldChange(index, 'endDate')}
+                    placeholder="Leave blank if current"
+                  />
+                </label>
+              </div>
+
+              <label className="admin-notes-field">
+                <span>Description</span>
+                <input
+                  value={flag.description}
+                  onChange={handleFlagFieldChange(index, 'description')}
+                  placeholder="e.g. Revolutionary Era Flag"
+                  required
+                />
+              </label>
+
+              <label className="admin-notes-field">
+                <span>Reason for Change</span>
+                <textarea
+                  rows={2}
+                  value={flag.reasonForChange}
+                  onChange={handleFlagFieldChange(index, 'reasonForChange')}
+                  placeholder="e.g. Adopted after independence"
+                />
+              </label>
+            </article>
+          );
+        })}
+      </section>
+
       <AiImageModal
         isOpen={isAiModalOpen}
         onClose={() => setIsAiModalOpen(false)}
@@ -1057,6 +1270,17 @@ const AdminCountryEditorClient = ({
         initialImage={aiModalInitialImage}
         leaderName={aiModalLeaderName}
         decade={aiModalDecade}
+      />
+
+      <AiFlagModal
+        isOpen={isAiFlagModalOpen}
+        onClose={() => setIsAiFlagModalOpen(false)}
+        onSelectImage={(url) => {
+          aiFlagModalOnSelect(url);
+          setImmediateSavePending(true);
+        }}
+        initialImage={aiFlagModalInitialImage}
+        countryName={draft.name || 'Unknown Country'}
       />
     </form>
   );

@@ -5,6 +5,7 @@ import type {
   TimelineEvent,
   President,
   Monarch,
+  Flag,
 } from './timeline';
 
 export interface SerializedTimelineEvent {
@@ -33,6 +34,14 @@ export interface SerializedMonarch {
   imageUrl?: string;
 }
 
+export interface SerializedFlag {
+  imageUrl: string;
+  startDate: string;
+  endDate: string | null;
+  description: string;
+  reasonForChange?: string;
+}
+
 export interface SerializedCountryTimeline {
   code: string;
   name: string;
@@ -40,6 +49,7 @@ export interface SerializedCountryTimeline {
   end: string | null;
   presidents: SerializedPresident[];
   monarchs: SerializedMonarch[];
+  flags: SerializedFlag[];
 }
 
 const serializeDate = (value: Date | null): string | null =>
@@ -77,9 +87,19 @@ export const serializeBootstrapMonarch = (
   imageUrl: monarch.imageUrl,
 });
 
+export const serializeBootstrapFlag = (
+  flag: Flag
+): SerializedFlag => ({
+  imageUrl: flag.imageUrl,
+  startDate: flag.startDate.toISOString(),
+  endDate: serializeDate(flag.endDate),
+  description: flag.description,
+  reasonForChange: flag.reasonForChange,
+});
+
 type CountryRecord = Pick<
   Country,
-  'code' | 'name' | 'start' | 'end' | 'presidents' | 'monarchs'
+  'code' | 'name' | 'start' | 'end' | 'presidents' | 'monarchs' | 'flags'
 >;
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -167,6 +187,28 @@ const normalizeMonarch = (
   };
 };
 
+const normalizeFlag = (
+  value: unknown
+): SerializedFlag | null => {
+  if (!isObject(value) || !isString(value.imageUrl) || !isString(value.startDate)) {
+    return null;
+  }
+  if (!isString(value.description)) {
+    return null;
+  }
+
+  const endDate = value.endDate;
+  const reasonForChange = value.reasonForChange;
+
+  return {
+    imageUrl: value.imageUrl,
+    startDate: value.startDate,
+    endDate: isString(endDate) ? endDate : null,
+    description: value.description,
+    reasonForChange: isString(reasonForChange) ? reasonForChange : undefined,
+  };
+};
+
 const normalizeEventCollection = (value: unknown): SerializedTimelineEvent[] =>
   normalizeArray(value, normalizeEvent);
 
@@ -178,6 +220,10 @@ const normalizeMonarchCollection = (
   value: unknown
 ): SerializedMonarch[] => normalizeArray(value, normalizeMonarch);
 
+const normalizeFlagCollection = (
+  value: unknown
+): SerializedFlag[] => normalizeArray(value, normalizeFlag);
+
 export const serializeCountryRecord = (
   country: CountryRecord
 ): SerializedCountryTimeline => ({
@@ -187,6 +233,7 @@ export const serializeCountryRecord = (
   end: serializeDate(country.end),
   presidents: normalizePresidentCollection(country.presidents),
   monarchs: normalizeMonarchCollection(country.monarchs),
+  flags: normalizeFlagCollection(country.flags),
 });
 
 export const extractCountryPresidents = (
@@ -196,3 +243,7 @@ export const extractCountryPresidents = (
 export const extractCountryMonarchs = (
   monarchs: unknown
 ): SerializedMonarch[] => normalizeMonarchCollection(monarchs);
+
+export const extractCountryFlags = (
+  flags: unknown
+): SerializedFlag[] => normalizeFlagCollection(flags);

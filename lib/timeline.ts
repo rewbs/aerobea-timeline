@@ -33,6 +33,14 @@ export interface Monarch {
   imageUrl?: string;
 }
 
+export interface Flag {
+  imageUrl: string;
+  startDate: Date;
+  endDate: Date | null;
+  description: string;
+  reasonForChange?: string;
+}
+
 export function isPresident(date: Date, president: President): boolean {
   const begins = president.events.filter(e => e.type === PRESIDENCY_BEGINS);
   const ends = president.events.filter(e => e.type === PRESIDENCY_ENDS);
@@ -60,5 +68,11 @@ export function getMonarch(
   return monarchs.find(
     m =>
       date >= m.start_reign && (m.end_reign === null || date <= m.end_reign)
+  );
+}
+
+export function getFlag(date: Date, flags: Flag[]): Flag | undefined {
+  return flags.find(
+    f => date >= f.startDate && (f.endDate === null || date <= f.endDate)
   );
 }

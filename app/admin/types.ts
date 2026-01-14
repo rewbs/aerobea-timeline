@@ -10,6 +10,7 @@ export interface AdminCountry {
   updatedAt: string;
   presidents: unknown;
   monarchs: unknown;
+  flags: unknown;
 }
 
 export const serializeAdminCountry = (country: Country): AdminCountry => ({
@@ -22,4 +23,5 @@ export const serializeAdminCountry = (country: Country): AdminCountry => ({
   updatedAt: country.updatedAt.toISOString(),
   presidents: country.presidents,
   monarchs: country.monarchs,
+  flags: country.flags,
 });
