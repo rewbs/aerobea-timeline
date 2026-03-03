@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../lib/prisma';
 import { serializeCountryRecord } from '../../lib/serialize';
-import { Country } from '@prisma/client/edge';
+import { Country } from '@prisma/client';
 
 export async function GET() {
   try {

@@ -1,5 +1,5 @@
 
-import { Country } from '@prisma/client/edge';
+import { Country } from '@prisma/client';
 import type {
   EventType,
   TimelineEvent,

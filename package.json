@@ -12,7 +12,6 @@
     "@fal-ai/client": "^1.7.2",
     "@fal-ai/serverless-client": "^0.15.0",
     "@prisma/client": "^6.19.0",
-    "@prisma/extension-accelerate": "^2.0.2",
     "@vercel/blob": "^2.0.0",
     "dotenv": "^17.2.3",
     "next": "^16.0.8",

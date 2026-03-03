@@ -1,4 +1,4 @@
-import { Country } from '@prisma/client/edge';
+import { Country } from '@prisma/client';
 
 export interface AdminCountry {
   id: number;

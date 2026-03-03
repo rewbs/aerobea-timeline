@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client/edge';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../../../../lib/prisma';
 import { serializeAdminCountry } from '../../../../admin/types';
 import { validateAdminCountryInput } from '../../../../../lib/adminValidation';
